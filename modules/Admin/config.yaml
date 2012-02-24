@@ -1,0 +1,15 @@
+name: Admin Module
+identifier: com.fustrate.admin
+version: 1.0
+author:
+    name: Steven Hoffman
+    email: fustrate@me.com
+    website: http://www.fustrate.com/
+template_ns: admin
+language_ns: admin
+namespace: \smCore\Modules\Admin
+routes:
+    main:
+        match: [admin, admin/main]
+        controller: MainController
+        method: mainAction

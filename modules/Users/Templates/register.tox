@@ -1,0 +1,83 @@
+<tpl:container>
+	<tpl:template name="users:register_main">
+		<site:rounded header="{#users.register.join_now}">
+			<form action="{$context.scripturl}/register/?step=finish" method="post" class="form-vertical">
+				<div class="control-group">
+					<label class="control-label">
+						{#users.login_username}:
+					</label>
+					<div class="controls">
+						<input type="text" name="new_account_username" id="new_account_username" size="30" />
+					</div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label">
+						{#users.login_email}:
+					</label>
+					<div class="controls">
+						<input type="text" name="new_account_email" id="new_account_email" size="30" />
+					</div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label">
+						{#users.login_password}:
+					</label>
+					<div class="controls">
+						<input type="password" name="new_account_password" id="new_account_password" size="30" />
+					</div>
+				</div>
+
+				<div class="smaller">
+					{#users.register.disclaimer:$context.scripturl |raw}
+					<input type="hidden" name="step" value="1" />
+				</div>
+				<br />
+
+				<div class="center">
+					<input class="btn btn-primary" type="submit" name="submit" value="{#users.register.create_account}" />
+				</div>
+			</form>
+
+			<script language="JavaScript" type="text/javascript" src="{$context.default_theme_url}/scripts/hash.js?{$context.reload_counter}"></script>
+			<script type="text/javascript">
+				$("#register_form").bind('submit', function()
+				{
+					// Pre-hash the password, and remove the plaintext version so it doesn't get passed along.
+					$('<input type="hidden" name="password_hashed" id="password_hashed" />').attr('value', Sha256.hash($("#new_account_password").val())).appendTo("#register_form");
+					$("#new_account_password").val("");
+				});
+			</script>
+		</site:rounded>
+	</tpl:template>
+
+	<tpl:template name="users:register_activation_sent">
+		<site:rounded>
+			{#users.register.activation_sent:$context.new_account_email}
+		</site:rounded>
+	</tpl:template>
+
+	<tpl:template name="users:register_activated">
+		<site:rounded>
+			{#users.register.activated_message:$context.scripturl |raw}
+		</site:rounded>
+	</tpl:template>
+
+
+
+
+
+
+
+	<tpl:template name="users:register_resend">
+		<site:rounded>
+			<form action="{$context.scripturl}/register/resend/" method="post">
+				{#users.register.resend_message}
+				<input type="text" name="activate_email" size="25" /><br />
+				<br />
+				<input type="submit" name="submit" value="{#users.register.resend}" />
+			</form>
+		</site:rounded>
+	</tpl:template>
+</tpl:container>

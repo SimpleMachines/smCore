@@ -1,0 +1,70 @@
+users:
+    login_title: Logging In
+    login_username: Name
+    login_email: Email Address
+    login_password: Password
+    login_time: Keep me logged in for
+    login_user_login: User Login
+    log_in: Log In
+
+    register:
+        titles:
+            main: Register
+            activation_sent: Activation Email Sent
+            activated: Account Activated
+            resend: Resend Activation Email
+
+        activated_message: Thank you for activating your account! From here, you can <a href="%s/login/">log in</a> and start interacting with the site.
+        resend_message: Need us to resend your account activation email? Just enter your email address:
+        resend: Resend
+        activation_sent: An email with your account activation link has been sent to %s. Please check your spam filter.
+        join_now: Not a Member? Join Now!
+        create_account: Create My Account
+        disclaimer: Your email address will not be shared with third parties. By creating an account you agree to the <a href="%s/terms/">Terms of Use &amp; Privacy Policy</a>.
+
+        email_activate_account:
+            subject: HOA Lifestyle Account Activation
+            text: |
+                Thank you for signing up for HOA Lifestyle!
+                
+                To activate your account, please use the following link: %1$s/register/activate/?key=%2$s;id=%3$d
+            html: |
+                Thank you for signing up for HOA Lifestyle!<br />
+                <br />
+                To activate your account, please use the following link: <a href="%1$s/register/activate/?key=%2$s;id=%3$d">%1$s/register/activate/?key=%2$s;id=%3$d</a>.
+
+    terms:
+        title: Terms of Use & Privacy Policy
+        terms_of_use: Terms of Use
+        terms_text: |
+            <ol class="numbered">
+                <li>Users of this website must refrain from posting spam advertisements, rude or hurtful comments, and illegal or adult material.</li>
+                <li>Each user may only have one account registered.</li>
+                <li>All published content (including but not limited to articles, images, and data) are property of HOA Lifestyle, unless otherwise noted.</li>
+                <li>Aside from personal use, HOA Lifestyle content may not be reproduced or distributed without proper attribution to both the author and this website. If reproduced online, in whole or in part, a hyperlink to the content must be present.</li>
+            </ol>
+            <br />
+            By visiting, registering, or logging into this site, you accept these terms. If you do not accept these terms, you must exit this site immediately. Breaching these terms will result in terminated or restricted access to this site.
+        privacy_policy: Privacy Policy
+        privacy_text: HOA Lifestyle will not sell or otherwise distribute user information, identifiable or anonymous, to any third-party. This site uses an HTTP cookie (a small piece of data stored safely on your computer) to enable users to log in and comment, and may also use a separate cookie to collect data about how many unique visitors come to this site, along with other miscellaneous and anonymous data. Any data from or about your account will only be accessed or used by HOA Lifestyle.
+
+    exceptions:
+        login:
+            account_not_active: Your account is not active. Please check your email for an activation link.
+            no_username_sent: No username sent.
+            no_password_sent: No password sent.
+            identity_not_found: An account with the username provided could not be found.
+            credential_invalid: Invalid password.
+        register:
+            invalid_step: Invalid registration step.
+            username_required: A username is required.
+            invalid_email: The email address provided does not seem to be valid.
+            no_password_sent: Please enter a password.
+            email_already_exists: The email address you tried to register with is already in use.
+            username_already_exists: The username you tried to register with already exists.
+            unknown_error: An error occurred while trying to create your account. Please try again, and contact us if this error persists.
+            invalid_id: An account with the ID specified could not be found.
+            activate_invalid_link: The activation information provided does not seem to be valid.
+            activate_id_doesnt_exist: The account ID from your activation link does not seem to exist.
+            already_activated: Your account has already been activated.
+            wrong_key: The activation key provided did not match the one on record.

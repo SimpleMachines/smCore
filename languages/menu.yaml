@@ -1,0 +1,7 @@
+# This should actually be compiled from the module language files, and then cached. This file is not needed.
+menu:
+    home: Home
+    login: Log In
+    logout: Log Out
+    register: Register
+    admin: Admin

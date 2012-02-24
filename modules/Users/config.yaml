@@ -1,0 +1,70 @@
+name: Users Module
+identifier: com.fustrate.users
+version: 1.0
+author:
+    name: Steven Hoffman
+    email: fustrate@me.com
+    website: http://www.fustrate.com/
+template_ns: users
+language_ns: users
+namespace: \smCore\Modules\Users
+
+# Stuff for further down
+controllers:
+    main: &main
+        Main
+    admin: &admin
+        Admin
+    register: &register
+        Register
+
+routes:
+    login:
+        match: login
+        controller: *main
+    loginSubmit:
+        match: login/submit
+        controller: *main
+    loginForgot:
+        match: login/forgot
+        controller: *main
+    logout:
+        match: logout
+        controller: *main
+
+    terms:
+        match: terms
+        controller: *main
+
+    register:
+        match: register
+        controller: *register
+    registerSubmit:
+        match: register/submit
+        controller: *register
+        method: submit
+    registerActivate:
+        match: register/activate
+        controller: *register
+        method: activate
+    registerResend:
+        match: register/resend
+        controller: *register
+        method: resend
+
+    adminMain:
+        match: [admin/users, admin/users/main]
+        controller: *admin
+
+permissions:
+    - edit_own_account_settings
+    - edit_any_account_settings
+    - edit_own_profile_options
+    - edit_any_profile_options
+    - edit_own_custom_title
+    - edit_any_custom_title
+    - delete_own_account
+    - delete_any_account
+    - manage_roles
+    - manage_permissions
+    - manage_bans
