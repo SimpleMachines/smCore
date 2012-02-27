@@ -1,0 +1,149 @@
+<tpl:container>
+
+	<tpl:template name="forms:form">
+		<form action="{$context.form.attributes.action}" method="{$context.form.attributes.method}">
+			<site:rounded>
+				<dl><tpl:foreach from="{$context.form.controls}" as="{$control}">
+					<tpl:call name="forms:{$control.type}" data="{$control}" /></tpl:foreach>
+				</dl>
+				<div class="clear"></div>
+			</site:rounded>
+
+			<div class="center"><tpl:if test="{$context.form.show_reset}">
+				<input type="reset" name="reset" value="{#reset}" /></tpl:if>
+				<input type="submit" name="submit" value="{#submit}" />
+			</div>
+		</form>
+
+		<script type="text/javascript">
+			$("[required]").bind('keyup blur', function()
+			{
+				elem = $(this);
+				elem.toggleClass('error', elem.val().length < 1);
+			}).blur();
+		</script>
+	</tpl:template>
+
+	<tpl:template name="forms:button" requires="data"></tpl:template>
+
+	<tpl:template name="forms:checkbox" requires="data"></tpl:template>
+
+	<tpl:template name="forms:file" requires="data"></tpl:template>
+
+	<tpl:template name="forms:hidden" requires="data">
+		<input type="hidden" name="{$data.name}" id="{$data.id}" value="{$data.value}" />
+	</tpl:template>
+
+	<tpl:template name="forms:image" requires="data"></tpl:template>
+
+	<tpl:template name="forms:password" requires="data"></tpl:template>
+
+	<tpl:template name="forms:radio" requires="data"></tpl:template>
+
+	<tpl:template name="forms:select" requires="data">
+		<dt>{$data.label}</dt>
+		<dd>
+			<select name="{$data.name}">
+				<option></option><tpl:foreach from="{$data.options}" as="{$id} => {$option}">
+				<option value="{$id}"{tpl:if test="{$id} == {$data.value}"} selected="selected"{/tpl:if}>{$option}</option></tpl:foreach>
+			</select>
+		</dd>
+	</tpl:template>
+
+	<tpl:template name="forms:text" requires="data">
+		<dt>{$data.label}</dt>
+		<dd>
+			<input type="text" name="{$data.name}" id="{$data.id}" value="{$data.value}" size="{$data.size}"{tpl:if test="{$data.validation.required}"} required="required"{/tpl:if} />
+		</dd>
+	</tpl:template>
+
+	<tpl:template name="forms:textarea" requires="data">
+		<dt>{$data.label}</dt>
+		<dd>
+			<textarea name="{$data.name}" id="{$data.id}" rows="{$data.rows}" cols="{$data.cols}"{tpl:if test="{$data.validation.required}"} required="required"{/tpl:if}>{$data.value}</textarea>
+		</dd>
+	</tpl:template>
+
+
+	<!--- HTML5 --->
+
+
+	<tpl:template name="forms:email" requires="data">
+		<input type="email" name="{$data.name}" id="{$data.id}" value="{$value}" />
+	</tpl:template>
+
+	<tpl:template name="forms:url" requires="data">
+		<input type="url" name="{$data.name}" id="{$data.id}" value="{$value}" />
+	</tpl:template>
+
+	<tpl:template name="forms:tel" requires="data">
+		<input type="tel" name="{$data.name}" id="{$data.id}" value="{$value}" />
+	</tpl:template>
+
+	<tpl:template name="forms:number" requires="data"></tpl:template>
+
+	<tpl:template name="forms:range" requires="data"></tpl:template>
+
+	<tpl:template name="forms:date" requires="data"></tpl:template>
+
+	<tpl:template name="forms:time" requires="data"></tpl:template>
+
+	<tpl:template name="forms:datetime" requires="data">
+		<dt>{$data.label}</dt>
+		<dd>
+			<input type="date" name="{$data.name}_date" id="{$data.id}_date" size="9" />
+			<input type="time" name="{$data.name}_time" id="{$data.id}_time" size="7" value="{%date:{$data.value}:"g:i A"}">
+			<script type="text/javascript">
+				$("#{$data.id}_date").datepicker({
+					dateFormat: 'm/d/yy'
+				}).datepicker("setDate", new Date({$data.value}000));
+			</script>
+		</dd>
+	</tpl:template>
+
+	<tpl:template name="forms:search" requires="data"></tpl:template>
+
+	<tpl:template name="forms:color" requires="data">
+		<dt>{$data.label}</dt>
+		<dd>
+			<input type="color" id="{$data.id}" name="{$data.name}" value="{$data.value}" />
+			<script type="text/javascript">
+				$("#{$data.id}").coreColorPicker();
+			</script>
+		</dd>
+	</tpl:template>
+
+
+	<!--- Custom --->
+
+
+	<tpl:template name="forms:user" requires="data">
+		<dt>{$data.label}</dt>
+		<dd>
+			<input type="text" name="{$data.name}" id="{$data.id}" />
+			<script type="text/javascript"><!--
+				$(function()
+				{
+					$("#{$data.id}").coreUserPicker({
+						limit: {$data.limit},
+						require: {$data.require},
+						users: [<tpl:foreach from="{$data.value}" as="{$id} => {$name}">
+							[{$id}, '{$name}'],</tpl:foreach>
+							[0, '']
+						]
+					});
+				});
+			--></script>
+		</dd>
+	</tpl:template>
+
+	<tpl:template name="forms:group" requires="data">
+	</tpl:template>
+
+	<tpl:template name="forms:recaptcha" requires="data">
+	</tpl:template>
+
+	<!--- jQuery UI --->
+
+
+</tpl:container>
