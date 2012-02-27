@@ -1,0 +1,19 @@
+name: Home Module
+identifier: com.fustrate.home
+version: 1.0
+author:
+    name: Steven Hoffman
+    email: fustrate@me.com
+    website: http://www.fustrate.com/
+template_ns: home
+language_ns: home
+namespace: \smCore\modules\home
+routes:
+    home:
+        title: home_home
+        controller: \smCore\modules\home\controllers\HomeController
+        method: homeAction
+        order: 1
+        visible: true
+        resource: [role, member]
+        default: true
