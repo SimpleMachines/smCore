@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmlns:uml="http://www.eclipse.org/uml2/3.0.0/UML" xmlns:uml2tools.notation="http://www.eclipse.org/mdt/uml2tools/gmf/notation/ext/2008" xmi:id="_sg48sGWIEeCgR7o4SZUPJg" type="UMLComponent" name="components.umlcomp" measurementUnit="Pixel">
+  <children xmi:type="notation:Shape" xmi:id="_uvmP8GWIEeCgR7o4SZUPJg" type="2005" fontName="Georgia">
+    <children xmi:type="notation:DecorationNode" xmi:id="_uvvZ4GWIEeCgR7o4SZUPJg" type="5011"/>
+    <children xmi:type="notation:DecorationNode" xmi:id="_uvvZ4WWIEeCgR7o4SZUPJg" type="5023"/>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_uv0SYGWIEeCgR7o4SZUPJg" type="7003" collapsed="true">
+      <styles xmi:type="notation:SortingStyle" xmi:id="_uv0SYWWIEeCgR7o4SZUPJg"/>
+      <styles xmi:type="notation:FilteringStyle" xmi:id="_uv0SYmWIEeCgR7o4SZUPJg"/>
+      <styles xmi:type="notation:CanonicalStyle" xmi:id="_uv05cGWIEeCgR7o4SZUPJg"/>
+    </children>
+    <element xmi:type="uml:Package" href="components.uml#_sTGYUWWIEeCgR7o4SZUPJg"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_uvm3AGWIEeCgR7o4SZUPJg"/>
+  </children>
+  <children xmi:type="notation:Shape" xmi:id="_0yb8IGWIEeCgR7o4SZUPJg" type="2001" fontName="Georgia">
+    <children xmi:type="notation:DecorationNode" xmi:id="_0ycjMGWIEeCgR7o4SZUPJg" type="5001"/>
+    <children xmi:type="notation:DecorationNode" xmi:id="_0ycjMWWIEeCgR7o4SZUPJg" type="5020"/>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_0ycjMmWIEeCgR7o4SZUPJg" type="7001">
+      <styles xmi:type="notation:CanonicalStyle" xmi:id="_0ycjM2WIEeCgR7o4SZUPJg"/>
+    </children>
+    <styles xmi:type="notation:CanonicalStyle" xmi:id="_0yb8IWWIEeCgR7o4SZUPJg"/>
+    <element xmi:type="uml:Component" href="components.uml#_0roJgGWIEeCgR7o4SZUPJg"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_0yb8ImWIEeCgR7o4SZUPJg" x="60" y="120"/>
+  </children>
+  <children xmi:type="notation:Shape" xmi:id="_FRlPIGWJEeCgR7o4SZUPJg" type="2001" fontName="Georgia">
+    <children xmi:type="notation:DecorationNode" xmi:id="_FRl2MmWJEeCgR7o4SZUPJg" type="5001"/>
+    <children xmi:type="notation:DecorationNode" xmi:id="_FRmdQGWJEeCgR7o4SZUPJg" type="5020"/>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_FRmdQWWJEeCgR7o4SZUPJg" type="7001">
+      <styles xmi:type="notation:CanonicalStyle" xmi:id="_FRmdQmWJEeCgR7o4SZUPJg"/>
+    </children>
+    <styles xmi:type="notation:CanonicalStyle" xmi:id="_FRl2MGWJEeCgR7o4SZUPJg"/>
+    <element xmi:type="uml:Component" href="components.uml#_FP3-8GWJEeCgR7o4SZUPJg"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_FRl2MWWJEeCgR7o4SZUPJg" x="420" y="84" width="128" height="107"/>
+  </children>
+  <children xmi:type="notation:Shape" xmi:id="_0bqlcGWJEeCeXo-rEJDYDg" type="2001" fontName="Georgia">
+    <children xmi:type="notation:DecorationNode" xmi:id="_0brzkGWJEeCeXo-rEJDYDg" type="5001"/>
+    <children xmi:type="notation:DecorationNode" xmi:id="_0brzkWWJEeCeXo-rEJDYDg" type="5020"/>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_0bsaoGWJEeCeXo-rEJDYDg" type="7001">
+      <styles xmi:type="notation:CanonicalStyle" xmi:id="_0bsaoWWJEeCeXo-rEJDYDg"/>
+    </children>
+    <styles xmi:type="notation:CanonicalStyle" xmi:id="_0bqlcWWJEeCeXo-rEJDYDg"/>
+    <element xmi:type="uml:Component" href="components.uml#_0UpXcGWJEeCeXo-rEJDYDg"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_0bqlcmWJEeCeXo-rEJDYDg" x="261" y="287"/>
+  </children>
+  <children xmi:type="notation:Shape" xmi:id="_6n7TYGWJEeCeXo-rEJDYDg" type="2001" fontName="Georgia">
+    <children xmi:type="notation:DecorationNode" xmi:id="_6n7TY2WJEeCeXo-rEJDYDg" type="5001"/>
+    <children xmi:type="notation:DecorationNode" xmi:id="_6n76cGWJEeCeXo-rEJDYDg" type="5020"/>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_6n76cWWJEeCeXo-rEJDYDg" type="7001">
+      <styles xmi:type="notation:CanonicalStyle" xmi:id="_6n76cmWJEeCeXo-rEJDYDg"/>
+    </children>
+    <styles xmi:type="notation:CanonicalStyle" xmi:id="_6n7TYWWJEeCeXo-rEJDYDg"/>
+    <element xmi:type="uml:Component" href="components.uml#_6nICIGWJEeCeXo-rEJDYDg"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_6n7TYmWJEeCeXo-rEJDYDg" x="420" y="240"/>
+  </children>
+  <children xmi:type="notation:Shape" xmi:id="_9xMxcGWJEeCeXo-rEJDYDg" type="2001" fontName="Georgia">
+    <children xmi:type="notation:DecorationNode" xmi:id="_9xNYgGWJEeCeXo-rEJDYDg" type="5001"/>
+    <children xmi:type="notation:DecorationNode" xmi:id="_9xNYgWWJEeCeXo-rEJDYDg" type="5020"/>
+    <children xmi:type="notation:BasicCompartment" xmi:id="_9xNYgmWJEeCeXo-rEJDYDg" type="7001">
+      <styles xmi:type="notation:CanonicalStyle" xmi:id="_9xNYg2WJEeCeXo-rEJDYDg"/>
+    </children>
+    <styles xmi:type="notation:CanonicalStyle" xmi:id="_9xMxcWWJEeCeXo-rEJDYDg"/>
+    <element xmi:type="uml:Component" href="components.uml#_9wlGYGWJEeCeXo-rEJDYDg"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_9xMxcmWJEeCeXo-rEJDYDg" x="52" y="327"/>
+  </children>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_sg48sWWIEeCgR7o4SZUPJg"/>
+  <styles xmi:type="uml2tools.notation:U2TDiagramCanonicalStyle" xmi:id="_sg48smWIEeCgR7o4SZUPJg"/>
+  <element xmi:type="uml:Package" href="components.uml#_sTGYUWWIEeCgR7o4SZUPJg"/>
+</notation:Diagram>

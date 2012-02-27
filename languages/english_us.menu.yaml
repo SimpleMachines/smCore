@@ -1,0 +1,31 @@
+menu_titles:
+    hll_home: Home
+    hll_login: Log In
+    hll_logout: Log Out
+
+    whiteboard: Whiteboard
+    whiteboard_main: Currently Out
+    whiteboard_day: Day View
+    whiteboard_week: Week View
+    whiteboard_new: New Entry
+
+    tasks: Tasks
+    tasks_main: Open Tasks
+    tasks_history: Task History
+    tasks_new: New Task
+
+    calendar: Calendar
+    calendar_month: Month View
+    calendar_week: Week View
+    calendar_day: Day View
+    calendar_holidays: Holidays
+
+    settings: Settings
+    admin: Admin
+    time: Time
+
+    time_main: Main
+    time_history: History
+    time_clockin: Clock In
+    time_clockout: Clock Out
+    time_header_quickactions: Quick Actions

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Package xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:uml="http://www.eclipse.org/uml2/3.0.0/UML" xmi:id="_eFNrYGWKEeCeXo-rEJDYDg" name="PackageManager">
+  <elementImport xmi:id="_eHzFUGWKEeCeXo-rEJDYDg">
+    <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+  </elementImport>
+  <elementImport xmi:id="_eHzsYGWKEeCeXo-rEJDYDg">
+    <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+  </elementImport>
+  <elementImport xmi:id="_eHzsYWWKEeCeXo-rEJDYDg">
+    <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UnlimitedNatural"/>
+  </elementImport>
+  <elementImport xmi:id="_eHzsYmWKEeCeXo-rEJDYDg">
+    <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+  </elementImport>
+  <packagedElement xmi:type="uml:Class" xmi:id="_ihozYGWKEeCeXo-rEJDYDg" name="PackageManager">
+    <ownedAttribute xmi:id="_8kLRwGWWEeCeXo-rEJDYDg" name="plugins" aggregation="composite"/>
+    <ownedAttribute xmi:id="_9wGSUGWWEeCeXo-rEJDYDg" name="modules" aggregation="composite"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_lrA_IGWKEeCeXo-rEJDYDg" name="Package">
+    <ownedAttribute xmi:id="_J0IeMGWSEeCeXo-rEJDYDg" name="version" aggregation="composite"/>
+    <ownedAttribute xmi:id="_cm0hIGWSEeCeXo-rEJDYDg" name="config" aggregation="composite"/>
+    <ownedAttribute xmi:id="_DasLgGzHEeCo7oMNs7-zQg" name="dependencies" aggregation="composite"/>
+    <ownedAttribute xmi:id="_FCR0YGzHEeCo7oMNs7-zQg" name="clashes" aggregation="composite"/>
+    <ownedOperation xmi:id="_pN7FMGWKEeCeXo-rEJDYDg" name="update">
+      <ownedParameter xmi:id="_s12OIGWKEeCeXo-rEJDYDg" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_uhIrQGWKEeCeXo-rEJDYDg" name="remove">
+      <ownedParameter xmi:id="_vgiSwGWKEeCeXo-rEJDYDg" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_wAxSAGWKEeCeXo-rEJDYDg" name="install">
+      <ownedParameter xmi:id="_wpp28GWKEeCeXo-rEJDYDg" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_MXytwGWSEeCeXo-rEJDYDg" name="lastVersion">
+      <ownedParameter xmi:id="_OrRzUGWSEeCeXo-rEJDYDg" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_iGWr8GWSEeCeXo-rEJDYDg" name="readConfigFile">
+      <ownedParameter xmi:id="_k7Y_YGWSEeCeXo-rEJDYDg" direction="return"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_u9jEAGWWEeCeXo-rEJDYDg" name="Plugin">
+    <generalization xmi:id="_xUpeQGWWEeCeXo-rEJDYDg" general="_lrA_IGWKEeCeXo-rEJDYDg"/>
+    <ownedAttribute xmi:id="_NXkWcGWXEeCeXo-rEJDYDg" name="module" aggregation="composite"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_vtjkoGWWEeCeXo-rEJDYDg" name="Module">
+    <generalization xmi:id="_x-bbEGWWEeCeXo-rEJDYDg" general="_lrA_IGWKEeCeXo-rEJDYDg"/>
+  </packagedElement>
+</uml:Package>

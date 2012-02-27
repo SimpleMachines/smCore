@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Package xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:uml="http://www.eclipse.org/uml2/3.0.0/UML" xmi:id="_YLziMGXxEeCg-f4XwK-L2w" name="parsing">
+  <elementImport xmi:id="_YVOj8GXxEeCg-f4XwK-L2w">
+    <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Boolean"/>
+  </elementImport>
+  <elementImport xmi:id="_YV22EGXxEeCg-f4XwK-L2w">
+    <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#String"/>
+  </elementImport>
+  <elementImport xmi:id="_YV3dIGXxEeCg-f4XwK-L2w">
+    <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#UnlimitedNatural"/>
+  </elementImport>
+  <elementImport xmi:id="_YV3dIWXxEeCg-f4XwK-L2w">
+    <importedElement xmi:type="uml:PrimitiveType" href="pathmap://UML_LIBRARIES/UMLPrimitiveTypes.library.uml#Integer"/>
+  </elementImport>
+  <packagedElement xmi:type="uml:Class" xmi:id="_dmu50GXxEeCg-f4XwK-L2w" name="ContentItem">
+    <ownedAttribute xmi:id="_qTMTcGXzEeCW39tJlpvdpw" name="subject" aggregation="composite"/>
+    <ownedAttribute xmi:id="_AxMKgGX0EeCdQIIbPYd7dg" name="text" aggregation="composite"/>
+    <ownedAttribute xmi:id="_COLs8GX0EeCdQIIbPYd7dg" name="author" aggregation="composite"/>
+    <ownedOperation xmi:id="_b_zQ4GX0EeCdQIIbPYd7dg" name="getText">
+      <ownedParameter xmi:id="_ciREwGX0EeCdQIIbPYd7dg" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_c4UNQGX0EeCdQIIbPYd7dg" name="getParsedText" isAbstract="true">
+      <ownedParameter xmi:id="_dshRYGX0EeCdQIIbPYd7dg" direction="return"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_fMZQEGXxEeCg-f4XwK-L2w" name="ArticleItem">
+    <generalization xmi:id="_Kd9KwGX0EeCdQIIbPYd7dg" general="_dmu50GXxEeCg-f4XwK-L2w"/>
+    <ownedOperation xmi:id="_X0j_gGX0EeCdQIIbPYd7dg" name="getParsedText">
+      <ownedParameter xmi:id="_ZxEvgGX0EeCdQIIbPYd7dg" direction="return"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_gZqUcGXxEeCg-f4XwK-L2w" name="ForumPostItem">
+    <generalization xmi:id="_M7j1oGX0EeCdQIIbPYd7dg" general="_dmu50GXxEeCg-f4XwK-L2w"/>
+    <ownedOperation xmi:id="_angoQGX0EeCdQIIbPYd7dg" name="getParsedText">
+      <ownedParameter xmi:id="_bWAF8GX0EeCdQIIbPYd7dg" direction="return"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_q9_14GXxEeCg-f4XwK-L2w" name="ContentItemService">
+    <ownedOperation xmi:id="_PZc0YGX0EeCdQIIbPYd7dg" name="loadTags">
+      <ownedParameter xmi:id="_QOdJwGX0EeCdQIIbPYd7dg" direction="return"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_OOh5YGX0EeCdQIIbPYd7dg" memberEnd="_OOk8sGX0EeCdQIIbPYd7dg _OOoAAWX0EeCdQIIbPYd7dg">
+    <ownedEnd xmi:id="_OOk8sGX0EeCdQIIbPYd7dg" name="src" type="_q9_14GXxEeCg-f4XwK-L2w" association="_OOh5YGX0EeCdQIIbPYd7dg">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_OOoAAGX0EeCdQIIbPYd7dg" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_OOnY8GX0EeCdQIIbPYd7dg" value="1"/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_OOoAAWX0EeCdQIIbPYd7dg" name="dst" type="_dmu50GXxEeCg-f4XwK-L2w" association="_OOh5YGX0EeCdQIIbPYd7dg">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_OOonEGX0EeCdQIIbPYd7dg" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_OOoAAmX0EeCdQIIbPYd7dg" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+</uml:Package>

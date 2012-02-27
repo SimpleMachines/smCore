@@ -1,0 +1,17 @@
+Changes to keep in mind, for the database mainly, for upgrading from SMF 2.0/2.1 to 3.0.
+
+
+1) Everything in install sql, diff-ed with SMF.
+Added to which: (to note before I forget) session table structure remains the same.
+
+2) 'forum_alias_urls' from smf_settings => 'alias_urls'
+
+
+
+
+
+
+Hooks changes:
+1) events
+2) integrate_verify_user => core_user_preload
+3) integrate_user_info => core_user_load
