@@ -1,5 +1,32 @@
 smCore repository
 
+---------------------------------------------------------------------
+
+This repository is the official development repository of smCore project,
+a Simple Machines project designed to be the core framework upon which
+SMF 3.0 is being built.
+The library will be included in SMF 3.0.
+
+-----------------------------------------------------------------------
+
+Installation requirements:
+- PHP 5.3+
+- Database support: currently tested on MySQL, with MySQLi or PDO. Character set: UTF8. The target is to support
+ multiple database systems, among which PostgreSQL 9+.
+
+Instructions:
+The file core_tables.sql from the main directory contains the queries to be executed for installation. Todo: add
+ the install script, and migration from SMF 2.0.
+The file Settings.php from the /other directory contains the settings for the installation. Customize it as needed,
+and copy it on your setup in the main directory.
+
+More details:
+In the main directory there is a file Database changes from SMF, being... what it says it is, surprisingly. ;)
+The file 'specs' is just a quick todo file, to be removed and replaced with proper specifications,
+ documented for the respective modules (it's not exactly smCore itself).
+
+------------------------------------------------------------------------------------
+
 License:
 Version: MPL 1.1
 
@@ -25,7 +52,7 @@ Contributor(s): Compuart, SleePy
 Alternatively, the contents of this package may be used under the terms of
 another license, specified beforehand by the Initial Developer. 
 
----------------------------------------------------------------------
+-----------------------------------------------------------------------------
 
 smCore third-party libraries. These libraries terms are specified by their own licenses.
 (please see the LICENSE file in their respective directory)
@@ -43,9 +70,6 @@ git://github.com/sebastianbergmann/php-text-template
 library/phpunit
 git://github.com/sebastianbergmann/phpunit
 
-library/ToxG
-git://github.com/Fustrate/ToxG.git
-
 To initialize submodules (first checkout), run
 git pull origin master
 git submodule init
@@ -53,25 +77,6 @@ To update submodules (fetch code), run
 git submodule update
 
 Included libraries at this time:
-libraries/Inspekt
-libraries/sfYaml
-
------------------------------------------------------------------------
-
-Installation requirements:
-- PHP 5.3+
-- Database support: currently tested on MySQL, with MySQLi or PDO. Character set: UTF8. The target is to support
- multiple database systems, among which PostgreSQL 9+.
-
-Instructions:
-The file core_tables.sql from the main directory contains the queries to be executed for installation. Todo: add
- the install script, and migration from SMF 2.0.
-The file Settings.php from the /other directory contains the settings for the installation. Customize it as needed,
-and copy it on your setup in the main directory.
-
-More details:
-In the main directory there is a file Database changes from SMF, being... what it says it is, surprisingly. ;)
-The file 'specs' is just a quick todo file, to be removed and replaced with proper specifications,
- documented for the respective modules (it's not exactly smCore itself).
-
-
+library/smTE
+library/Inspekt
+library/sfYaml
