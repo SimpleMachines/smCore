@@ -21,6 +21,9 @@ smCore will be a "core" of reusable code that will provide the basis for the dev
 What smCore is not
 smCore will not do anything all on its own, but provide the core functions upon which SMF functionalities are being built.
 
+For more information about SMF future, please refer to the development blog:
+http://www.simplemachines.org/community/index.php?topic=469381.0
+
 How to Contribute
 
 Code contributions are always welcome. We're developing using the fork and pull request model as per GitHub practice.
