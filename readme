@@ -7,6 +7,12 @@ a Simple Machines project designed to be the core framework upon which
 SMF 3.0 is being built.
 The library will be included in SMF 3.0.
 
+This software is being developed with an Open Development model, driven by the SMF community and contributors.
+
+SMF 3.0 will also be developed with an Open Development model, using both Github tools and home-installed tools. The official
+Github repository will be found here:
+https://github.com/SimpleMachines/Simple-Machines-Forum
+
 Goals:
 The smCore project will be working to develop a platform for development of future versions of SMF,
 allowing easy interaction with other large modules such as a blog, portal or CMS, gallery, and other
