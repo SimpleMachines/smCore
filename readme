@@ -7,6 +7,36 @@ a Simple Machines project designed to be the core framework upon which
 SMF 3.0 is being built.
 The library will be included in SMF 3.0.
 
+Goals:
+The smCore project will be working to develop a platform for development of future versions of SMF,
+allowing easy interaction with other large modules such as a blog, portal or CMS, gallery, and other
+large and desirable parts, of a community-based website.
+Currently, many of these things are hacked onto the forum and live as second-class citizens on your website.
+But SMF developers had always envisioned a set of website "simple machines" to do most of the hard work of the
+forum and all the other essential pieces of your community-based website.
+
+What is smCore?
+smCore will be a "core" of reusable code that will provide the basis for the development of future versions of SMF.
+
+What smCore is not
+smCore will not do anything all on its own, but provide the core functions upon which SMF functionalities are being built.
+
+How to Contribute
+
+Code contributions are always welcome. We're developing using the fork and pull request model as per GitHub practice.
+Please check out:
+http://help.github.com/send-pull-requests/
+
+Most of the actual work will be done in personal repositories, before being hashed out and merged in the official repository.
+Please feel free to check out also:
+https://github.com/norv/smCore
+https://github.com/Fustrate/smCore
+
+If you have features or ideas to propose, fill an issue here:
+Open Issues
+
+Go ahead and fork this project now. We're glad to have you.
+
 -----------------------------------------------------------------------
 
 Installation requirements:
