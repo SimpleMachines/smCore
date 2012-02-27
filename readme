@@ -1,0 +1,77 @@
+smCore repository
+
+License:
+Version: MPL 1.1
+
+The contents of this package are subject to the Mozilla Public License Version
+1.1 (the "License"); you may not use this package except in compliance with
+the License. You may obtain a copy of the License at
+http://www.mozilla.org/MPL/
+
+Software distributed under the License is distributed on an "AS IS" basis,
+WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+for the specific language governing rights and limitations under the
+License.
+
+The Original Code is smCore.
+
+The Initial Developer of the Original Code is the smCore project.
+
+Portions created by the Initial Developer are Copyright (C) 2011
+the Initial Developer. All Rights Reserved.
+
+Contributor(s): Compuart, SleePy
+
+Alternatively, the contents of this package may be used under the terms of
+another license, specified beforehand by the Initial Developer. 
+
+---------------------------------------------------------------------
+
+smCore third-party libraries. These libraries terms are specified by their own licenses.
+(please see the LICENSE file in their respective directory)
+
+Submodules:
+library/php-code-coverage
+git://github.com/sebastianbergmann/php-code-coverage
+
+library/php-file-iterator
+git://github.com/sebastianbergmann/php-file-iterator
+
+library/php-text-template
+git://github.com/sebastianbergmann/php-text-template
+
+library/phpunit
+git://github.com/sebastianbergmann/phpunit
+
+library/ToxG
+git://github.com/Fustrate/ToxG.git
+
+To initialize submodules (first checkout), run
+git pull origin master
+git submodule init
+To update submodules (fetch code), run
+git submodule update
+
+Included libraries at this time:
+libraries/Inspekt
+libraries/sfYaml
+
+-----------------------------------------------------------------------
+
+Installation requirements:
+- PHP 5.3+
+- Database support: currently tested on MySQL, with MySQLi or PDO. Character set: UTF8. The target is to support
+ multiple database systems, among which PostgreSQL 9+.
+
+Instructions:
+The file core_tables.sql from the main directory contains the queries to be executed for installation. Todo: add
+ the install script, and migration from SMF 2.0.
+The file Settings.php from the /other directory contains the settings for the installation. Customize it as needed,
+and copy it on your setup in the main directory.
+
+More details:
+In the main directory there is a file Database changes from SMF, being... what it says it is, surprisingly. ;)
+The file 'specs' is just a quick todo file, to be removed and replaced with proper specifications,
+ documented for the respective modules (it's not exactly smCore itself).
+
+
