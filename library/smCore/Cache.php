@@ -24,4 +24,40 @@ namespace smCore;
 
 class Cache
 {
+	public function load($key)
+	{
+	}
+
+	public function save($key, $data, array $tags = array(), $lifetime = null)
+	{
+	}
+
+	public function test($key)
+	{
+	}
+
+	public function remove($key)
+	{
+	}
+
+	public function clean($mode, array $tags = array())
+	{
+	}
+
+	public function getMetadata($key)
+	{
+	}
+
+	/**
+	 * Normalize a cache key
+	 *
+	 * @param string $key
+	 * @return string
+	 *
+	 * @access protected
+	 */
+	protected function _normalize($key)
+	{
+		return preg_replace('/[^a-z0-9_-]/i', '_', $key);
+	}
 }

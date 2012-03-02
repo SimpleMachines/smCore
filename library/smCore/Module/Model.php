@@ -21,9 +21,9 @@
  */
 
 namespace smCore\Module;
-use smCore\Module;
+use smCore, smCore\Module;
 
-abstract class Model
+abstract class Model extends smCore\Model
 {
 	protected $_parent_module;
 

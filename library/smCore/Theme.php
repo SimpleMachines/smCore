@@ -57,7 +57,7 @@ class Theme
 
 	protected static function _setupTheme()
 	{
-		include_once(Settings::THEME_DIR . '/' . $theme->theme_dir . '/include.php');
+		require Settings::THEME_DIR . '/' . $theme->theme_dir . '/include.php';
 		Application::$theme = new $theme->theme_class();
 
 		Application::$theme->loadTemplates('index');

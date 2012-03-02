@@ -57,7 +57,7 @@ class Autoloader
 		}
 
 		if (file_exists($filename))
-			include $filename;
+			require $filename;
 	}
 
 	/**

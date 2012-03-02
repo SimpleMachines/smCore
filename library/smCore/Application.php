@@ -67,7 +67,7 @@ class Application
 		self::set('time', time());
 
 		// Register our autoloader onto the stack
-		include_once(__DIR__ . '/Autoloader.php');
+		require __DIR__ . '/Autoloader.php';
 		Autoloader::register();
 
 		new ErrorHandler();
@@ -153,7 +153,7 @@ class Application
 			$cache->save($theme, 'theme_' . $id);
 		}
 
-		include_once(Settings::THEME_DIR . '/' . $theme->theme_dir . '/include.php');
+		require Settings::THEME_DIR . '/' . $theme->theme_dir . '/include.php';
 		self::$theme = new $theme->theme_class();
 
 		self::$theme->loadTemplates('index');

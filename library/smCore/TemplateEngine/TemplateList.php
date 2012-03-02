@@ -119,6 +119,6 @@ class TemplateList
 	public function loadAll()
 	{
 		foreach ($this->templates as $template)
-			include_once($template['cache_file']);
+			require $template['cache_file'];
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Module Storage
+ * smCore Abstract Storage
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,20 +20,9 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Module;
-use smCore, smCore\Module;
+namespace smCore;
 
-abstract class Storage extends smCore\Storage
+abstract class Storage
 {
-	protected $_parent_module;
-
-	public function __construct(Module $parent_module)
-	{
-		$this->_parent_module = $parent_module;
-	}
-
-	protected function _getParentModule()
-	{
-		return $this->_parent_module;
-	}
+	// @todo
 }
