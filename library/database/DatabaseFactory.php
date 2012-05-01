@@ -5,7 +5,7 @@
  *
  * @package database
  * @author Simple Machines http://www.simplemachines.org
- * @copyright 2011 Simple Machines and contributors
+ * @copyright 2012 Simple Machines and contributors
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
  * @version 1.0 Alpha 1

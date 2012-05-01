@@ -5,14 +5,14 @@
  *
  * @package database
  * @author Simple Machines http://www.simplemachines.org
- * @copyright 2011 Simple Machines and contributors
+ * @copyright 2012 Simple Machines and contributors
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
  * @version 1.0 Alpha 1
  */
 
 namespace database;
-use smCore\model\Storage;
+use smCore\storage;
 
 /**
  * Simple database logger class.
@@ -83,6 +83,9 @@ class DatabaseLogger
 		);
 	}
 
+    /**
+     * Add previous queries to the query count
+     */
 	public function addPreviousQueries()
 	{
 		if (!empty($_SESSION['debug_redirect']))
@@ -104,6 +107,8 @@ class DatabaseLogger
 	}
 
     /**
+     * Log an error
+     *
      * @param $error
      * @param string $type
      * @param string $file
@@ -116,11 +121,14 @@ class DatabaseLogger
     }
 
     /**
+     * Log fatal error and exit
+     *
      * @param $error
      * @param $type
      */
     public function fatalError($error, $type)
     {
         // @todo not implemented
+		die();
     }
 }

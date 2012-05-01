@@ -5,7 +5,7 @@
  *
  * @package database
  * @author Simple Machines http://www.simplemachines.org
- * @copyright 2011 Simple Machines and contributors
+ * @copyright 2012 Simple Machines and contributors
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
  * @version 1.0 Alpha 1
@@ -16,16 +16,12 @@ namespace database;
 use smCore\Exception, smCore\Configuration, Settings, smCore\Language;
 
 /**
- * This file is the main MySQL database adapter.
+ * The main MySQL database adapter.
  *
- * Simple Machines Forum (SMF)
- *
- * @package SMF
  * @author Simple Machines http://www.simplemachines.org
- * @copyright 2011 Simple Machines
+ * @copyright 2012 Simple Machines and contributors
  * @license http://www.simplemachines.org/about/smf/license.php BSD
  *
- * @version 2.1 Alpha 1
  */
 
 class DefaultMysqlAdapter extends DatabaseAdapter
@@ -46,8 +42,7 @@ class DefaultMysqlAdapter extends DatabaseAdapter
 	function initiate($db_server, $db_name, $db_user, $db_passwd, $db_prefix, $db_options = array())
 	{
 		// clean this up
-
-		if (empty($db_options['type']))
+        if (empty($db_options['type']))
 			$db_options['type'] = 'write';
 
 		// type = 'write' or 'read' or som'thing.
@@ -86,17 +81,12 @@ class DefaultMysqlAdapter extends DatabaseAdapter
 				false
 			);
 
-		// We know we're UTF-8 types, just do it.
-		// We're not going to like this later, though.
-		$this->query('', 'SET NAMES utf8',
-				array(),
-				false
-			);
-
 		return $connection;
 	}
 
 	/**
+     * Fix prefix.
+     *
 	 * @param $db_prefix
 	 * @param $db_name
 	 */
@@ -107,6 +97,8 @@ class DefaultMysqlAdapter extends DatabaseAdapter
 	}
 
 	/**
+     * Callback for the replacements to be made in the database statement
+     *
 	 * @param $matches
 	 * @return array|string
 	 */
@@ -211,6 +203,8 @@ class DefaultMysqlAdapter extends DatabaseAdapter
 	}
 
 	/**
+     * Quote the string for sending to the database
+     *
 	 * @param $db_string
 	 * @param $db_values
 	 * @param null $connection
@@ -227,7 +221,7 @@ class DefaultMysqlAdapter extends DatabaseAdapter
 			$db_callback = array($db_values, $connection === null ? $this->getConnection() : $connection);
 
 			// Do the quoting and escaping
-			$db_string = preg_replace_callback('~{([a-z_]+)(?::([a-zA-Z0-9_-]+))?}~', array($this, 'replacement__callback'), $db_string);
+			$db_string = preg_replace_callback('~{([a-z_]+)(?::([a-zA-Z0-9_-]+))?}~', array($this, 'replacement_callback'), $db_string);
 
 			// Clear this global variable.
 			$db_callback = array();
@@ -237,6 +231,8 @@ class DefaultMysqlAdapter extends DatabaseAdapter
 	}
 
 	/**
+     * Execute the query
+     *
 	 * @param $identifier
 	 * @param $db_string
 	 * @param array $db_values
@@ -375,6 +371,8 @@ class DefaultMysqlAdapter extends DatabaseAdapter
 	}
 
 	/**
+     * Retrieve affected rows
+     *
 	 * @param null $connection
 	 * @return int
 	 */
@@ -384,6 +382,8 @@ class DefaultMysqlAdapter extends DatabaseAdapter
 	}
 
 	/**
+     * Retrieve insert ID
+     *
 	 * @param $table
 	 * @param null $field
 	 * @param null $connection
@@ -398,6 +398,8 @@ class DefaultMysqlAdapter extends DatabaseAdapter
 	}
 
 	/**
+     * Handle transations (begin, commit, rollback)
+     *
 	 * @param string $type
 	 * @param null $connection
 	 * @return bool|\resource
@@ -418,6 +420,8 @@ class DefaultMysqlAdapter extends DatabaseAdapter
 	}
 
 	/**
+     * Handle errors.
+     *
 	 * @param $db_string
 	 * @param $connection = null
 	 * @return mixed
@@ -468,6 +472,8 @@ class DefaultMysqlAdapter extends DatabaseAdapter
 	}
 
 	/**
+     * Insert a set of data in the specified columns.
+     *
 	 * @param string $method
 	 * @param $table
 	 * @param $columns
@@ -516,7 +522,7 @@ class DefaultMysqlAdapter extends DatabaseAdapter
 		$queryTitle = $method == 'replace' ? 'REPLACE' : ($method == 'ignore' ? 'INSERT IGNORE' : 'INSERT');
 
 		// Do the insert.
-		$this->query('', '
+		$this->query('
 			' . $queryTitle . ' INTO ' . $table . '(`' . implode('`, `', $indexed_columns) . '`)
 			VALUES
 				' . implode(',
@@ -530,6 +536,8 @@ class DefaultMysqlAdapter extends DatabaseAdapter
 	}
 
 	/**
+     * Backtrace through the calls and log
+     *
 	 * @param $error_message
 	 * @param string $log_message
 	 * @param bool $error_type
