@@ -1,4 +1,4 @@
-smCore repository
+**smCore repository**
 
 ---------------------------------------------------------------------
 
@@ -21,23 +21,24 @@ smCore will not do anything all on its own, but provide the core functions upon 
 
 For more information about SMF future, please refer to the development blog: http://www.simplemachines.org/community/index.php?topic=469381.0
 
-How to Contribute
+**How to Contribute**
 
 Code contributions are always welcome. We're developing using the fork and pull request model as per GitHub practice. Please check out: [Pull requests](http://help.github.com/send-pull-requests)
-1. Fork the repository, and clone it
-2. Commit, as many times as you need to achieve the desired result
-3. Sign-off your commits, to certify the changes are under the license of the project, as per: [Developer Certificate of Origin](https://github.com/SimpleMachines/smCore/blob/master/DCO.txt)
-4. Push your changes to your repository, ideally to a branch, dedicated to the issue
-5. Create a pull request to the main repository
+* Fork the repository, and clone it
+* Commit, as many times as you need to achieve the desired result
+* Sign-off your commits, to certify the changes are under the license of the project, as per: [Developer Certificate of Origin](https://github.com/SimpleMachines/smCore/blob/master/DCO.txt)
+* Push your changes to your repository, ideally to a branch, dedicated to the issue
+* Create a pull request to the main repository
 
 Most of the actual work will be done in personal repositories, before being hashed out and merged in the official repository.
 
-Please feel free to check out related repositories:
-https://github.com/norv/SMF3.0
-https://github.com/Fustrate/smCore
-https://github.com/Fustrate/Twig
-
 If you have features or ideas to propose, fill an issue here: [Open Issues](https://github.com/SimpleMachines/smCore/issues)
+
+
+Please feel free to check out related repositories:
+* https://github.com/norv/SMF3.0
+* https://github.com/Fustrate/smCore
+* https://github.com/Fustrate/Twig
 
 Go ahead and fork this project now. We're glad to have you.
 
@@ -99,6 +100,6 @@ To update submodules (fetch code), run
 git submodule update
 
 Included libraries at this time:
-library/smTE
-library/Inspekt
-library/sfYaml
+* library/smTE
+* library/Inspekt
+* library/sfYaml
