@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Cache Class
+ * smCore 
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,31 +20,32 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore;
+namespace smCore\Cache;
+use smCore\Cache;
 
-abstract class Cache
+class Apc extends Cache
 {
-	public abstract function load($key);
-
-	public abstract function save($key, $data, array $tags = array(), $lifetime = null);
-
-	public abstract function test($key);
-
-	public abstract function remove($key);
-
-	public abstract function clean($mode, array $tags = array());
-
-	public abstract function getMetadata($key);
-
-	/**
-	 * Normalize a cache key
-	 *
-	 * @param string $key
-	 *
-	 * @return string
-	 */
-	protected function _normalize($key)
+	public abstract function load($key)
 	{
-		return preg_replace('/[^a-z0-9_\.\-]/i', '_', $key);
+	}
+
+	public abstract function save($key, $data, array $tags = array(), $lifetime = null)
+	{
+	}
+
+	public abstract function test($key)
+	{
+	}
+
+	public abstract function remove($key)
+	{
+	}
+
+	public abstract function clean($mode, array $tags = array())
+	{
+	}
+
+	public abstract function getMetadata($key)
+	{
 	}
 }
