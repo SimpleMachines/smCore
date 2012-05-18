@@ -28,18 +28,18 @@ use smCore\Application, smCore\Exception, smCore\Settings, smCore\FileIO\Factory
 
 class Modules
 {
-	protected static $_modules = array();
-	protected static $_moduleData = array();
+	protected $_modules = array();
+	protected $_moduleData = array();
 
 	public function __construct()
 	{
 		$cache = Application::get('cache');
 
 		// Load the configs
-		// if ((self::$_modules = $cache->load('core_module_registry_data')) === false)
+		// if (($this->_modules = $cache->load('core_module_registry_data')) === false)
 		{
 			$iterator = new DirectoryIterator(Settings::MODULE_DIR);
-			self::$_modules = array();
+			$this->_modules = array();
 
 			$reader = IOFactory::getReader('yaml');
 
@@ -64,20 +64,20 @@ class Modules
 				if (empty($config['identifier']))
 					throw new Exception(array('exceptions.modules.no_identifier', basename($module->getPathname())));
 
-				if (array_key_exists($config['identifier'], self::$_modules))
+				if (array_key_exists($config['identifier'], $this->_modules))
 					throw new Exception(array(
 						'exceptions.modules.identifier_taken',
 						basename($module->getPathname()),
-						basename(self::$_modules[$config['identifier']]['directory'])
+						basename($this->_modules[$config['identifier']]['directory'])
 					));
 
-				self::$_moduleData[$config['identifier']] = array(
+				$this->_moduleData[$config['identifier']] = array(
 					'config' => $config,
 					'directory' => $module->getPathname(),
 				);
 			}
 
-			$cache->save(self::$_modules, 'core_module_registry_data');
+			$cache->save($this->_modules, 'core_module_registry_data');
 
 			// Anything that depends on this should be refreshed
 			$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('dependency_module_registry'));
@@ -86,40 +86,40 @@ class Modules
 
 	public function getLoadedModules()
 	{
-		return self::$_modules;
+		return $this->_modules;
 	}
 
 	public function getModule($identifier)
 	{
-		if (!array_key_exists($identifier, self::$_modules))
+		if (!array_key_exists($identifier, $this->_modules))
 		{
-			if (array_key_exists($identifier, self::$_moduleData))
+			if (array_key_exists($identifier, $this->_moduleData))
 			{
-				$moduleClass = self::$_moduleData[$identifier]['config']['namespace'] . '\\Module';
-				self::$_modules[$identifier] = new $moduleClass(self::$_moduleData[$identifier]['config'], self::$_moduleData[$identifier]['directory']);
+				$moduleClass = $this->_moduleData[$identifier]['config']['namespace'] . '\\Module';
+				$this->_modules[$identifier] = new $moduleClass($this->_moduleData[$identifier]['config'], $this->_moduleData[$identifier]['directory']);
 			}
 			else
 				throw new Exception('exceptions.modules.doesnt_exist', $identifier);
 		}
 
-		return self::$_modules[$identifier];
+		return $this->_modules[$identifier];
 	}
 
 	public function getModuleConfig($identifier)
 	{
-		if (!array_key_exists($identifier, self::$_moduleData))
+		if (!array_key_exists($identifier, $this->_moduleData))
 			return false;
 
-		return self::$_moduleData[$identifier]['config'];
+		return $this->_moduleData[$identifier]['config'];
 	}
 
 	public function getIdentifiers()
 	{
-		return array_keys(self::$_moduleData);
+		return array_keys($this->_moduleData);
 	}
 
 	public function moduleExists($identifier)
 	{
-		return array_key_exists($identifier, self::$_moduleData);
+		return array_key_exists($identifier, $this->_moduleData);
 	}
 }

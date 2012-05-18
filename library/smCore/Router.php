@@ -24,13 +24,12 @@ namespace smCore;
 
 class Router
 {
-	protected static $_routes = null;
-	protected static $_matches = array();
+	protected $_routes = null;
+	protected $_matches = array();
 
 	public function __construct()
 	{
-		if (self::$_routes === null)
-			$this->_loadRoutes();
+		$this->_loadRoutes();
 	}
 
 	/**
@@ -60,16 +59,16 @@ class Router
 
 		if (empty($path))
 		{
-			if (!empty(self::$_routes['default']))
-				return self::$_routes['default'];
+			if (!empty($this->_routes['default']))
+				return $this->_routes['default'];
 		}
-		else if (array_key_exists($path, self::$_routes['literal']))
+		else if (array_key_exists($path, $this->_routes['literal']))
 		{
-			return self::$_routes['literal'][$path];
+			return $this->_routes['literal'][$path];
 		}
-		else if (!empty(self::$_routes['regex']))
+		else if (!empty($this->_routes['regex']))
 		{
-			foreach (self::$_routes['regex'] as $route)
+			foreach ($this->_routes['regex'] as $route)
 			{
 				if (preg_match('~^' . $route['match'] . '$~i', $path, $matches))
 				{
@@ -96,11 +95,11 @@ class Router
 	 */
 	protected function _loadRoutes()
 	{
-		if ((self::$_routes = Application::get('cache')->load('core_routes')) !== false)
+		if (($this->_routes = Application::get('cache')->load('core_routes')) !== false)
 			return;
 
 		// We don't want to do a regex match if we don't have to
-		self::$_routes = array(
+		$this->_routes = array(
 			'default' => array(),
 			'literal' => array(),
 			'regex' => array(),
@@ -121,7 +120,7 @@ class Router
 		}
 
 		// @todo: Use app constants so we don't have to remember different tags. Application::DEPENDENCY_MODULE_REGISTRY = '...';
-		Application::get('cache')->save(self::$_routes, 'core_routes', array('dependency_module_registry'));
+		Application::get('cache')->save($this->_routes, 'core_routes', array('dependency_module_registry'));
 	}
 
 	/**
@@ -257,7 +256,7 @@ class Router
 					if (preg_match('/' . $match . '/', '') === false)
 						continue;
 
-					self::$_routes['regex'][] = array(
+					$this->_routes['regex'][] = array(
 						'match' => $match,
 						'module' => $identifier,
 						'controller' => $route['controller'],
@@ -269,7 +268,7 @@ class Router
 					$type = 'regex';
 					$match = preg_replace('/:([^\/]+)/', '(?<$1>[^/]+)', $match);
 
-					self::$_routes['regex'][] = array(
+					$this->_routes['regex'][] = array(
 						'match' => $match,
 						'module' => $identifier,
 						'controller' => $route['controller'],
@@ -278,8 +277,7 @@ class Router
 				}
 				else if (empty($match))
 				{
-					// Storing the route as the key enables us to use array_key_exists
-					self::$_routes['default'] = array(
+					$this->_routes['default'] = array(
 						'module' => $identifier,
 						'controller' => $route['controller'],
 						'method' => $method,
@@ -288,7 +286,7 @@ class Router
 				else
 				{
 					// Storing the route as the key enables us to use array_key_exists
-					self::$_routes['literal'][$match] = array(
+					$this->_routes['literal'][$match] = array(
 						'module' => $identifier,
 						'controller' => $route['controller'],
 						'method' => $method,
