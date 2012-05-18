@@ -47,8 +47,6 @@ class Response
 
 	/**
 	 * Constructor for the Response class.
-	 *
-	 * @access public
 	 */
 	public function __construct()
 	{
@@ -66,8 +64,6 @@ class Response
 	 * Headers to be sent
 	 *
 	 * @return array
-	 *
-	 * @access public
 	 */
 	public function getHeaders()
 	{
@@ -78,8 +74,6 @@ class Response
 	 * Add a HTTP header to the Response.
 	 *
 	 * @param string $header A text header to send.
-	 *
-	 * @access public
 	 */
 	public function addHeader($header)
 	{
@@ -105,8 +99,6 @@ class Response
 	 * Body of the response.
 	 *
 	 * @return string
-	 *
-	 * @access public
 	 */
 	public function getBody()
 	{
@@ -115,8 +107,6 @@ class Response
 
 	/**
 	 * Send the output to the browser. End this execution.
-	 *
-	 * @access public
 	 */
 	public function sendOutput()
 	{
@@ -131,8 +121,6 @@ class Response
 
 	/**
 	 * No clones allowed.
-	 *
-	 * @access private
 	 */
 	final private function __clone(){}
 }

@@ -59,7 +59,7 @@ class Factory
 	 *
 	 * @throws smCore\Exception
 	 *
-	 * @access public
+	 * @return smCore\FileIO\Reader|null
 	 */
 	public static function getReader($type)
 	{
@@ -118,7 +118,7 @@ class Factory
 	 *
 	 * @throws smCore\Exception
 	 *
-	 * @access public
+	 * @return smCore\FileIO\Writer|null
 	 */
 	public static function getWriter($type)
 	{

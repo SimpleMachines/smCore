@@ -27,10 +27,9 @@ class Exception extends \Exception
 	/**
 	 * Construct the exception
 	 *
-	 * @param  mixed $msg
-	 * @param  int $code
+	 * @param  string    $msg
+	 * @param  int       $code
 	 * @param  Exception $previous
-	 * @return void
 	 */
 	public function __construct($msg = '', $code = 0, Exception $previous = null)
 	{

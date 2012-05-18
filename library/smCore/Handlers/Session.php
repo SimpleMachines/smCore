@@ -32,8 +32,6 @@ class Session
 	 * Instantiate a session handler. This directly replaces the default PHP handlers.
 	 *
 	 * @return boolean Whether or not we were able to set the save handler. This can return false if the session is already started.
-	 *
-	 * @access public
 	 */
 	public function __construct()
 	{
@@ -52,9 +50,8 @@ class Session
 	 *
 	 * @param string $save_path
 	 * @param string $session_name
-	 * @return boolean
 	 *
-	 * @access public
+	 * @return boolean
 	 */
 	public function open($save_path, $session_name)
 	{
@@ -65,8 +62,6 @@ class Session
 	 * 
 	 *
 	 * @return boolean
-	 *
-	 * @access public
 	 */
 	public function close()
 	{
@@ -77,9 +72,8 @@ class Session
 	 * 
 	 *
 	 * @param string $id
-	 * @return string
 	 *
-	 * @access public
+	 * @return string
 	 */
 	public function read($id)
 	{
@@ -91,9 +85,8 @@ class Session
 	 *
 	 * @param string $id
 	 * @param string $data
-	 * @return boolean
 	 *
-	 * @access public
+	 * @return boolean
 	 */
 	public function write($id, $data)
 	{
@@ -108,9 +101,8 @@ class Session
 	 * 
 	 *
 	 * @param string $id
-	 * @return boolean
 	 *
-	 * @access public
+	 * @return boolean
 	 */
 	public function destroy($id)
 	{
@@ -122,9 +114,8 @@ class Session
 	 * 
 	 *
 	 * @param int $max_lifetime
-	 * @return bool
 	 *
-	 * @access public
+	 * @return bool
 	 */
 	public function gc($max_lifetime)
 	{

@@ -32,8 +32,6 @@ class Autoloader
 	 * and have the respective file included.
 	 *
 	 * @param string $name The name of the class we're trying to find.
-	 *
-	 * @access public
 	 */
 	public static function autoload($name)
 	{

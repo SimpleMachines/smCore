@@ -21,7 +21,7 @@
  */
 
 namespace smCore;
-use \Inspekt_Cage;
+use Inspekt_Cage;
 
 class Request
 {

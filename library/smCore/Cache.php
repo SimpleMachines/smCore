@@ -52,9 +52,8 @@ class Cache
 	 * Normalize a cache key
 	 *
 	 * @param string $key
-	 * @return string
 	 *
-	 * @access protected
+	 * @return string
 	 */
 	protected function _normalize($key)
 	{

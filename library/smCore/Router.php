@@ -38,9 +38,8 @@ class Router
 	 * to find a regex that fits.
 	 *
 	 * @param string $path The path to find a route for.
-	 * @return mixed An array of route data if one was found, false otherwise.
 	 *
-	 * @access public
+	 * @return mixed An array of route data if one was found, false otherwise.
 	 */
 	public function match($path)
 	{
@@ -94,8 +93,6 @@ class Router
 
 	/**
 	 * Load the routes from the cache, or load each module's config data and feed the routes to _addRoutes().
-	 *
-	 * @access protected
 	 */
 	protected function _loadRoutes()
 	{
@@ -132,10 +129,8 @@ class Router
 	 * the appropriate category. Route method names cannot match any of the method names
 	 * defined in smCore\Module\Controller, or we'd get unexpected results.
 	 *
-	 * @param array $routes An array of config route data
+	 * @param array  $routes     An array of config route data
 	 * @param string $identifier The module identifier for these routes
-	 *
-	 * @access protected
 	 */
 	protected function _addRoutes(array $routes, $identifier)
 	{

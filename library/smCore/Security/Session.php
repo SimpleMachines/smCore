@@ -101,8 +101,6 @@ class Session
 	 * Set the lifetime for any new sessions created.
 	 *
 	 * @param int $length
-	 *
-	 * @access public
 	 */
 	public static function setLifetime($length)
 	{
@@ -114,8 +112,6 @@ class Session
 	 * 
 	 *
 	 * @return int
-	 *
-	 * @access public
 	 */
 	public static function getLifetime()
 	{

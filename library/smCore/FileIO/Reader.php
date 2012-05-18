@@ -33,9 +33,8 @@ abstract class Reader
 	 * (i.e. an array)
 	 *
 	 * @param string $filename The name of the file we're going to try to read
-	 * @return mixed
 	 *
-	 * @access public
+	 * @return mixed
 	 */
 	abstract public function read($filename);
 }

@@ -41,10 +41,8 @@ abstract class Module
 	/**
 	 * Module constructor. Handles the initial setup.
 	 *
-	 * @param array $config The contents of this module's config.yaml file.
+	 * @param array  $config    The contents of this module's config.yaml file.
 	 * @param string $directory The directory where this module is located.
-	 *
-	 * @access public
 	 */
 	public function __construct($config, $directory)
 	{
@@ -67,8 +65,6 @@ abstract class Module
 	 * Load a controller in this module's /Controllers/ directory by name.
 	 *
 	 * @param string $name The name of the controller to load.
-	 *
-	 * @access public
 	 */
 	public function loadController($name)
 	{
@@ -86,8 +82,6 @@ abstract class Module
 	 * Dispatch a method under the loaded controller.
 	 *
 	 * @param string $name The method name to dispatch.
-	 *
-	 * @access public
 	 */
 	public function runControllerMethod($name)
 	{
@@ -111,9 +105,8 @@ abstract class Module
 	 * Load and return a model in this module's /Models/ directory by name.
 	 *
 	 * @param string $name The name of the model to load.
-	 * @return smCore\Module\Model
 	 *
-	 * @access public
+	 * @return smCore\Module\Model
 	 */
 	public function getModel($name)
 	{
@@ -129,9 +122,8 @@ abstract class Module
 	 * Load and return a storage in this module's /Storages/ directory by name.
 	 *
 	 * @param string $name The name of the storage to load.
-	 * @return smCore\Module\Storage
 	 *
-	 * @access public
+	 * @return smCore\Module\Storage
 	 */
 	public function getStorage($name)
 	{
@@ -151,8 +143,6 @@ abstract class Module
 	 * Returns the directory where this module is located.
 	 *
 	 * @return string The directory where this module is located.
-	 *
-	 * @access public
 	 */
 	public function getDirectory()
 	{
@@ -188,8 +178,6 @@ abstract class Module
 	 *
 	 * @param string $filename The name of the language file to load, i.e. "my_strings.yaml"
 	 * @param boolean $force_reload If this is not false, ignore any cached version.
-	 *
-	 * @access public
 	 */
 	public function loadLanguage($filename, $force_reload = false)
 	{
@@ -204,10 +192,9 @@ abstract class Module
 	 * Lang!
 	 *
 	 * @param string|array $key
-	 * @param array $replacements
-	 * @return string
+	 * @param array        $replacements
 	 *
-	 * @access public
+	 * @return string
 	 */
 	public function lang($key, array $replacements = array())
 	{
@@ -223,10 +210,9 @@ abstract class Module
 	 * A shortcut to allow us to throw language strings in exceptions
 	 *
 	 * @param string|array $key
-	 * @param array $replacements
-	 * @throws \smCore\Exception
+	 * @param array        $replacements
 	 *
-	 * @access public
+	 * @throws \smCore\Exception
 	 */
 	public function throwLangException($key, array $replacements = array())
 	{
@@ -237,10 +223,9 @@ abstract class Module
 	 * Create an event, under this module's namespace, that can be fired/used later.
 	 *
 	 * @param string $name
-	 * @param array $args
-	 * @return \smCore\Event
+	 * @param array  $args
 	 *
-	 * @access public
+	 * @return \smCore\Event
 	 */
 	public function createEvent($name, array $args = array())
 	{
@@ -252,9 +237,8 @@ abstract class Module
 	 * Check to see if the current user has a certain permission for this module.
 	 *
 	 * @param string $name The permission name to check under this module's identifier.
-	 * @return boolean
 	 *
-	 * @access public
+	 * @return boolean
 	 */
 	public function hasPermission($name)
 	{
@@ -265,8 +249,6 @@ abstract class Module
 	 * Kick a user out if they don't have the correct permissions.
 	 *
 	 * @param $name The permission to check. It will be prepended by this module's identifier and a period ("edit" -> "org.smcore.yourmodule" . "." . $name)
-	 *
-	 * @access public
 	 */
 	public function requirePermission($name)
 	{
@@ -278,9 +260,8 @@ abstract class Module
 	 * Retrieve a module setting by name.
 	 *
 	 * @param string $name
-	 * @return mixed
 	 *
-	 * @access public
+	 * @return mixed
 	 */
 	public function getSetting($name)
 	{
@@ -293,12 +274,10 @@ abstract class Module
 	/**
 	 *
 	 *
-	 * @param mixed The value to save to the cache.
-	 * @param string Unique key to save this data under, in the module's namespace.
-	 * @param array Tags for this data, optional.
-	 * @param int Amount of time to keep this data in the cache, optional.
-	 *
-	 * @access public
+	 * @param mixed  $data     The value to save to the cache.
+	 * @param string $key      Unique key to save this data under, in the module's namespace.
+	 * @param array  $tags     Tags for this data, optional.
+	 * @param int    $lifetime Amount of time to keep this data in the cache, optional.
 	 */
 	public function cacheSave($data, $key, array $tags = array(), $lifetime = false)
 	{
@@ -314,8 +293,6 @@ abstract class Module
 	 *
 	 *
 	 * @param string $key The key to find in the cache.
-	 *
-	 * @access public
 	 */
 	public function cacheLoad($key)
 	{
@@ -329,8 +306,6 @@ abstract class Module
 	 *
 	 *
 	 * @param string $key The key to test for in the cache.
-	 *
-	 * @access public
 	 */
 	public function cacheTest($key)
 	{
@@ -344,9 +319,8 @@ abstract class Module
 	 * Create a unique token to use for a (likely destructive) request.
 	 *
 	 * @param string $name
-	 * @return string
 	 *
-	 * @access public
+	 * @return string
 	 */
 	public function createToken($name)
 	{
@@ -361,8 +335,6 @@ abstract class Module
 	 * @param string $value
 	 *
 	 * @throws \smCore\Exception
-	 *
-	 * @access public
 	 */
 	public function checkToken($name, $value, $langException = null)
 	{

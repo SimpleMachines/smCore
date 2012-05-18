@@ -53,8 +53,6 @@ class Application
 
 	/**
 	 * The main function, runs ALL the things!
-	 *
-	 * @access public
 	 */
 	public function run()
 	{
@@ -200,10 +198,8 @@ return;
 	/**
 	 * Set an internal registry value.
 	 *
-	 * @param string $key The name of this value
-	 * @param mixed $value The value to store. Passing null will unset the key from the registry.
-	 *
-	 * @access public
+	 * @param string $key   The name of this value
+	 * @param mixed  $value The value to store. Passing null will unset the key from the registry.
 	 */
 	public static function set($key, $value)
 	{
@@ -216,11 +212,10 @@ return;
 	/**
 	 * Get a value from the internal application registry.
 	 *
-	 * @param string $key The name of the value to look for
+	 * @param string  $key      The name of the value to look for
 	 * @param boolean $lazyload Whether we should try lazy loading or not, if the key isn't already set.
-	 * @return mixed Returns the value matched with the key passed, or null if nothing was found.
 	 *
-	 * @access public
+	 * @return mixed Returns the value matched with the key passed, or null if nothing was found.
 	 */
 	public static function get($key, $lazyload = true)
 	{
@@ -240,12 +235,11 @@ return;
 	/**
 	 * Add a lazy loader for the internal registry.
 	 *
-	 * @param string $key The key to store the result of the callback under
-	 * @param callback $callback A callback to run
-	 * @param array $arguments Arguments to pass to the callback
-	 * @return 
+	 * @param string   $key       The key to store the result of the callback under
+	 * @param callback $callback  A callback to run
+	 * @param array    $arguments Arguments to pass to the callback
 	 *
-	 * @access public
+	 * @return 
 	 */
 	public function addLazyLoader($key, $callback, array $arguments = array())
 	{
@@ -264,8 +258,6 @@ return;
 	 * Remove a lazy loader.
 	 *
 	 * @param string $key The name of the lazy loader to remove.
-	 *
-	 * @access public
 	 */
 	public function removeLazyLoader($key)
 	{
@@ -277,8 +269,6 @@ return;
 	 * Only load and connect to the database when necessary.
 	 *
 	 * @return Zend_Db The database object created.
-	 *
-	 * @access protected
 	 */
 	protected function _loadDatabase()
 	{
@@ -297,9 +287,7 @@ return;
 	 *
 	 * @todo Read real cache settings from Settings, use the smCore\Cache class instead
 	 *
-	 * @return Zend_Cache A new Zend Cache object to use
-	 *
-	 * @access protected
+	 * @return Zend_Cache A new Zend Cache object to use.
 	 */
 	protected function _loadCache()
 	{
@@ -319,9 +307,7 @@ return;
 	/**
 	 * 
 	 *
-	 * @return smCore\TemplateEngine
-	 *
-	 * @access protected
+	 * @return 
 	 */
 	protected function _loadTheme()
 	{
@@ -329,8 +315,6 @@ return;
 
 	/**
 	 * Setup for the mail object
-	 *
-	 * @access protected
 	 */
 	protected function _loadMail()
 	{

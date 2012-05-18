@@ -28,11 +28,10 @@ class YamlWriter extends Writer
 	/**
 	 * Write data to a file in YAML format.
 	 *
-	 * @param mixed $data The data to write to the file
+	 * @param mixed  $data     The data to write to the file
 	 * @param string $filename The name of the file to write to
-	 * @return boolean True if the data was written successfully, false otherwise
 	 *
-	 * @access public
+	 * @return boolean True if the data was written successfully, false otherwise
 	 */
 	public function write($data, $filename)
 	{

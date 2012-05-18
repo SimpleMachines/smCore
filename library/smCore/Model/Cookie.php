@@ -37,10 +37,8 @@ class Cookie
 	 * Default constructor for the Cookie class. The cookie will be initialized with name, domain, path from settings,
 	 * the rest being empty values.
 	 *
-	 * @param string $name The name of this cookie.
+	 * @param string  $name         The name of this cookie.
 	 * @param boolean $attempt_read If true, see if this cookie already exists and fetch its value.
-	 *
-	 * @access public
 	 */
 	public function __construct($name, $attempt_read = true)
 	{
@@ -74,8 +72,6 @@ class Cookie
 	 * If this is the main cookie, 
 	 *
 	 * @return boolean
-	 *
-	 * @access public
 	 */
 	public function validateSession()
 	{
@@ -99,8 +95,6 @@ class Cookie
 	 * This method validates the SMF-style cookie.
 	 *
 	 * @return boolean
-	 *
-	 * @access public
 	 */
 	public static function validateSessionCookie()
 	{
@@ -120,8 +114,6 @@ class Cookie
 	 *
 	 * @static
 	 * @return Cookie
-	 *
-	 * @access public
 	 */
 	public static function readSessionCookie()
 	{
@@ -144,6 +136,7 @@ class Cookie
 	 * This method is reusing url_parts() function from SMF.
 	 *
 	 * @param string $fakeUrl=null optional parameter to specify an alternative URL if suited (i.e. for frames)
+	 *
 	 * @return array an array to set the cookie on with domain and path in it, in that order
 	 */
 	public function initFromUrl($fakeUrl = null)
@@ -182,7 +175,6 @@ class Cookie
 	 * It has the default expected name, domain, path.
 	 * Empty out the $_COOKIE too, if possible, to be sure.
 	 *
-	 * @static
 	 * @return Cookie
 	 */
 	public static function emptyCookie()
@@ -214,10 +206,10 @@ class Cookie
 	 * Initialize the cookie with the valid values, according to the parameters passed and configuration options.
 	 * This method is guaranteed to result in an well-formed cookie, or may throw a security exception otherwise.
 	 *
-	 * @param int $length=0
-	 * @param int $id_user=0
-	 * @param string $password=''
-	 * @param string $fakeUrl=null
+	 * @param int    $length
+	 * @param int    $id_user
+	 * @param string $password
+	 * @param string $fakeUrl
 	 */
 	public function initializeCookie($length = 0, $id_user = 0, $password = '', $fakeUrl = null)
 	{

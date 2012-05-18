@@ -31,22 +31,20 @@ abstract class Writer
 	 * Read the contents of a file from the filesystem, and return the corresponding PHP values.
 	 * (i.e. an array)
 	 *
-	 * @param mixed $data The data to write to the file
+	 * @param mixed  $data     The data to write to the file
 	 * @param string $filename The name of the file to write to
-	 * @return boolean
 	 *
-	 * @access public
+	 * @return boolean
 	 */
 	abstract public function write($data, $filename);
 
 	/**
 	 * Helper function to write the data to the file. Code duplication makes sea otters cry.
 	 *
-	 * @param string $data The data to write
+	 * @param string $data     The data to write
 	 * @param string $filename Where to write the data
-	 * @return boolean True if the data was written successfully, false otherwise
 	 *
-	 * @access protected
+	 * @return boolean True if the data was written successfully, false otherwise
 	 */
 	protected function _writeToFile($data, $filename)
 	{

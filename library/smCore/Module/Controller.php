@@ -31,8 +31,6 @@ abstract class Controller
 	 * 
 	 *
 	 * @param smCore\Module $parentModule
-	 *
-	 * @access public
 	 */
 	public function __construct(Module $parent_module)
 	{
@@ -43,8 +41,6 @@ abstract class Controller
 	 * Get the parent module, in order to use its helper methods.
 	 *
 	 * @return smCore\Module The module which owns this controller
-	 *
-	 * @access protected
 	 */
 	protected function _getParentModule()
 	{
@@ -53,8 +49,6 @@ abstract class Controller
 
 	/**
 	 * Run code before dispatching any method in this Controller.
-	 *
-	 * @access public
 	 */
 	public function preDispatch()
 	{
@@ -62,8 +56,6 @@ abstract class Controller
 
 	/**
 	 * Run code after dispatching any method in this Controller.
-	 *
-	 * @access public
 	 */
 	public function postDispatch()
 	{

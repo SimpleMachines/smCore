@@ -29,9 +29,8 @@ class Sessions
 	 * Read a session from the database by ID.
 	 *
 	 * @param string $id
-	 * @return mixed A Session object if a valid session was found, false otherwise.
 	 *
-	 * @access public
+	 * @return mixed A Session object if a valid session was found, false otherwise.
 	 */
 	public function read($id)
 	{
@@ -62,10 +61,9 @@ class Sessions
 	 *
 	 * @param string $id
 	 * @param string $data
-	 * @param int $expires
-	 * @return boolean
+	 * @param int    $expires
 	 *
-	 * @access public
+	 * @return boolean
 	 */
 	public function write($id, $data)
 	{
@@ -106,9 +104,8 @@ class Sessions
 	 * Remove a session from the database.
 	 *
 	 * @param string $id
-	 * @return boolean
 	 *
-	 * @access public
+	 * @return boolean
 	 */
 	public function destroy($id)
 	{
@@ -128,8 +125,6 @@ class Sessions
 
 	/**
 	 * Remove all expired sessions from the database. Used by the garbage collector.
-	 *
-	 * @access public
 	 */
 	public function deleteExpired()
 	{

@@ -34,8 +34,6 @@ class Exception
 	 * Custom exception handler
 	 *
 	 * @param Exception $exception The exception that needs to be handled.
-	 *
-	 * @access public
 	 */
 	public function handle($exception)
 	{

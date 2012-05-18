@@ -32,12 +32,10 @@ class Error
 	/**
 	 * Custom error handler
 	 *
-	 * @param int $errno Internal error number
-	 * @param string $errstr The error that was encountered
+	 * @param int    $errno   Internal error number
+	 * @param string $errstr  The error that was encountered
 	 * @param string $errfile The file this error occurred in
-	 * @param int $errline The line this error occurred on
-	 *
-	 * @access public
+	 * @param int    $errline The line this error occurred on
 	 */
 	public function handle($errno, $errstr, $errfile, $errline)
 	{
