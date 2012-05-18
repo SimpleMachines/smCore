@@ -87,8 +87,8 @@ class Application
 		self::set('modules', StorageFactory::getStorage('Modules'));
 		self::set('event_dispatcher', new EventDispatcher());
 
-		$lang = new Language($user['language']);
-		$lang->load(Settings::LANGUAGE_DIR . '/core.yaml');
+		$lang = StorageFactory::getStorage('Languages')->getById($user['language']);
+		$lang->loadPackageByName('org.smcore.common');
 		self::set('lang', $lang);
 
 		$this->_setupTheme();
@@ -179,8 +179,6 @@ return;
 			'recompile' => true,
 			'auto_reload' => true,
 		));
-
-		self::get('lang')->load(Settings::LANGUAGE_DIR . '/menu.yaml');
 
 		self::$context += array(
 			'page_title' => '...',

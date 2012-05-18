@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Language Class
+ * smCore Language Model Class
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,26 +20,147 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore;
-use smCore\FileIO\Factory as IOFactory;
+namespace smCore\Model;
+use smCore\Application, smCore\FileIO\Factory as IOFactory;
 
 class Language
 {
 	// Stores all the language strings
 	protected $_strings = array();
-	protected $_key_separator = '.';
+	protected $_packageData;
 
-	public $language = 'english_us';
+	protected $_name;
+	protected $_code;
+	protected $_id;
  
 	// Loads the basic language file and sets up stuff
-	public function __construct($name)
+	public function __construct($name, $code, $id = 0)
 	{
-		$this->language = preg_replace('~[^a-z_-]~i', '', strtolower($name));
+		$this->_name = $name;
+		$this->_code = $code;
+		$this->_id = (int) $id;
+	}
+
+	protected function _getPackageData()
+	{
+		if ($this->_packageData === null)
+		{
+			$cache = Application::get('cache');
+
+			if (false === $this->_packageData = $cache->load('smcore_language_packages'))
+			{
+				$db = Application::get('db');
+
+				$result = $db->query("
+					SELECT id_package, package_name, package_type
+					FROM beta_lang_packages"
+				);
+
+				$this->_packageData = array(
+					'types' => array(),
+					'names' => array(),
+				);
+
+				if ($result->rowCount() > 0)
+				{
+					while ($package = $result->fetch())
+					{
+						$this->_packageData['types'][$package->package_type][] = (int) $package->id_package;
+						$this->_packageData['names'][$package->package_name] = (int) $package->id_package;
+					}
+				}
+			}
+		}
+
+		return $this->_packageData;
+	}
+
+	public function loadPackagesByType($type, $force_recompile = false)
+	{
+		$packages = $this->_getPackageData();
+
+		if (empty($packages['types'][$type]))
+			return;
+
+		foreach ($packages['types'][$type] as $package)
+			$this->_loadPackageById($package, $force_recompile);
+
+		return $this;
+	}
+
+	public function loadPackageByName($name, $force_recompile = false)
+	{
+		$packages = $this->_getPackageData();
+
+		if (empty($packages['names'][$name]))
+			return;
+
+		$this->_loadPackageById($packages['names'][$name], $force_recompile);
+
+		return $this;
+	}
+
+	protected function _loadPackageById($id_package, $force_recompile)
+	{
+		$cache = Application::get('cache');
+
+		$cache_key = 'lang_package_' . (int) $id_package;
+
+//		if ($force_recompile || false === $data = $cache->load($cache_key))
+		{
+			$db = Application::get('db');
+
+			$result = $db->query("
+				SELECT string_key, string_value
+				FROM beta_lang_strings
+				WHERE string_package = ?",
+				array(
+					$id_package,
+				)
+			);
+
+			$strings = $result->fetchAll();
+
+			$data = array();
+
+			foreach ($strings as $row)
+				$data[$row->string_key] = $row->string_value;
+
+			$cache->save($data, $cache_key, array('smcore_language', 'smcore_language_' . $this->_code));
+		}
+
+		$this->_addStrings($data);
+	}
+
+	/**
+	 * Merge the new strings onto the existing strings.
+	 *
+	 * @param array $strings An array of strings, with their keys flattened via _compileStrings()
+	 */
+	protected function _addStrings($strings)
+	{
+		$this->_strings = array_merge($this->_strings, $strings);
+	}
+
+	/**
+	 * Generic keyExists function, lets us know if a specific language key is in the currently loaded strings.
+	 *
+	 * @param string|array $key The key to search for. If this is an array, it will be imploded by the key separator.
+	 * @return boolean Whether or not the key could be found.
+	 *
+	 * @access public
+	 */
+	public function keyExists($key)
+	{
+		if (is_array($key))
+			$key = implode('.', $key);
+
+		return array_key_exists($key, $this->_strings);
 	}
 
 	/**
 	 * Retrieve a language string based on index. Arrays are imploded by
-	 * $this->_key_separator and fed to fierce kittens.
+	 * '.' and fed to fierce kittens.
 	 *
 	 * @param string|array $key The language string to look for.
 	 * @param array $replacements Array of replacements to sprintf into the string if found.
@@ -53,7 +174,7 @@ class Language
 			throw new Exception('exceptions.lang.empty_index');
 
 		if (is_array($key))
-			$key = implode($this->_key_separator, $key);
+			$key = implode('.', $key);
 
 		if ($this->keyExists($key))
 		{
@@ -67,13 +188,29 @@ class Language
 		return $key;
 	}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/**
 	 * Loads and compiles a language file
 	 *
-	 * @param string $filename File to load
+	 * @param string  $filename        File to load
 	 * @param boolean $force_recompile Should we ignore the cache and recompile anyways?
 	 *
-	 * @access public
 	 * @todo better language filenames
 	 */
 	public function load($base_filename, $force_recompile = false)
@@ -107,7 +244,7 @@ class Language
 			}
 		}
 
-		if ($force_recompile || (($compiled = $cache->load($cache_name)) === false))
+		if ($force_recompile || $false === $compiled = $cache->load($cache_name))
 		{
 			$strings = array();
 
@@ -124,22 +261,6 @@ class Language
 		}
 
 		$this->_addStrings($compiled);
-	}
-
-	/**
-	 * Generic keyExists function, lets us know if a specific language key is in the currently loaded strings.
-	 *
-	 * @param string|array $key The key to search for. If this is an array, it will be imploded by the key separator.
-	 * @return boolean Whether or not the key could be found.
-	 *
-	 * @access public
-	 */
-	public function keyExists($key)
-	{
-		if (is_array($key))
-			$key = implode($this->_key_separator, $key);
-
-		return array_key_exists($key, $this->_strings);
 	}
 
 	/**
@@ -178,9 +299,6 @@ class Language
 	 * @param array $base The base of the key for this level, to be imploded by $separator
 	 * @param array $strings A key=>value array of strings to compile
 	 * @param array $compiled The array in which to store compiled values, passed by reference
-	 * @param string $separator String to implode the base+key array with
-	 *
-	 * @access protected
 	 */
 	protected function _compileStrings($base, $strings, &$compiled)
 	{
@@ -191,19 +309,7 @@ class Language
 			if (is_array($val))
 				$this->_compileStrings($current_key, $val, $compiled);
 			else
-				$compiled[implode($this->_key_separator, $current_key)] = $val;
+				$compiled[implode('.', $current_key)] = $val;
 		}
-	}
-
-	/**
-	 * Merge the new strings onto the existing strings.
-	 *
-	 * @param array $strings An array of strings, with their keys flattened via _compileStrings()
-	 *
-	 * @access protected
-	 */
-	protected function _addStrings($strings)
-	{
-		$this->_strings = array_merge($this->_strings, $strings);
 	}
 }

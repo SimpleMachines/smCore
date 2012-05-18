@@ -70,6 +70,14 @@ class Factory
 			return self::$_storages['sessions'];
 		}
 
+		if ($name === 'languages')
+		{
+			if (empty(self::$_storages['languages']))
+				self::$_storages['languages'] = new Languages();
+
+			return self::$_storages['languages'];
+		}
+
 		return null;
 	}
 }

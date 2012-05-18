@@ -174,18 +174,17 @@ abstract class Module
 	}
 
 	/**
-	 * Load a language file from this module's /languages/ directory.
+	 * Load a language package
 	 *
-	 * @param string $filename The name of the language file to load, i.e. "my_strings.yaml"
+	 * @param string  $package_name The name of the language package to load, i.e. "common"
 	 * @param boolean $force_reload If this is not false, ignore any cached version.
 	 */
-	public function loadLanguage($filename, $force_reload = false)
+	public function loadLangPackage($package_name = null, $force_reload = false)
 	{
-		// If a full filename was passed in, just load it directly
-		if (file_exists($filename))
-			Application::get('lang')->load($filename, $force_reload);
+		if (empty($package_name))
+			Application::get('lang')->loadPackageByName($this->_config['identifier']);
 		else
-			Application::get('lang')->load($this->_language_dir . $filename, $force_reload);
+			Application::get('lang')->loadPackageByName($this->_config['identifier'] . '.' . $package_name);
 	}
 
 	/**
@@ -198,12 +197,12 @@ abstract class Module
 	 */
 	public function lang($key, array $replacements = array())
 	{
-		if (is_array($key))
-			array_unshift($key, $this->_config['language_ns']);
-		else
-			$key = array($this->_config['language_ns'], $key);
+		if (Application::get('lang')->keyExists($key))
+		{
+			return Application::get('lang')->get(array($key), $replacements);
+		}
 
-		return Application::get('lang')->get($key, $replacements);
+		return is_array($key) ? implode('.', $key) : $key;
 	}
 
 	/**

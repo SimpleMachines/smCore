@@ -32,6 +32,9 @@ class Menu
 
 	public static function getMenu()
 	{
+		Application::get('lang')->loadPackagesByType('menu');
+
+
 		$cache = Application::get('cache');
 
 //		if (($menu_rows = $cache->load('core_menu_rows')) === null)
