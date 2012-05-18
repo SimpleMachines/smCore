@@ -54,31 +54,7 @@ class Theme
 		}
 	}
 
-
 	protected static function _setupTheme()
 	{
-		require Settings::THEME_DIR . '/' . $theme->theme_dir . '/include.php';
-		Application::$theme = new $theme->theme_class();
-
-		Application::$theme->loadTemplates('index');
-		Application::$theme->addLayer('main', 'site');
-
-		Application::$theme->addNamespace('ui', 'com.fustrate.ui');
-
-		Application::$theme->loadTemplates('common');
-
-		Application::get('lang')->load(Settings::LANGUAGE_DIR . '/menu.yaml');
-
-		Application::$context += array(
-			'page_title' => '...',
-			'reload_counter' => 0,
-			'theme_url' => trim(Settings::URL, '/?') . '/themes/' . $theme->theme_dir,
-			'default_theme_url' => trim(Settings::URL, '/?') . '/themes/default',
-			'scripturl' => Settings::URL,
-			'time_display' => date('g:i:s A', time()),
-			'menu' => Menu::getMenu(),
-		);
-
-		TemplateEngine\Expression::setLangFunction('Application::get('lang')->get');
 	}
 }

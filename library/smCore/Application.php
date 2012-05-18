@@ -35,7 +35,8 @@ class Application
 	// Only allow one call to the run() function
 	private static $_run = false;
 
-	public static $theme = null;
+	public static $haste;
+
 	public static $context = array();
 
 	public static $start_time = null;
@@ -100,9 +101,9 @@ class Application
 
 		if ($route === false)
 		{
-			// @todo: show a real 404 page
-			self::$context['page_title'] = '404';
-			self::$theme->addTemplate('error_404', 'site');
+			self::$haste
+				->addGlobal('page_title', '404')
+				->addView('error_404.tpl');
 		}
 		else
 		{
@@ -115,9 +116,18 @@ class Application
 		$post_router_event = new Event(null, 'org.smcore.core.post_router');
 		$post_router_event->fire();
 
+		if (!isset(self::$context['uses_wysiwyg']))
+			self::$context['uses_wysiwyg'] = false;
+
+		if (!isset(self::$context['requires_js']))
+			self::$context['requires_js'] = false;
+
 		self::$context['requires_js'] |= self::$context['uses_wysiwyg'];
-		self::$context['menu'] = Menu::getMenu();
-		self::$theme->output();
+
+		self::$haste
+			->addGlobal('menu', self::get('menu')->getMenu())
+			->addGlobal('requires_js', self::$context['requires_js'] || self::$context['uses_wysiwyg'])
+			->display();
 	}
 
 	// @todo: put this in its own file, a theme storage
@@ -125,8 +135,6 @@ class Application
 	{
 		$cache = Application::get('cache');
 		$user = Application::get('user');
-
-		TemplateEngine\Expression::setLangFunction(__CLASS__ . '::get(\'lang\')->get');
 
 		$id = $user['theme'];
 
@@ -152,16 +160,27 @@ class Application
 			$theme = $result->fetch();
 			$cache->save($theme, 'theme_' . $id);
 		}
+/*
+$loader = new \Twig_Loader_Filesystem(Settings::THEME_DIR . '/' . $theme->theme_dir);
+$twig = new \Twig_Environment($loader, array(
+	'cache' => false,
+));
 
-		require Settings::THEME_DIR . '/' . $theme->theme_dir . '/include.php';
-		self::$theme = new $theme->theme_class();
+$twig->render('index.tpl', array(
+));
 
-		self::$theme->loadTemplates('index');
-		self::$theme->addLayer('main', 'site');
+die('got here');
 
-		self::$theme->addNamespace('ui', 'com.fustrate.ui');
+return;
+*/
+		\Twig_Autoloader::register();
+		$Twig_theme = \Twig_Environment::loadTheme(Settings::THEME_DIR . '/' . $theme->theme_dir . '/include.php', 'haste' . $theme->theme_class);
 
-		self::$theme->loadTemplates('common');
+		self::$haste = new \Twig_Environment($Twig_theme, array(
+			'cache' => Settings::CACHE_DIR,
+			'recompile' => true,
+			'auto_reload' => true,
+		));
 
 		self::get('lang')->load(Settings::LANGUAGE_DIR . '/menu.yaml');
 
