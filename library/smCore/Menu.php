@@ -24,20 +24,22 @@ namespace smCore;
 
 class Menu
 {
-	protected static $_menu = array();
+	protected $_parents = array();
+	protected $_menu = array();
+	protected $_active = array();
 
 	protected static $_primary;
 	protected static $_secondary;
 	protected static $_tertiary;
 
-	public static function getMenu()
+	public function __construct()
 	{
 		Application::get('lang')->loadPackagesByType('menu');
 
 
 		$cache = Application::get('cache');
 
-//		if (($menu_rows = $cache->load('core_menu_rows')) === null)
+//		if (($this->_parents = $cache->load('core_menu_rows')) === null)
 		{
 			$db = Application::get('db');
 
@@ -47,23 +49,78 @@ class Menu
 				ORDER BY menu_order ASC");
 
 			// Pack these up into a more usable format
-			$menu_rows = array();
+			$this->_parents = array();
 
 			while ($row = $result->fetch())
-				$menu_rows[$row->menu_parent][] = $row;
+				$this->_parents[$row->menu_parent][] = $row;
 
-			$cache->save($menu_rows, 'core_menu_rows');
+			$cache->save($this->_parents, 'core_menu_rows');
 		}
 
-		$user = Application::get('user');
+		$this->_buildMenu($this->_menu);
+	}
+
+	protected function _buildMenu(&$parent, $parent_id = 0, $level = 0)
+	{
+		if (!empty($this->_parents[$parent_id]))
+		{
+			foreach ($this->_parents[$parent_id] as $item)
+			{
+				if ($item->menu_visible && $this->_canAccess($item))
+				{
+					$parent[$item->id_menu] = array(
+						'url' => Settings::URL . $item->menu_url,
+						'title' => Application::get('lang')->get($item->menu_title),
+						'level' => $level,
+						'menu' => array(),
+					);
+
+					$this->_buildMenu($parent[$item->id_menu]['menu'], $item->id_menu, $level + 1);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Set the active menu item URLs.
+	 *
+	 * @param null|false|string For each parameter passed, null skips setting that level, false removes the active URL for that level, and anything else sets that level.
+	 */
+	public function setActiveItems()
+	{
+		$args = func_get_args();
+
+		foreach ($args as $level => $arg)
+		{
+			if ($arg === false)
+				unset($this->_active[$level]);
+			else if ($arg !== null)
+				$this->_active[$level] = (string) $arg;
+		}
+
+		// @todo LEGACY - REMOVE
+		if (isset($args[0]))
+			self::$_primary = $args[0];
+
+		if (isset($args[1]))
+			self::$_secondary = $args[1];
+
+		if (isset($args[2]))
+			self::$_tertiary = $args[2];
+	}
+
+	public function getMenu()
+	{
 		$menu = array();
+
+		$menu_rows = $this->_parents;
 
 		// @todo: make this a recursive function
 		if (!empty($menu_rows[0]))
 		{
 			foreach ($menu_rows[0] as $primary)
 			{
-				if ($primary->menu_visible && self::_canAccess($user, $primary))
+				if ($primary->menu_visible && $this->_canAccess($primary))
 				{
 					$menu[$primary->id_menu] = array(
 						'url' => Settings::URL . $primary->menu_url,
@@ -76,7 +133,7 @@ class Menu
 					{
 						foreach ($menu_rows[$primary->id_menu] as $secondary)
 						{
-							if ($secondary->menu_visible && self::_canAccess($user, $secondary))
+							if ($secondary->menu_visible && $this->_canAccess($secondary))
 							{
 								$menu[$primary->id_menu]['submenu'][$secondary->id_menu] = array(
 									'url' => Settings::URL . $secondary->menu_url,
@@ -92,26 +149,19 @@ class Menu
 		}
 
 		return $menu;
-		
 	}
 
 	public static function setActive($primary = null, $secondary = null, $tertiary = null)
 	{
-		if ($primary !== null)
-			self::$_primary = $primary;
-
-		if ($secondary !== null)
-			self::$_secondary = $secondary;
-
-		if ($tertiary !== null)
-			self::$_tertiary = $tertiary;
 	}
 
-	protected static function _canAccess($user, $menu_item)
+	protected function _canAccess($menu_item)
 	{
-		if (empty($menu_item->menu_permission))
-			return true;
+		return empty($menu_item->menu_permission) || Application::get('user')->hasPermission($menu_item->menu_permission);
+	}
 
-		return $user->hasPermission($menu_item->menu_permission);
+	public function __toString()
+	{
+		return print_r($this->_menu, true);
 	}
 }
