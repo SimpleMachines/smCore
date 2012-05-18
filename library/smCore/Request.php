@@ -31,6 +31,7 @@ class Request
 	protected $_path;
 	protected $_format;
 	protected $_has_get_params = false;
+	protected $_subdomain = 'www';
 
 	public function __construct()
 	{
@@ -61,6 +62,11 @@ class Request
 	public function getFormat()
 	{
 		return $this->_format;
+	}
+
+	public function getSubdomain()
+	{
+		return $this->_subdomain;
 	}
 
 	public function isXmlHttpRequest()
@@ -94,6 +100,9 @@ class Request
 		{
 			$this->_url = '';
 		}
+
+		if ($_SERVER['HTTP_HOST'] != $_SERVER['SERVER_NAME'])
+			$this->_subdomain = rtrim(str_replace($_SERVER['SERVER_NAME'], '', $_SERVER['HTTP_HOST']), '.');
 
 		$_GET = array();
 
