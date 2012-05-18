@@ -91,6 +91,8 @@ class Application
 		$lang->loadPackageByName('org.smcore.common');
 		self::set('lang', $lang);
 
+		self::set('menu', new Menu());
+
 		$this->_setupTheme();
 
 		$router = new Router();
@@ -318,5 +320,6 @@ return;
 	protected function _loadMail()
 	{
 		Zend_Mail::setDefaultFrom(Settings::MAIL_FROM, Settings::MAIL_FROM_NAME);
+		return true;
 	}
 }

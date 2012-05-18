@@ -247,6 +247,8 @@ abstract class Module
 	{
 		if (!Application::get('user')->hasPermission($this->_config['identifier'] . '.' . $name))
 			throw new Exception('You do not have the permissions required to access this page.');
+
+		return $this;
 	}
 
 	/**
