@@ -21,7 +21,7 @@
  */
 
 namespace smCore\Model;
-use smCore\Settings, smCore\Request, smCore\Exception, smCore\Application;
+use smCore\Model, smCore\Settings, smCore\Request, smCore\Exception, smCore\Application;
 
 class Cookie
 {
@@ -183,23 +183,12 @@ class Cookie
 		// when the cookie is invalid (which readFromRequest() checks)
 		$cookieName = Settings::COOKIE_NAME;
 		$cookieValue = Request::getInstance()->getCookieValue($cookieName);
+
 		if (!empty($cookieValue))
 			Request::getInstance()->unsetCookieValue($cookieName);
 
 		$cookie = new Cookie();
 		return $cookie;
-	}
-
-	/**
-	 * Serialize the cookie.
-	 *
-	 * @static
-	 * @param Cookie $cookie
-	 * @return string
-	 */
-	public static function serialize(Cookie $cookie)
-	{
-		return serialize($cookie->getData(), $cookie->getExpire(), $cookie->getPath(), $cookie->getDomain());
 	}
 
 	/**
