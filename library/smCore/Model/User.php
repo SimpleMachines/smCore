@@ -68,7 +68,7 @@ class User implements ArrayAccess
 
 			// Some shortcuts. We should just make a new array, probably.
 			$this->_data['id'] = $data->id_user;
-			$this->_data['theme'] = $data->user_theme;
+			$this->_data['theme'] = (int) $data->user_theme;
 			$this->_data['language'] = (int) $data->user_language;
 			$this->_data['display_name'] = $data->user_display_name;
 
@@ -81,8 +81,8 @@ class User implements ArrayAccess
 			$this->_data = array(
 				'id' => 0,
 				'display_name' => 'Guest',
-				'theme' => Settings::DEFAULT_THEME,
 				'language' => (int) Settings::DEFAULT_LANG, // @todo: lang
+				'theme' => (int) Settings::DEFAULT_THEME,
 			);
 
 			$this->_primary_role = $roles->getRoleById($roles::ROLE_GUEST);

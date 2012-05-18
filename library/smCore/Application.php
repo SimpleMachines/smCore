@@ -180,17 +180,18 @@ return;
 			'auto_reload' => true,
 		));
 
-		self::$context += array(
-			'page_title' => '...',
-			'reload_counter' => 0,
-			'theme_url' => trim(Settings::URL, '/?') . '/themes/' . $theme->theme_dir,
-			'default_theme_url' => trim(Settings::URL, '/?') . '/themes/default',
-			'scripturl' => Settings::URL,
-			'time_display' => date('g:i:s A', time()),
-			'uses_wysiwyg' => false,
-			'requires_js' => false,
-			'hide_sidebar' => false,
-		);
+		self::$haste
+			->addExtension(new TwigExtension())
+			->addGlobal('scripturl', Settings::URL)
+			->addGlobal('theme_url', trim(Settings::URL, '/?') . '/themes/' . $theme->theme_dir)
+			->addGlobal('default_theme_url', trim(Settings::URL, '/?') . '/themes/default')
+			->addGlobal('reload_counter', 0)
+			->addGlobal('time_display', date('g:i:s A', time()))
+			->addGlobal('uses_wysiwyg', false)
+			->addGlobal('requires_js', false)
+			->addLayer('index.tpl', array(
+				'menu2' => self::get('menu'),
+			));
 	}
 
 	/**

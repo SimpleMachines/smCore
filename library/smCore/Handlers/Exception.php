@@ -21,7 +21,7 @@
  */
 
 namespace smCore\Handlers;
-use smCore\Application, smCore\TemplateEngine, smCore\Menu;
+use smCore\Application, smCore\Menu;
 
 class Exception
 {
@@ -40,24 +40,20 @@ class Exception
 		$show_trace = Application::get('user', false) !== null && Application::get('user')->hasPermission('org.smcore.core.is_admin');
 
 		// We can't show a nice screen if the exception came from the template engine or the theme hasn't been loaded
-		if (!($exception instanceof TemplateEngine\Exception) && Application::$theme !== null)
+		if (!($exception instanceof \Twig_Error) && Application::$haste !== null)
 		{
-			Application::$theme->resetTemplates();
-			Application::$theme->resetLayers();
-			Application::$theme->loadTemplates('index');
-			Application::$theme->addLayer('main', 'site');
-			Application::$theme->loadTemplates('common');
-			Application::$theme->addTemplate('display_error', 'site');
-
-			Application::$context['error'] = $exception->getMessage();
-			Application::$context['error_trace'] = print_r($exception->getTrace(), true);
-
-			Application::$context['show_trace'] = $show_trace;
-			Application::$context['page_title'] = Application::get('lang')->get('error');
-
-			Application::$context['menu'] = Menu::getMenu();
-
-			Application::$theme->output();
+			Application::$haste
+				->resetLayers()
+				->resetViews()
+				->addLayer('index.tpl')
+				->addView('error.tpl', array(
+					'error' =>$exception->getMessage(),
+					'error_trace' => print_r($exception->getTrace(), true),
+					'show_trace' => $show_trace,
+				))
+				->addGlobal('page_title', Application::get('lang')->get('error'))
+				->addGlobal('menu', Application::get('menu')->getMenu())
+				->display();
 		}
 		else
 		{

@@ -155,10 +155,10 @@ class Form
 
 	public function display()
 	{
-		Application::$theme->addNamespace('forms', 'com.fustrate.forms');
-		Application::$theme->loadTemplates('forms');
-		Application::$theme->addTemplate('form', 'forms');
-		Application::$context['form'] = $this->getContext();
+//		Application::$theme->addNamespace('forms', 'com.fustrate.forms');
+//		Application::$theme->loadTemplates('forms');
+//		Application::$theme->addTemplate('form', 'forms');
+//		Application::$context['form'] = $this->getContext();
 	}
 
 	protected function _validateProperties($properties)

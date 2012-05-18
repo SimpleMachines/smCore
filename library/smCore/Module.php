@@ -50,10 +50,7 @@ abstract class Module
 		$this->_directory = $directory;
 
 		$this->_language_dir = $this->_directory . '/Languages/';
-		$this->_template_dir = $this->_directory . '/Templates/';
-
-		if (!empty($this->_config['template_ns']))
-			Application::$theme->addNamespace($this->_config['template_ns'], $config['identifier']);
+		$this->_template_dir = $this->_directory . '/Views/';
 
 		if (empty($this->_config['settings']))
 			$this->_config['settings'] = array();
@@ -149,28 +146,25 @@ abstract class Module
 		return $this->_directory;
 	}
 
-	/**
-	 * Load a template file from this module's /templates/ directory.
-	 *
-	 * @param string $name The name of the template file, i.e. "home_page"
-	 *
-	 * @access public
-	 */
-	public function loadTemplates($name)
+	public function addLayer($name, array $context = array())
 	{
-		Application::$theme->loadTemplates($this->_template_dir . $name . '.tox');
+		Application::$haste->addLayer($this->_template_dir . $name . '.tpl', $context);
+
+		return $this;
 	}
 
-	/**
-	 * Add a template to the view that we're going to output.
-	 *
-	 * @param string $name
-	 
-	 * @access public
-	 */
-	public function addTemplate($name)
+	public function addView($name, array $context = array())
 	{
-		Application::$theme->addTemplate($name, $this->_config['template_ns']);
+		Application::$haste->addView($this->_template_dir . $name . '.tpl', $context);
+
+		return $this;
+	}
+
+	public function setPageTitle($title = '')
+	{
+		Application::$haste->addGlobal('page_title', $title);
+
+		return $this;
 	}
 
 	/**
