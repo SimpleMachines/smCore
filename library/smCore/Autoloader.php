@@ -35,23 +35,16 @@ class Autoloader
 	 */
 	public static function autoload($name)
 	{
-		// Namespaced, like smCore\Router
-		if (strpos($name, '\\') !== false)
+		// Modules aren't located here, so we'll work some magic.
+		if (strpos($name, 'smCore\\Modules\\') === 0)
 		{
-			if (strpos($name, 'smCore\\Modules\\') === 0)
-			{
-				// First 15 characters (0-14) are "smCore\Modules\", so cut them off
-				$filename = Settings::MODULE_DIR . '/' . str_replace('\\', '/', substr($name, 15)) . '.php';
-			}
-			else
-			{
-				$filename = dirname(__DIR__) . '/' . str_replace('\\', '/', $name) . '.php';
-			}
+			// First 15 characters (0-14) are "smCore\Modules\", so cut them off
+			$filename = Settings::MODULE_DIR . '/' . str_replace(array('\\', '_', "\0"), array('/', '/', ''), substr($name, 15)) . '.php';
 		}
 		else
 		{
 			// Otherwise, it's not namespaced and we'll hope it has a standard format
-			$filename = dirname(__DIR__) . '/' . str_replace('_', '/', $name) . '.php';
+			$filename = dirname(__DIR__) . '/' . str_replace(array('\\', '_', "\0"), array('/', '/', ''), $name) . '.php';
 		}
 
 		if (file_exists($filename))
@@ -64,33 +57,5 @@ class Autoloader
 	public static function register()
 	{
 		spl_autoload_register(array(__CLASS__, 'autoload'));
-	}
-
-	/**
-	 * Unregister this autoloader.
-	 */
-	public static function unregister()
-	{
-		spl_autoload_unregister(array(__CLASS__, 'autoload'));
-
-		$functions = spl_autoload_functions();
-
-		if (empty($functions))
-			spl_autoload_register(array(__CLASS__, 'defaultAutoload'));
-	}
-
-	/**
-	 * If our autoloader gets unregistered, the default doesn't get restored. This is a
-	 * basic pass-through to the default. We don't just set it to __autoload here because
-	 * it might not be defined yet.
-	 *
-	 * @param string $name Name of the class to autoload.
-	 *
-	 * @access public
-	 */
-	public static function defaultAutoload($name)
-	{
-		if (function_exists('__autoload'))
-			__autoload($name);
 	}
 }
