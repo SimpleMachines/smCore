@@ -71,7 +71,7 @@ class Session
 	{
 		unset($_SESSION['id_user']);
 		session_destroy();
-		setcookie(Settings::COOKIE_NAME, '', Application::get('time') - 3600);
+		setcookie(Settings::COOKIE_NAME, '', 0, Settings::COOKIE_PATH, Settings::COOKIE_DOMAIN);
 	}
 
 	public static function reinitialize()
