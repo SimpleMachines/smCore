@@ -1,0 +1,7 @@
+/nbproject/private/
+/nbproject
+.settings
+.idea
+.buildpath
+.project
+Settings.php

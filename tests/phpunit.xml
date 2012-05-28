@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<phpunit backupGlobals="false"
+	backupStaticAttributes="false"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	processIsolation="false"
+	stopOnFailure="false"
+	syntaxCheck="true"
+	colors="false"
+	verbose="true"
+	strict="false"
+	debug="true"
+	bootstrap="bootstrap.php">
+
+	<testsuites>
+		<testsuite name="Library Test Suite">
+			<directory>./library</directory>
+		</testsuite>
+		<testsuite name="Modules Test Suite">
+			<directory>./modules</directory>
+		</testsuite>
+		<testsuite name="Install Test Suite">
+			<directory>./install</directory>
+		</testsuite>
+    </testsuites>
+	
+	<!-- <logging>
+		 
+		<log type="coverage-html" target="build/coverage" title="PHPUnit 3.5"
+			charset="UTF-8" yui="true" highlight="true"
+			lowUpperBound="35" highLowerBound="70"/>
+		<log type="coverage-clover" target="build/logs/clover.xml"/>
+		<log type="junit" target="build/logs/junit.xml" logIncompleteSkipped="false"/>
+		
+	</logging> -->
+    
+    <filter>
+		<whitelist>
+            <!-- <directory>./</directory> -->
+            <exclude>
+            	<directory>./simpletest</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+</phpunit>
