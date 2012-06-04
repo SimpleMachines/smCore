@@ -5,11 +5,33 @@ author:
     name: Steven Hoffman
     email: fustrate@me.com
     website: http://www.fustrate.com/
-template_ns: admin
+description: |
+    Admin module description
+
 language_ns: admin
 namespace: \smCore\Modules\Admin
+
 routes:
     main:
-        match: [admin, admin/main]
-        controller: MainController
-        method: mainAction
+        match: admin
+        controller: Main
+        method: main
+    modules:
+        match: admin/modules
+        controller: Main
+        method: modules
+
+# Languages
+
+    languages:
+        match: admin/languages
+        controller: Languages
+        method: main
+    viewLangPackage:
+        match: "admin/languages/packages/:slug"
+        controller: Languages
+        method: viewPackage
+    stringEdit:
+        match: admin/languages/stringEdit
+        controller: Languages
+        method: stringEdit
