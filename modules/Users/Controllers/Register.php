@@ -11,7 +11,8 @@ class Register extends Module\Controller
 	function preDispatch()
 	{
 		$module = $this->_getParentModule();
-		$module->loadLanguage('strings.yaml');
+		$module->loadLangPackage();
+		Application::get('menu')->setActive('register');
 	}
 
 	// @todo: A way to add custom steps
@@ -25,27 +26,25 @@ class Register extends Module\Controller
 		if ($step === 'start')
 		{
 			// Do nothing.
-			$module->loadTemplates('register');
-			$module->addTemplate('register_main');
-
-			Application::$context['page_title'] = $module->lang('register.titles.main');
+			$module
+				->addView('register')
+				->setPageTitle($module->lang('users.titles.register'));
 		}
 		else if ($step === 'finish')
 		{
 			$user_data = $model->processRegistration();
 			$model->sendActivationEmail($user_data['id']);
 
-			$module->loadTemplates('register');
-			$module->addTemplate('register_activation_sent');
-
-			Application::$context['new_account_email'] = $user_data['email'];
-			Application::$context['email_subject'] = $module->lang('register.email_activate_account.subject');
-
-			Application::$context['page_title'] = $module->lang('register.titles.activation_sent');
+			$module
+				->addView('activation_sent', array(
+					'new_account_email' => $user_data['email'],
+					'email_subject' => $module->lang('users.register.email_activate_account.subject'),
+				))
+				->setPageTitle($module->lang('users.register.titles.activation_sent'));
 		}
 		else
 		{
-			$module->throwLangException('exceptions.register.invalid_step');
+			$module->throwLangException('users.exceptions.register.invalid_step');
 		}
 	}
 
@@ -56,19 +55,17 @@ class Register extends Module\Controller
 
 		$model->activateAccount();
 
-		$module->loadTemplates('register');
-		$module->addTemplate('register_activated');
-
-		Application::$context['page_title'] = $module->lang('register.titles.activated');
+		$module
+			->addView('activated')
+			->setPageTitle($module->lang('users.titles.activated'));
 	}
 
 	function resend()
 	{
 		$module = $this->_getParentModule();
 
-		$module->loadTemplates('register');
-		$module->addTemplate('register_resend');
-
-		Application::$context['page_title'] = $module->lang('register.titles.resend');
+		$module
+			->addView('resend_ativation')
+			->setPageTitle($module->lang('users.titles.resend_activation'));
 	}
 }

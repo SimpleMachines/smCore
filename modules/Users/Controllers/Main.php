@@ -11,19 +11,24 @@ class Main extends Module\Controller
 	function preDispatch()
 	{
 		$module = $this->_getParentModule();
-		$module->loadLanguage('strings.yaml');
+		$module->loadLangPackage();
 	}
 
 	/**
 	 * Show the login screen.
 	 */
-	function login()
+	function login($error = null)
 	{
 		$module = $this->_getParentModule();
-		$module->loadTemplates('main');
-		$module->addTemplate('login');
+		Application::get('menu')->setActive('login');
 
-		Application::$context['page_title'] = $module->lang('login_title');
+		$module
+			->addView('login', array(
+				'error' => $error,
+				'username' => Application::get('input')->post->getRaw('username') ?: '',
+				'cookie_time' => Application::get('input')->post->getInt('cookie_time'),
+			))
+			->setPageTitle($module->lang('users.titles.login'));
 	}
 
 	/**
@@ -39,8 +44,7 @@ class Main extends Module\Controller
 		}
 		catch (\Exception $exception)
 		{
-			Application::$context['login_error'] = $exception->getMessage();
-			$this->login();
+			$this->login($exception->getMessage());
 			return;
 		}
 
@@ -77,9 +81,8 @@ class Main extends Module\Controller
 	{
 		$module = $this->_getParentModule();
 
-		$module->loadTemplates('main');
-		$module->addTemplate('terms');
-
-		Application::$context['page_title'] = $module->lang('terms.title');
+		$module
+			->addView('terms')
+			->setPageTitle($module->lang('users.titles.terms'));
 	}
 }

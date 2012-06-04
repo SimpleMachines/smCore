@@ -5,7 +5,9 @@ author:
     name: Steven Hoffman
     email: fustrate@me.com
     website: http://www.fustrate.com/
-template_ns: users
+description: |
+    Users module description
+
 language_ns: users
 namespace: \smCore\Modules\Users
 
@@ -52,9 +54,14 @@ routes:
         controller: *register
         method: resend
 
-    adminMain:
-        match: [admin/users, admin/users/main]
+    admin:
+        match: admin/users
         controller: *admin
+        method: main
+    adminMoreInfo:
+        match: admin/users/([0-9]+)
+        controller: *admin
+        method: moreInfo
 
 permissions:
     - edit_own_account_settings

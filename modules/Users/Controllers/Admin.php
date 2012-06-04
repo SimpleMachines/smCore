@@ -10,28 +10,54 @@ class Admin extends Module\Controller
 	 */
 	function preDispatch()
 	{
-		$this->_getParentModule()->loadLanguage('strings.yaml');
+		$this->_getParentModule()->loadLangPackage();
 	}
 
-	function mainAction()
+	function main()
+	{
+		$module = $this->_getParentModule();
+
+		$module
+			->addView('admin/main', array(
+				'users' => $module->getStorage('Users')->getPage(),
+			))
+			->setPageTitle('User Administration');
+	}
+
+	function moreInfo()
+	{
+		$module = $this->_getParentModule();
+
+		$id = (int) Application::get('router')->getMatch(1);
+
+		if ($id < 1)
+			$module->throwLangException('Invalid user ID.');
+
+
+
+
+
+		$module
+			->addView('admin/more', array(
+				'user' => null,
+			))
+			->setPageTitle(':)');
+	}
+
+	function listUsers()
 	{
 		$module = $this->_getParentModule();
 	}
 
-	function listAction()
-	{
-		$module = $this->_getParentModule();
-	}
-
-	function permissionsAction()
+	function permissions()
 	{
 	}
 
-	function registrationAction()
+	function registration()
 	{
 	}
 
-	function settingsAction()
+	function settings()
 	{
 	}
 }

@@ -17,14 +17,10 @@ class Register extends Module\Model
 		$password_hashed = Application::get('input')->post->getRaw('password_hashed') ?: '';
 
 		if (empty($username))
-		{
 			$module->throwLangException('exceptions.register.username_required');
-		}
 
 		if (empty($email))
-		{
-			$module->throwLangException('exceptions.register.invalid_email');
-		}
+			$module->throwLangException('users.exceptions.register.invalid_email');
 
 		// No hashed password? Try to create one.
 		if (!preg_match('~^[a-f0-9]{64}$~', $password_hashed))
@@ -33,7 +29,7 @@ class Register extends Module\Model
 
 			// No plaintext password, either
 			if (!$password)
-				$module->throwLangException('exceptions.register.no_password_sent');
+				$module->throwLangException('users.exceptions.register.no_password_sent');
 
 			$password_hashed = hash('sha256', $password);
 		}
@@ -55,21 +51,18 @@ class Register extends Module\Model
 			$found = $result->fetch();
 
 			if ($found->user_email == $email)
-			{
-				$module->throwLangException('exceptions.register.email_already_exists');
-			}
-			else
-			{
-				$module->throwLangException('exceptions.register.username_already_exists');
-			}
+				$module->throwLangException('users.exceptions.register.email_already_exists');
+
+			$module->throwLangException('users.exceptions.register.username_already_exists');
 		}
 
 		// @todo: add user
 		$salt = Utility::randString(32, 'hex');
 		$activation = Utility::randString(25, 'hex');
-		$token = md5($hashed . time());
+		$token = md5($password_hashed . time());
 
 		$result = $db->insert('beta_users', array(
+			'user_given_name' => $username,
 			'user_display_name' => $username,
 			'user_login' => $login,
 			'user_email' => $email,
@@ -83,7 +76,7 @@ class Register extends Module\Model
 		));
 
 		if (!$result)
-			$module->throwLangException('exceptions.register.unknown_error');
+			$module->throwLangException('users.exceptions.register.unknown_error');
 
 		$id = $db->lastInsertId();
 
@@ -107,7 +100,7 @@ class Register extends Module\Model
 		$result = $db->update('beta_users', array('user_activation' => $new_activation), 'id_user = ' . $user_id);
 
 		if (!$result)
-			$module->throwLangException('exceptions.register.invalid_id');
+			$module->throwLangException('users.exceptions.register.invalid_id');
 
 		$result = $db->query("
 			SELECT user_display_name, user_email
@@ -125,12 +118,12 @@ class Register extends Module\Model
 			$new_activation,
 			$user_id,
 		);
-
+Application::get('mail');
 		$mail = new Zend_Mail();
-		$mail->setBodyText($module->lang('register.email_activate_account.text', $replacements));
-		$mail->setBodyHtml($module->lang('register.email_activate_account.html', $replacements));
+		$mail->setBodyText($module->lang('users.register.email_activate_account.text', $replacements));
+		$mail->setBodyHtml($module->lang('users.register.email_activate_account.html', $replacements));
 		$mail->addTo($user_data->user_email, $user_data->user_display_name);
-		$mail->setSubject($module->lang('register.email_activate_account.subject'));
+		$mail->setSubject($module->lang('users.register.email_activate_account.subject'));
 		$mail->send();
 	}
 
@@ -155,15 +148,15 @@ class Register extends Module\Model
 		);
 
 		if ($result->rowCount() < 1)
-			$module->throwLangException('exceptions.register.activate_id_doesnt_exist');
+			$module->throwLangException('users.exceptions.register.activate_id_doesnt_exist');
 
 		$user_data = $result->fetch();
 
 		if ($user_data->user_active > 0)
-			$module->throwLangException('exceptions.register.already_activated');
+			$module->throwLangException('users.exceptions.register.already_activated');
 
 		if ($user_data->user_activation !== $key)
-			$module->throwLangException('exceptions.register.wrong_key');
+			$module->throwLangException('users.exceptions.register.wrong_key');
 
 		// Everything seems to be in order
 		return $db->update('beta_users', array(
