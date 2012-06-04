@@ -25,17 +25,18 @@
  */
 
 namespace smCore;
-use smCore\Event\Dispatcher as EventDispatcher, smCore\Storage\Factory as StorageFactory,
-	smCore\Handlers\Error as ErrorHandler, smCore\Handlers\Exception as ExceptionHandler,
-	Zend_Db, Zend_Db_Table_Abstract, Zend_Cache, Zend_Mail,
-	Inspekt, Inspekt_Cage;
+
+use smCore\Event\Dispatcher as EventDispatcher, smCore\Storage\Factory as StorageFactory, smCore\Handlers;
+use Zend_Db, Zend_Db_Table_Abstract, Zend_Cache, Zend_Mail;
+use Twig_Autoloader, Twig_Environment;
+use Inspekt, Inspekt_Cage;
 
 class Application
 {
 	// Only allow one call to the run() function
 	private static $_run = false;
 
-	public static $haste;
+	public static $twig;
 
 	public static $context = array();
 
@@ -57,7 +58,9 @@ class Application
 	public function run()
 	{
 		if (self::$_run)
+		{
 			throw new Exception('Cannot load the application again!');
+		}
 
 		self::$_run = true;
 
@@ -69,8 +72,8 @@ class Application
 		require __DIR__ . '/Autoloader.php';
 		Autoloader::register();
 
-		new ErrorHandler();
-		new ExceptionHandler();
+		new Handlers\Error();
+		new Handlers\Exception();
 
 		self::addLazyLoader('db', array($this, '_loadDatabase'));
 		self::addLazyLoader('cache', array($this, '_loadCache'));
@@ -101,7 +104,7 @@ class Application
 
 		if ($route === false)
 		{
-			self::$haste
+			self::$twig
 				->addGlobal('page_title', '404')
 				->addView('error_404.tpl');
 		}
@@ -117,14 +120,18 @@ class Application
 		$post_router_event->fire();
 
 		if (!isset(self::$context['uses_wysiwyg']))
+		{
 			self::$context['uses_wysiwyg'] = false;
+		}
 
 		if (!isset(self::$context['requires_js']))
+		{
 			self::$context['requires_js'] = false;
+		}
 
 		self::$context['requires_js'] |= self::$context['uses_wysiwyg'];
 
-		self::$haste
+		self::$twig
 			->addGlobal('menu', self::get('menu')->getMenu())
 			->addGlobal('requires_js', self::$context['requires_js'] || self::$context['uses_wysiwyg'])
 			->display();
@@ -160,29 +167,17 @@ class Application
 			$theme = $result->fetch();
 			$cache->save($theme, 'theme_' . $id);
 		}
-/*
-$loader = new \Twig_Loader_Filesystem(Settings::THEME_DIR . '/' . $theme->theme_dir);
-$twig = new \Twig_Environment($loader, array(
-	'cache' => false,
-));
 
-$twig->render('index.tpl', array(
-));
+		Twig_Autoloader::register();
+		$Twig_theme = Twig_Environment::loadTheme(Settings::THEME_DIR . '/' . $theme->theme_dir . '/include.php', 'haste' . $theme->theme_class);
 
-die('got here');
-
-return;
-*/
-		\Twig_Autoloader::register();
-		$Twig_theme = \Twig_Environment::loadTheme(Settings::THEME_DIR . '/' . $theme->theme_dir . '/include.php', 'haste' . $theme->theme_class);
-
-		self::$haste = new \Twig_Environment($Twig_theme, array(
+		self::$twig = new Twig_Environment($Twig_theme, array(
 			'cache' => Settings::CACHE_DIR,
 			'recompile' => true,
 			'auto_reload' => true,
 		));
 
-		self::$haste
+		self::$twig
 			->addExtension(new TwigExtension())
 			->addGlobal('scripturl', Settings::URL)
 			->addGlobal('theme_url', trim(Settings::URL, '/?') . '/themes/' . $theme->theme_dir)
@@ -192,7 +187,7 @@ return;
 			->addGlobal('uses_wysiwyg', false)
 			->addGlobal('requires_js', false)
 			->addLayer('index.tpl', array(
-				'menu2' => self::get('menu'),
+				'menu' => self::get('menu'),
 			));
 	}
 
@@ -205,9 +200,13 @@ return;
 	public static function set($key, $value)
 	{
 		if ($value === null)
+		{
 			unset(self::$_registry[$key]);
+		}
 		else
+		{
 			self::$_registry[$key] = $value;
+		}
 	}
 
 	/**
@@ -246,11 +245,15 @@ return;
 	{
 		// @todo: throw an exception for invalid/duplicate/late
 		if (empty($key) || array_key_exists($key, self::$_registry) || array_key_exists($key, self::$_lazyLoads))
+		{
 			return;
+		}
 
 		// @todo: invalid callback exception
 		if (!is_callable($callback))
+		{
 			return;
+		}
 
 		self::$_lazyLoads[$key] = array($callback, $arguments);
 	}
@@ -263,7 +266,9 @@ return;
 	public function removeLazyLoader($key)
 	{
 		if (array_key_exists($key, self::$_lazyLoads))
+		{
 			unset(self::$_lazyLoads[$key]);
+		}
 	}
 
 	/**

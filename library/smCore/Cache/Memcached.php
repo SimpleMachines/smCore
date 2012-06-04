@@ -21,7 +21,8 @@
  */
 
 namespace smCore\Cache;
-use smCore\Cache, smCore\Extension;
+
+use smCore\Cache, smCore\Exception;
 
 class Memcached extends Cache
 {
@@ -63,8 +64,10 @@ class Memcached extends Cache
 		return false;
 	}
 
-	public function save($key, $data, array $tags = array(), $lifetime = null)
+	public function save($key, $data, array $tags = array(), $ttl = null)
 	{
+		$lifetime = time() + ($ttl ?: self::DEFAULT_TTL);
+
 		$this->_memcached->set($key, array($data, time(), $lifetime), $lifetime);
 	}
 

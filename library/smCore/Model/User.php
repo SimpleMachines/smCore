@@ -21,7 +21,9 @@
  */
 
 namespace smCore\Model;
-use smCore\Application, smCore\Settings, smCore\Storage\Factory as StorageFactory, ArrayAccess;
+
+use smCore\Application, smCore\Settings, smCore\Storage\Factory as StorageFactory;
+use ArrayAccess;
 
 class User implements ArrayAccess
 {
@@ -67,7 +69,8 @@ class User implements ArrayAccess
 			$this->_data = (array) $data;
 
 			// Some shortcuts. We should just make a new array, probably.
-			$this->_data['id'] = $data->id_user;
+			$this->_data['id'] = (int) $data->id_user;
+			$this->_data['ip'] = Application::get('input')->server->getRaw('REMOTE_ADDR');
 			$this->_data['theme'] = (int) $data->user_theme;
 			$this->_data['language'] = (int) $data->user_language;
 			$this->_data['display_name'] = $data->user_display_name;
@@ -80,9 +83,11 @@ class User implements ArrayAccess
 		{
 			$this->_data = array(
 				'id' => 0,
+				'ip' => Application::get('input')->server->getRaw('REMOTE_ADDR'),
 				'display_name' => 'Guest',
 				'language' => (int) Settings::DEFAULT_LANG, // @todo: lang
 				'theme' => (int) Settings::DEFAULT_THEME,
+				'user_token' => false,
 			);
 
 			$this->_primary_role = $roles->getRoleById($roles::ROLE_GUEST);

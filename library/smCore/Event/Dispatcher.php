@@ -21,6 +21,7 @@
  */
 
 namespace smCore\Event;
+
 use smCore\Application, smCore\Event;
 
 class Dispatcher

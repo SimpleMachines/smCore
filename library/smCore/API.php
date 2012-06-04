@@ -23,6 +23,7 @@
 // @todo: should this be part of Response instead?
 
 namespace smCore;
+
 use Symfony\Component\Yaml\Yaml;
 
 class API

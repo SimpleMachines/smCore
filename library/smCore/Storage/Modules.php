@@ -23,8 +23,10 @@
  */
 
 namespace smCore\Storage;
-use smCore\Application, smCore\Exception, smCore\Settings, smCore\FileIO\Factory as IOFactory,
-	DirectoryIterator, Zend_Cache;
+
+use smCore\Application, smCore\Exception, smCore\Settings, smCore\FileIO\Factory as IOFactory;
+use DirectoryIterator;
+use Zend_Cache;
 
 class Modules
 {
@@ -36,7 +38,7 @@ class Modules
 		$cache = Application::get('cache');
 
 		// Load the configs
-		// if (($this->_modules = $cache->load('core_module_registry_data')) === false)
+//		if (false === $this->_modules = $cache->load('core_module_registry_data'))
 		{
 			$iterator = new DirectoryIterator(Settings::MODULE_DIR);
 			$this->_modules = array();

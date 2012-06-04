@@ -21,6 +21,7 @@
  */
 
 namespace smCore\Storage;
+
 use smCore\Application, smCore\Model\Role, smCore\Settings;
 
 class Roles
@@ -38,7 +39,7 @@ class Roles
 
 		$cache = Application::get('cache');
 
-		// if (($this->_loaded_roles = $cache->load('core_roles')) === null)
+		if (false === $this->_loaded_roles = $cache->load('core_roles'))
 		{
 			$db = Application::get('db');
 
@@ -77,6 +78,8 @@ class Roles
 				foreach ($this->_loaded_roles as $id => $role)
 					$this->_loaded_roles[$id] = new Role($id, $role['title'], $role['inherits'], $role['permissions']);
 			}
+
+			$cache->save($this->_loaded_roles, 'core_roles');
 		}
 
 		return $this->_loaded_roles;

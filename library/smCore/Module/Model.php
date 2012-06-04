@@ -21,6 +21,7 @@
  */
 
 namespace smCore\Module;
+
 use smCore, smCore\Module;
 
 abstract class Model extends smCore\Model

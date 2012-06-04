@@ -21,6 +21,7 @@
  */
 
 namespace smCore\Storage;
+
 use smCore\Application, smCore\Security\Session;
 
 class Sessions

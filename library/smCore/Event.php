@@ -21,6 +21,7 @@
  */
 
 namespace smCore;
+
 use smCore\Event\Dispatcher;
 
 class Event

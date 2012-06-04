@@ -21,6 +21,7 @@
  */
 
 namespace smCore\Module;
+
 use smCore, smCore\Module;
 
 abstract class Storage extends smCore\Storage

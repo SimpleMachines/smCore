@@ -1,6 +1,7 @@
 <?php
 
 namespace smCore;
+
 use Twig_Extension, Twig_Function_Function, Twig_Filter_Function;
 
 class TwigExtension extends Twig_Extension

@@ -24,6 +24,8 @@ namespace smCore;
 
 abstract class Cache
 {
+	const DEFAULT_TTL = 3600;
+
 	public abstract function load($key);
 
 	public abstract function save($key, $data, array $tags = array(), $lifetime = null);

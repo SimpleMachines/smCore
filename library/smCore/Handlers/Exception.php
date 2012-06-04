@@ -21,7 +21,9 @@
  */
 
 namespace smCore\Handlers;
-use smCore\Application, smCore\Menu;
+
+use smCore\Application;
+use Twig_Error;
 
 class Exception
 {
@@ -40,26 +42,27 @@ class Exception
 		$show_trace = Application::get('user', false) !== null && Application::get('user')->hasPermission('org.smcore.core.is_admin');
 
 		// We can't show a nice screen if the exception came from the template engine or the theme hasn't been loaded
-		if (!($exception instanceof \Twig_Error) && Application::$haste !== null)
+		if (!($exception instanceof Twig_Error) && Application::$twig !== null)
 		{
-			Application::$haste
+			Application::$twig
 				->resetLayers()
 				->resetViews()
-				->addLayer('index.tpl')
+				->addLayer('index.tpl', array(
+					'menu' => Application::get('menu'),
+					'page_title' => Application::get('lang')->get('error'),
+				))
 				->addView('error.tpl', array(
 					'error' =>$exception->getMessage(),
 					'error_trace' => print_r($exception->getTrace(), true),
 					'show_trace' => $show_trace,
 				))
-				->addGlobal('page_title', Application::get('lang')->get('error'))
-				->addGlobal('menu', Application::get('menu')->getMenu())
 				->display();
 		}
 		else
 		{
 			echo 'Uncaught exception error:<hr /><pre>' . $exception->getMessage() . '</pre>';
 
-			if (false) //$show_trace)
+			if ($show_trace)
 				echo '<br /><pre>' . print_r($exception->getTrace(), true) . '</pre>';
 		}
 

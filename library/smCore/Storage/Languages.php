@@ -21,8 +21,9 @@
  */
 
 namespace smCore\Storage;
-use smCore\Application, smCore\Exception, smCore\Settings, smCore\Model\Language,
-	Zend_Cache;
+
+use smCore\Application, smCore\Exception, smCore\Settings, smCore\Model\Language;
+use Zend_Cache;
 
 class Languages
 {

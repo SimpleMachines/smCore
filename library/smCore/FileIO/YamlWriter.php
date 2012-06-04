@@ -21,6 +21,7 @@
  */
 
 namespace smCore\FileIO;
+
 use Symfony\Component\Yaml\Yaml;
 
 class YamlWriter extends Writer

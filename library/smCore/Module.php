@@ -23,7 +23,6 @@
  */
 
 namespace smCore;
-use smCore\Exception;
 
 abstract class Module
 {
@@ -148,21 +147,21 @@ abstract class Module
 
 	public function addLayer($name, array $context = array())
 	{
-		Application::$haste->addLayer($this->_template_dir . $name . '.tpl', $context);
+		Application::$twig->addLayer($this->_template_dir . $name . '.tpl', $context);
 
 		return $this;
 	}
 
 	public function addView($name, array $context = array())
 	{
-		Application::$haste->addView($this->_template_dir . $name . '.tpl', $context);
+		Application::$twig->addView($this->_template_dir . $name . '.tpl', $context);
 
 		return $this;
 	}
 
 	public function setPageTitle($title = '')
 	{
-		Application::$haste->addGlobal('page_title', $title);
+		Application::$twig->addGlobal('page_title', $title);
 
 		return $this;
 	}
@@ -320,7 +319,7 @@ abstract class Module
 	public function createToken($name)
 	{
 		$user = Application::get('user');
-		return md5(hash('sha256', $name . '%' . $user['token'] . '%' . $this->_config['identifier']));
+		return md5(hash('sha256', $name . '%' . $user['user_token'] . '%' . $this->_config['identifier']));
 	}
 
 	/**

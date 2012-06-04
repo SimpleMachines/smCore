@@ -21,6 +21,7 @@
  */
 
 namespace smCore\Security;
+
 use smCore\Application, smCore\Settings, smCore\Handlers\Session as SessionHandler;
 
 class Session

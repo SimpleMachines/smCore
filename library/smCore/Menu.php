@@ -28,18 +28,13 @@ class Menu
 	protected $_menu = array();
 	protected $_active = array();
 
-	protected static $_primary;
-	protected static $_secondary;
-	protected static $_tertiary;
-
 	public function __construct()
 	{
 		Application::get('lang')->loadPackagesByType('menu');
 
-
 		$cache = Application::get('cache');
 
-//		if (($this->_parents = $cache->load('core_menu_rows')) === null)
+		if (false === $this->_parents = $cache->load('core_menu_rows'))
 		{
 			$db = Application::get('db');
 
@@ -60,33 +55,13 @@ class Menu
 		$this->_buildMenu($this->_menu);
 	}
 
-	protected function _buildMenu(&$parent, $parent_id = 0, $level = 0)
-	{
-		if (!empty($this->_parents[$parent_id]))
-		{
-			foreach ($this->_parents[$parent_id] as $item)
-			{
-				if ($item->menu_visible && $this->_canAccess($item))
-				{
-					$parent[$item->id_menu] = array(
-						'url' => Settings::URL . $item->menu_url,
-						'title' => Application::get('lang')->get($item->menu_title),
-						'level' => $level,
-						'menu' => array(),
-					);
-
-					$this->_buildMenu($parent[$item->id_menu]['menu'], $item->id_menu, $level + 1);
-				}
-			}
-		}
-	}
-
 	/**
 	 * Set the active menu item URLs.
 	 *
-	 * @param null|false|string For each parameter passed, null skips setting that level, false removes the active URL for that level, and anything else sets that level.
+	 * @param null|false|string For each parameter passed, null skips setting that level, false removes
+	 *                          the active URL for that level, and anything else sets that level.
 	 */
-	public function setActiveItems()
+	public function setActive()
 	{
 		$args = func_get_args();
 
@@ -97,71 +72,60 @@ class Menu
 			else if ($arg !== null)
 				$this->_active[$level] = (string) $arg;
 		}
-
-		// @todo LEGACY - REMOVE
-		if (isset($args[0]))
-			self::$_primary = $args[0];
-
-		if (isset($args[1]))
-			self::$_secondary = $args[1];
-
-		if (isset($args[2]))
-			self::$_tertiary = $args[2];
 	}
 
+	/**
+	 * 
+	 *
+	 * @return array
+	 */
 	public function getMenu()
 	{
-		$menu = array();
+		$this->_markActive($this->_menu);
 
-		$menu_rows = $this->_parents;
+		return $this->_menu;
+	}
 
-		// @todo: make this a recursive function
-		if (!empty($menu_rows[0]))
+	/**
+	 * 
+	 *
+	 * @param array &$parent
+	 * @param int   $id
+	 */
+	protected function _buildMenu(&$parent, $id = 0)
+	{
+		if (!empty($this->_parents[$id]))
 		{
-			foreach ($menu_rows[0] as $primary)
+			foreach ($this->_parents[$id] as $item)
 			{
-				if ($primary->menu_visible && $this->_canAccess($primary))
+				if ($item->menu_visible && (empty($item->menu_permission) || Application::get('user')->hasPermission($item->menu_permission)))
 				{
-					$menu[$primary->id_menu] = array(
-						'url' => Settings::URL . $primary->menu_url,
-						'title' => Application::get('lang')->get($primary->menu_title),
+					$parent[$item->menu_name] = array(
+						'url' => Settings::URL . $item->menu_url,
+						'title' => Application::get('lang')->get($item->menu_title),
 						'submenu' => array(),
-						'active' => $primary->menu_url === self::$_primary,
+						'active' => false,
 					);
 
-					if (!empty($menu_rows[$primary->id_menu]))
-					{
-						foreach ($menu_rows[$primary->id_menu] as $secondary)
-						{
-							if ($secondary->menu_visible && $this->_canAccess($secondary))
-							{
-								$menu[$primary->id_menu]['submenu'][$secondary->id_menu] = array(
-									'url' => Settings::URL . $secondary->menu_url,
-									'title' => Application::get('lang')->get($secondary->menu_title),
-									'submenu' => array(),
-									'active' => $secondary->menu_url === self::$_secondary,
-								);
-							}
-						}
-					}
+					$this->_buildMenu($parent[$item->menu_name]['submenu'], $item->id_menu);
 				}
 			}
 		}
-
-		return $menu;
 	}
 
-	public static function setActive($primary = null, $secondary = null, $tertiary = null)
+	/**
+	 * 
+	 *
+	 * @param array &$menu
+	 * @param int   $level
+	 */
+	protected function _markActive(&$menu, $level = 0)
 	{
-	}
+		if (!empty($this->_active[$level]) && isset($menu[$this->_active[$level]]))
+		{
+			$menu[$this->_active[$level]]['active'] = true;
 
-	protected function _canAccess($menu_item)
-	{
-		return empty($menu_item->menu_permission) || Application::get('user')->hasPermission($menu_item->menu_permission);
-	}
-
-	public function __toString()
-	{
-		return print_r($this->_menu, true);
+			$this->_markActive($menu[$this->_active[$level]]['submenu'], $level + 1);
+		}
 	}
 }

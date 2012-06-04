@@ -21,7 +21,8 @@
  */
 
 namespace smCore\Model;
-use smCore\Model, smCore\Settings, smCore\Request, smCore\Exception, smCore\Application;
+
+use smCore\Application, smCore\Exception, smCore\Model, smCore\Request, smCore\Settingst;
 
 class Cookie
 {
@@ -52,21 +53,6 @@ class Cookie
 		if ($attempt_read && $input->cookie->keyExists($name))
 			$this->_value = $input->cookie->getRaw($name);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	/**
 	 * If this is the main cookie, 

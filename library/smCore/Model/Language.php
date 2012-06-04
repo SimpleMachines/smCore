@@ -21,6 +21,7 @@
  */
 
 namespace smCore\Model;
+
 use smCore\Application, smCore\FileIO\Factory as IOFactory;
 
 class Language

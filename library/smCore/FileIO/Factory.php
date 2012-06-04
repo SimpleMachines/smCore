@@ -25,6 +25,7 @@
  */
 
 namespace smCore\FileIO;
+
 use smCore\Exception;
 
 class Factory

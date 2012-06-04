@@ -21,6 +21,7 @@
  */
 
 namespace smCore\Cache;
+
 use smCore\Cache;
 
 class Apc extends Cache
@@ -29,7 +30,7 @@ class Apc extends Cache
 	{
 	}
 
-	public abstract function save($key, $data, array $tags = array(), $lifetime = null)
+	public abstract function save($key, $data, array $tags = array(), $ttl = null)
 	{
 	}
 

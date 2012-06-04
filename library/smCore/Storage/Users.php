@@ -21,6 +21,7 @@
  */
 
 namespace smCore\Storage;
+
 use smCore\Application, smCore\Settings, smCore\Model\User, smCore\Exception, smCore\Security\Session;
 
 class Users

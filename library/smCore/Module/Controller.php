@@ -21,6 +21,7 @@
  */
 
 namespace smCore\Module;
+
 use smCore\Module;
 
 abstract class Controller
