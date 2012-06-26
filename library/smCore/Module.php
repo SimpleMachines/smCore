@@ -242,9 +242,12 @@ abstract class Module
 	 *
 	 * @param $name The permission to check. It will be prepended by this module's identifier and a period ("edit" -> "org.smcore.yourmodule" . "." . $name)
 	 */
-	public function requirePermission($name)
+	public function requirePermission($name, $use_namespace = true)
 	{
-		if (!Application::get('user')->hasPermission($this->_config['identifier'] . '.' . $name))
+		if ($use_namespace)
+			$name = $this->_config['identifier'] . '.' . $name;
+
+		if (!Application::get('user')->hasPermission($name))
 			throw new Exception('You do not have the permissions required to access this page.');
 
 		return $this;
