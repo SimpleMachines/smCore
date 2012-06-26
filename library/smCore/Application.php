@@ -70,7 +70,7 @@ class Application
 
 		// Register our autoloader onto the stack
 		require __DIR__ . '/Autoloader.php';
-		Autoloader::register();
+		new Autoloader(null, dirname(__DIR__));
 
 		new Handlers\Error();
 		new Handlers\Exception();

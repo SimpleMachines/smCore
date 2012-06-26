@@ -24,38 +24,42 @@
 
 namespace smCore\Storage;
 
-use smCore\Application, smCore\Exception, smCore\Settings, smCore\FileIO\Factory as IOFactory;
+use smCore\Application, smCore\Exception, smCore\Settings, smCore\FileIO\Factory as IOFactory, smCore\Autoloader;
 use DirectoryIterator;
 use Zend_Cache;
 
 class Modules
 {
+	protected $_moduleData;
 	protected $_modules = array();
-	protected $_moduleData = array();
 
 	public function __construct()
 	{
 		$cache = Application::get('cache');
 
 		// Load the configs
-//		if (false === $this->_modules = $cache->load('core_module_registry_data'))
+		if (false === $this->_moduleData = $cache->load('core_module_registry_data'))
 		{
 			$iterator = new DirectoryIterator(Settings::MODULE_DIR);
-			$this->_modules = array();
+			$this->_moduleData = array();
 
 			$reader = IOFactory::getReader('yaml');
 
 			foreach ($iterator as $module)
 			{
 				if ($module->isDot() || !$module->isDir() || !file_exists($module->getPathname() . '/config.yaml'))
+				{
 					continue;
+				}
 
 				try
 				{
 					$config = $reader::read($module->getPathname() . '/config.yaml');
 
 					if (empty($config))
+					{
 						continue;
+					}
 				}
 				catch (\Exception $e)
 				{
@@ -64,14 +68,18 @@ class Modules
 				}
 
 				if (empty($config['identifier']))
+				{
 					throw new Exception(array('exceptions.modules.no_identifier', basename($module->getPathname())));
+				}
 
-				if (array_key_exists($config['identifier'], $this->_modules))
+				if (array_key_exists($config['identifier'], $this->_moduleData))
+				{
 					throw new Exception(array(
 						'exceptions.modules.identifier_taken',
 						basename($module->getPathname()),
-						basename($this->_modules[$config['identifier']]['directory'])
+						basename($this->_moduleData[$config['identifier']]['directory'])
 					));
+				}
 
 				$this->_moduleData[$config['identifier']] = array(
 					'config' => $config,
@@ -79,10 +87,15 @@ class Modules
 				);
 			}
 
-			$cache->save($this->_modules, 'core_module_registry_data');
+			$cache->save($this->_moduleData, 'core_module_registry_data');
 
 			// Anything that depends on this should be refreshed
 			$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('dependency_module_registry'));
+		}
+
+		foreach ($this->_moduleData as $module)
+		{
+			new Autoloader($module['config']['namespace'], $module['directory']);
 		}
 	}
 
@@ -101,7 +114,9 @@ class Modules
 				$this->_modules[$identifier] = new $moduleClass($this->_moduleData[$identifier]['config'], $this->_moduleData[$identifier]['directory']);
 			}
 			else
+			{
 				throw new Exception('exceptions.modules.doesnt_exist', $identifier);
+			}
 		}
 
 		return $this->_modules[$identifier];
@@ -110,7 +125,9 @@ class Modules
 	public function getModuleConfig($identifier)
 	{
 		if (!array_key_exists($identifier, $this->_moduleData))
+		{
 			return false;
+		}
 
 		return $this->_moduleData[$identifier]['config'];
 	}

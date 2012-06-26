@@ -26,6 +26,17 @@ namespace smCore;
 
 class Autoloader
 {
+	protected $namespace;
+	protected $directory;
+
+	public function __construct($namespace, $directory)
+	{
+		$this->namespace = $namespace ? trim($namespace, '\\') : null;
+		$this->directory = $directory;
+
+		spl_autoload_register(array($this, 'autoload'));
+	}
+
 	/**
 	 * Once registered, this method is called by the PHP engine when loading a class.
 	 * It allows us to figure out where the class is, based on our setup of directories and files,
@@ -33,29 +44,27 @@ class Autoloader
 	 *
 	 * @param string $name The name of the class we're trying to find.
 	 */
-	public static function autoload($name)
+	public function autoload($name)
 	{
-		// Modules aren't located here, so we'll work some magic.
-		if (strpos($name, 'smCore\\Modules\\') === 0)
+		$name = trim($name, '\\');
+
+		// If this autoloader isn't a default and it doesn't match, skip it
+		if (null !== $this->namespace && 0 !== strpos($name, $this->namespace))
+			return;
+
+		if ($this->namespace === null)
 		{
-			// First 15 characters (0-14) are "smCore\Modules\", so cut them off
-			$filename = Settings::MODULE_DIR . '/' . str_replace(array('\\', '_', "\0"), array('/', '/', ''), substr($name, 15)) . '.php';
+			$filename = $this->directory . '/' . str_replace(array('\\', '_', "\0"), array('/', '/', ''), $name) . '.php';
 		}
 		else
 		{
-			// Otherwise, it's not namespaced and we'll hope it has a standard format
-			$filename = dirname(__DIR__) . '/' . str_replace(array('\\', '_', "\0"), array('/', '/', ''), $name) . '.php';
+			$filename = $this->directory . '/' . str_replace(array('\\', '_', "\0"), array('/', '/', ''), substr($name, strlen($this->namespace))) . '.php';
 		}
 
 		if (file_exists($filename))
+		{
 			require $filename;
-	}
-
-	/**
-	 * Register this autoloader.
-	 */
-	public static function register()
-	{
-		spl_autoload_register(array(__CLASS__, 'autoload'));
+			return;
+		}
 	}
 }
