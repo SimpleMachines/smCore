@@ -123,11 +123,11 @@ abstract class Module
 	 */
 	public function getStorage($name)
 	{
-		if (!file_exists($this->_directory . '/Storages/' . $name . '.php'))
-			throw new Exception(array('exceptions.modules.invalid_storage', $name));
-
 		if (empty($this->_storages[$name]))
 		{
+			if (!file_exists($this->_directory . '/Storages/' . $name . '.php'))
+				throw new Exception(array('exceptions.modules.invalid_storage', $name));
+
 			$storageClass = $this->_config['namespace'] . '\\Storages\\' . $name;
 			$this->_storages[$name] = new $storageClass($this);
 		}
