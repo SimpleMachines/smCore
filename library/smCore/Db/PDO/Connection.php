@@ -22,12 +22,13 @@
 
 namespace smCore\Db\PDO;
 
-use PDO, Closure, Exception;
-use smCore\Db\ConnectionInterface, smCore\Db\Query, smCore\Db\Expression;
+use PDO, Closure;
+use smCore\Db\ConnectionInterface, smCore\Db\Query, smCore\Db\Expression, smCore\Db\Exception;
 
-class Connection extends PDO implements ConnectionInterface
+class Connection implements ConnectionInterface
 {
 	protected $_options = array();
+	protected $_connection;
 
 	/**
 	 * Create a new PDO connection
@@ -39,93 +40,77 @@ class Connection extends PDO implements ConnectionInterface
 	 */
 	public function __construct($dsn, $user = null, $password = null, array $options = null)
 	{
-		parent::__construct($dsn, $user, $password, $options);
-		$this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		$this->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('\smCore\Db\PDO\Statement', array()));
+		$this->_connection = new PDO($dsn, $user, $password, $options);
+		$this->_connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		$this->_connection->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('\smCore\Db\PDO\Statement', array()));
+		$this->_connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+		$this->_options = $options;
 	}
 
-	public function query(array $options = array())
+	public function query($sql, array $parameters = array(), array $options = array())
 	{
-		return new Query($this, $options);
+		$found_parameters = array();
+
+		if (false !== strpos($sql, '{'))
+		{
+			$options = $this->_options;
+
+			// @todo: this whole section should be in its own function, and not in this file
+			$sql = preg_replace_callback('/\{([a-z_]+)(?::([a-zA-Z0-9_-]+))?\}/', function($matches) use (&$found_parameters, $parameters, $options)
+			{
+				$default = null;
+
+				if ($matches[1] === 'db_prefix')
+				{
+					return $options['prefix'];
+				}
+
+				// Were we given a default value for this?
+				if (array_key_exists($matches[2], $parameters))
+				{
+					$value = Expression::typeSanitize($parameters[$matches[2]], $matches[1], $matches[2]);
+
+					// We'll have to work some magic because PDO can't bind arrays
+					if ($matches[1] === 'array_int' || $matches[1] === 'array_string')
+					{
+						$i = 0;
+
+						foreach ($value as $val)
+						{
+							$found_parameters[$matches[2] . '_' . $i++] = $val;
+						}
+
+						return '(:' . $matches[2] . '_' . implode(', :' . $matches[2] . '_', range(0, count($value) - 1)) . ')';
+					}
+
+					$found_parameters[$matches[2]] = $value;
+					return ':' . $matches[2];
+				}
+
+				throw new Exception(sprintf('Missing parameter for key "%s".', $matches[2]));
+			}, $sql);
+
+			$prepared = $this->_connection->prepare($sql);
+			$prepared->execute($found_parameters);
+
+			return $prepared;
+		}
+
+		return $this->_connection->query($sql);
 	}
 
-	public function execute($sql, array $parameters = null)
-	{
-		if ($sql instanceof Query)
-		{
-			$result = $sql->execute($parameters);
-		}
-		else
-		{
-			$result = $this->execute($sql);
-		}
-	}
-
-	public function insert($table, $data)
+	public function insert($table, array $data, array $options = array())
 	{
 		$keys = array_keys($data);
 		$values = array_values($data);
 
 		$sql = "INSERT INTO " . ($this->getOption('prefix') ?: '') . $table . " (" . implode(', ', $keys) . ") VALUES (" . implode(', ', array_fill(0, count($keys), '?')) . ")";
 
-		$prepared = $this->prepare($sql);
+		$prepared = $this->_connection->prepare($sql);
 		$prepared->execute($values);
 
 		return $this->lastInsertId();
-	}
-
-	public function replace($table, $data)
-	{
-		$keys = array_keys($data);
-		$values = array_values($data);
-
-		$sql = "REPLACE INTO " . ($this->getOption('prefix') ?: '') . $table . " (" . implode(', ', $keys) . ") VALUES (" . implode(', ', array_fill(0, count($keys), '?')) . ")";
-
-		$prepared = $this->prepare($sql);
-		$prepared->execute($values);
-
-		return $this->lastInsertId();
-	}
-
-	public function update($table, $data, $expression)
-	{
-		if (is_array($expression) && 0 !== $key = key($expression))
-		{
-			$expression = $this->expr($key . ' = {string:' . $key . '}', $expression);
-		}
-		else if (is_string($expression))
-		{
-			$expression = $this->expr($expression);
-		}
-		else if (!$expression instanceof Expression)
-		{
-			throw new Exception('update() expects an array, string, or Expression.');
-		}
-
-		$keys = array_keys($data);
-
-		$sql = "UPDATE " . ($this->getOption('prefix') ?: '') . $table . " SET ";
-
-		$first = true;
-		foreach ($keys as $key)
-		{
-			$sql .= $key . " = :" . $key . (!$first ? ', ' : '');
-			$first = false;
-		}
-
-		$sql .= " WHERE "  . $expression->getSQL();
-
-die(print_r($expression->getParameters()));
-
-		$prepared = $this->prepare($sql);
-		$prepared->execute($values);
-
-		return $prepared->rowCount();
-	}
-
-	public function expr($sql, array $params = array(), array $param_types = array())
-	{
-		return new Expression($sql, $params, $param_types);
 	}
 
 	/**
@@ -142,12 +127,90 @@ die(print_r($expression->getParameters()));
 			$closure($this);
 			$this->commit();
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			$this->rollback();
 			throw $e;
 		}
 	}
+
+
+
+
+
+
+
+
+
+
+
+	public function replace($table, array $data, array $options = array())
+	{
+	}
+	public function update($table, array $data, $condition, array $options = array())
+	{
+	}
+
+	public function lastInsertId()
+	{
+		return $this->_connection->lastInsertId();
+	}
+	public function quote($value)
+	{
+		return $this->_connection->quote($value);
+	}
+
+	/*
+	public function select($columns, $table = null)
+	{
+	}
+	public function expr($expression, array $parameters)
+	{
+	}
+	*/
+
+	public function beginTransaction()
+	{
+		if ($this->_connection->inTransaction())
+		{
+		}
+		else
+		{
+			$this->_connection->beginTransaction();
+		}
+	}
+	public function commit()
+	{
+		if (!$this->_connection->inTransaction())
+		{
+			return;
+		}
+
+		$this->_connection->commit();
+	}
+	public function rollBack()
+	{
+		if (!$this->_connection->inTransaction())
+		{
+			throw new Exception('You cannot roll back a transaction without first starting one.');
+		}
+
+		$this->_connection->rollBack();
+	}
+	public function inTransaction()
+	{
+		return $this->_connection->inTransaction();
+	}
+
+
+
+
+
+
+
+
+
+
 
 	/**
 	 * Set non-driver options for this connection

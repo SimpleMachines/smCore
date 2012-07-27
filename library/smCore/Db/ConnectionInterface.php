@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Database Driver - PDO MySQL
+ * smCore Database Connection Interface
  *
  * @package smCore
  * @author smCore Dev Team
@@ -22,11 +22,29 @@
 
 namespace smCore\Db;
 
+use Closure;
+
 interface ConnectionInterface
 {
+	public function query($sql, array $parameters = array(), array $options = array());
+
+	public function insert($table, array $data, array $options = array());
+	public function replace($table, array $data, array $options = array());
+	public function update($table, array $data, $condition, array $options = array());
+
+	public function lastInsertId();
+	public function quote($value);
+
+	// public function select($columns, $table = null);
+	// public function expr($expression, array $parameters);
+
 	public function setOptions(array $options);
 	public function setOption($key, $value);
 	public function getOption($key);
 
-	//public function execute($sql, array $parameters = null);
+	public function transactional(Closure $closure);
+	public function beginTransaction();
+	public function commit();
+	public function rollBack();
+	public function inTransaction();
 }
