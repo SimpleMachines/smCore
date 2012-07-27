@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore 
+ * smCore Cache Factory
  *
  * @package smCore
  * @author smCore Dev Team
@@ -22,31 +22,11 @@
 
 namespace smCore\Cache;
 
-use smCore\Cache;
-
-class Apc extends Cache
+class Factory
 {
-	public abstract function load($key)
+	public static function factory($name, $options = array())
 	{
-	}
-
-	public abstract function save($key, $data, array $tags = array(), $ttl = null)
-	{
-	}
-
-	public abstract function test($key)
-	{
-	}
-
-	public abstract function remove($key)
-	{
-	}
-
-	public abstract function clean($mode, array $tags = array())
-	{
-	}
-
-	public abstract function getMetadata($key)
-	{
+		$class = "\\smCore\\Cache\\Driver\\" . $name;
+		return new $class($options);
 	}
 }

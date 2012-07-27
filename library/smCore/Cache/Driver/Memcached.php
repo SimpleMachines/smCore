@@ -20,16 +20,23 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Cache;
+namespace smCore\Cache\Driver;
 
-use smCore\Cache, smCore\Exception;
+use smCore\Exception, smCore\Settings;
 
-class Memcached extends Cache
+class Memcached extends AbstractDriver
 {
 	public function __construct($options)
 	{
 		if (!extension_loaded('memcached'))
 			throw new Exception('The memcached extension is not loaded.');
+
+		$options = array_merge(array(
+			'servers' => array(),
+			'persistent' => false,
+			'connect_timeout' => 1,
+			'retry_timeout' => 15,
+		), $options);
 
 		$this->_memcached = new \Memcached();
 		$this->_memcached->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $options['connect_timeout']);
@@ -47,7 +54,7 @@ class Memcached extends Cache
 
 			foreach ($options['servers'] as $server)
 			{
-				// @todo: make sure the info is valid. Maybe use addServers()?
+				// @todo: make sure the info is valid. Maybe use ->addServers()?
 
 				$this->_memcached->addServer($server['host'], $server['port'], $server['weight']);
 			}
@@ -56,7 +63,7 @@ class Memcached extends Cache
 
 	public function load($key)
 	{
-		$value = $this->_memcached->get($key);
+		$value = $this->_memcached->get(Settings::UNIQUE_8 . $key);
 
 		if (is_array($value) && isset($value[0]))
 			return $value[0];
@@ -68,12 +75,12 @@ class Memcached extends Cache
 	{
 		$lifetime = time() + ($ttl ?: self::DEFAULT_TTL);
 
-		$this->_memcached->set($key, array($data, time(), $lifetime), $lifetime);
+		$this->_memcached->set(Settings::UNIQUE_8 . $key, array($data, time(), $lifetime), $lifetime);
 	}
 
 	public function test($key)
 	{
-		$value = $this->_memcached->get($key);
+		$value = $this->_memcached->get(Settings::UNIQUE_8 . $key);
 
 		if (is_array($value) && isset($value[1]))
 			return $value[1];
@@ -83,6 +90,7 @@ class Memcached extends Cache
 
 	public function remove($key)
 	{
+		$this->_memcached->delete(Settings::UNIQUE_8 . $key);
 	}
 
 	public function clean($mode, array $tags = array())
