@@ -29,24 +29,29 @@ class Query
 	protected $_sql;
 	protected $_dirty;
 
-	protected $_driver;
+	protected $_connection;
 	protected $_options;
 
 	protected $_selects;
-	protected $_from = array();
-	protected $_joins = array();
+	protected $_from;
+	protected $_joins;
 	protected $_where;
+	protected $_having;
 	protected $_limit;
 	protected $_group_by;
 	protected $_order_by;
 
-	protected $_expressionCount;
+	protected $_expression_count;
 	protected $_parameters;
+	protected $_bound_parameters;
 
-	public function __construct(AbstractDriver $driver, array $options = array())
+	public function __construct(ConnectionInterface $connection, array $options = array())
 	{
-		$this->_driver = $driver;
+		$this->_connection = $connection;
 		$this->_dirty = true;
+
+		$this->_joins = array();
+		$this->_bound_parameters = array();
 
 		$this->_options = array_merge(array(
 			'no_prefix' => false,
@@ -83,7 +88,7 @@ class Query
 		return $this;
 	}
 
-	public function where($condition)
+	public function where($condition, array $parameters = array())
 	{
 		$this->_dirty = true;
 
@@ -93,7 +98,7 @@ class Query
 		}
 		else
 		{
-			$this->_where = new Expression($condition);
+			$this->_where = new Expression($condition, $parameters);
 		}
 
 		return $this;
@@ -106,7 +111,7 @@ class Query
 		return $this;
 	}
 
-	public function join($table, $as = null, $condition = null, $type = 'inner')
+	public function join($table, $as = null, $condition = null, array $parameters = array(), $type = 'inner')
 	{
 		$this->_dirty = true;
 
@@ -117,11 +122,11 @@ class Query
 
 		if (null !== $condition && !$condition instanceof Expression)
 		{
-			$condition = new Expression($condition);
+			$condition = new Expression($condition, $parameters);
 		}
 		else if (empty($condition))
 		{
-			// We don't want "INNER JOIN table AS t ON ()"
+			// We don't want "INNER JOIN table AS t ON ()" when we're passed an empty string
 			$condition = null;
 		}
 
@@ -145,23 +150,84 @@ class Query
 		return $this;
 	}
 
-	public function leftJoin($table, $as = null, $condition = null)
+	public function leftJoin($table, $as = null, $condition = null, array $parameters = array())
 	{
-		return $this->join($table, $as, $condition, 'left');
+		return $this->join($table, $as, $condition, $parameters, 'left');
 	}
 
-	public function execute()
+	public function rightJoin($table, $as = null, $condition = null, array $parameters = array())
 	{
+		return $this->join($table, $as, $condition, $parameters, 'right');
 	}
 
-	public function fetchOne()
+	public function innerJoin($table, $as = null, $condition = null, array $parameters = array())
 	{
-		return new Result();
+		return $this->join($table, $as, $condition, $parameters, 'inner');
 	}
 
-	public function fetchAll()
+	public function outerJoin($table, $as = null, $condition = null, array $parameters = array())
 	{
-		return new Result();
+		return $this->join($table, $as, $condition, $parameters, 'outer');
+	}
+
+	public function orderBy($expression, $order = 'ASC', $prepend = false)
+	{
+		$this->_dirty = true;
+
+		$order = strtoupper($order);
+
+		if ($order !== 'ASC' && $order !== 'DESC')
+		{
+			throw new Exception('orderBy() second parameter must be "ASC" or "DESC".');
+		}
+
+		if (!$expression instanceof Expression)
+		{
+				$expression = array(new Expression($expression), $order);
+		}
+
+		if (!$prepend)
+		{
+			$this->_order_by[] = array($expression, $order);
+		}
+		else
+		{
+			array_unshift($this->_order_by, $expression);
+		}
+
+		return $this;
+	}
+
+	public function having($condition)
+	{
+		$this->_dirty = true;
+
+		if ($condition instanceof Expression)
+		{
+			$this->_having = $condition;
+		}
+		else
+		{
+			$this->_having = new Expression($condition);
+		}
+
+		return $this;
+	}
+
+	public function groupBy($expression, $order = 'ASC')
+	{
+		$this->_dirty = true;
+
+		if ($expression instanceof Expression)
+		{
+			$this->_group_by[] = $expression;
+		}
+		else
+		{
+			$this->_group_by[] = new Expression($expression);
+		}
+
+		return $this;
 	}
 
 	public function __toString()
@@ -178,7 +244,7 @@ class Query
 
 	public function getSQL()
 	{
-		$this->_expressionCount = 0;
+		$this->_expression_count = 0;
 		$this->_parameters = array();
 
 		if (!$this->_dirty)
@@ -191,7 +257,7 @@ class Query
 			throw new Exception('Please choose one or more columns to select data from.');
 		}
 
-		if (empty($this->_from))
+		if (null === $this->_from)
 		{
 			if (1 === count($this->_selects) && 0 !== $key = key($this->_selects))
 			{
@@ -206,7 +272,7 @@ class Query
 		$this->_sql = 'SELECT ';
 
 		$table_aliases = array($this->_from[0] => $this->_from[1]);
-		$table_prefix = !$this->_options['no_prefix'] ? ($this->_driver->getOption('prefix') ?: '') : '';
+		$table_prefix = !$this->_options['no_prefix'] ? ($this->_connection->getOption('prefix') ?: '') : '';
 
 		$selects = array();
 
@@ -236,31 +302,26 @@ class Query
 
 		$this->_sql .= implode(', ', $selects);
 
+		// From
 		$this->_sql .= "\nFROM " . $table_prefix . $this->_from[0] . ' AS ' . $this->_from[1];
 
+		// Joins
 		if (!empty($this->_joins))
 		{
 			foreach ($this->_joins as $join)
 			{
-				switch ($join['type'])
-				{
-					case 'left':
-					case 'right':
-					case 'inner':
-					case 'outer':
-					case 'full':
-						$this->_sql .= "\n" . strtoupper($join['type']) . " JOIN " . $join['table'][0] . " AS " . $join['table'][1];
+				$this->_sql .= "\n" . strtoupper($join['type']) . " JOIN " . $table_prefix . $join['table'][0] . " AS " . $join['table'][1];
 
-						if (null !== $join['condition'])
-						{
-							list ($condition, $parameters) = $this->_formatExpression($join['condition']);
-							$this->_parameters += $parameters;
-							$this->_sql .= " ON (" . $condition . ")";
-						}
+				if (null !== $join['condition'])
+				{
+					list ($condition, $parameters) = $this->_formatExpression($join['condition']);
+					$this->_parameters += $parameters;
+					$this->_sql .= " ON (" . $condition . ")";
 				}
 			}
 		}
 
+		// Where
 		if (!empty($this->_where))
 		{
 			$this->_sql .= "\nWHERE ";
@@ -276,14 +337,34 @@ class Query
 			// Add an "order by" to prevent MySQL from doing unnecessary filesorts
 			if (null === $this->_order_by)
 			{
-				$this->_order_by = array("NULL");
+				$this->_sql .= "\nORDER BY NULL";
 			}
 		}
 
 		// Order by
 		if (null !== $this->_order_by)
 		{
-			$this->_sql .= "\nORDER BY " . $this->_order_by;
+			$first = true;
+
+			foreach ($this->_order_by as $clause)
+			{
+				if ($clause === null)
+				{
+					$this->_sql .= "ORDER BY NULL";
+				}
+				else
+				{
+					if ($first)
+					{
+						$this->_sql .= sprintf("\nORDER BY %s %s", $clause);
+						$first = false;
+					}
+					else
+					{
+						$this->_sql .= sprintf(", %s %s", $clause);
+					}
+				}
+			}
 		}
 
 		// Limit
@@ -292,53 +373,86 @@ class Query
 			$this->_sql .= "\nLIMIT " . $this->_limit[0] . ", " . $this->_limit[1];
 		}
 
-
-
-
 		$this->_dirty = false;
 		return $this->_sql;
 	}
 
 	protected function _formatExpression(Expression $expr)
 	{
-		if ($expr->getType() === Expression::TYPE_POSITIONAL)
-		{
-			$count = ++$this->_expressionCount;
+		$condition = $expr->getSQL();
 
-			$condition = preg_replace_callback('/:(p[0-9]+)/', function($match) use ($count)
-			{
-				return ':e' . $count . $match[1];
-			}, $expr->getSQL());
-
-			$raw_parameters = $expr->getParameters();
-
-			$parameters = array();
-
-			foreach ($raw_parameters as $key => $param)
-			{
-				$parameters['e' . $count . $key] = $param;
-			}
-		}
-		else
-		{
-			$condition = $expr->getSQL();
-
-			$parameters = $expr->getParameters();
-		}
+		$parameters = $expr->getParameters();
 
 		return array($condition, $parameters);
 	}
 
-	public function getParameters()
+	public function bindParam($key, $value)
 	{
-		if ($this->_dirty)
-		{
-			$this->getSQL();
-		}
+		$this->_bound_parameters[$key] = $value;
 
-		return $this->_parameters;
+		return $this;
 	}
 
+	public function bindParams(array $parameters)
+	{
+		foreach ($parameters as $key => $value)
+		{
+			$this->_bound_parameters[$key] = $value;
+		}
+
+		return $this;
+	}
+
+	public function execute()
+	{
+		$sql = $this->getSQL();
+
+		$parameters = $this->_parameters;
+
+		foreach ($parameters as $key => $parameter)
+		{
+			if (array_key_exists($key, $this->_bound_parameters))
+			{
+				$parameters[$key] = Expression::typeSanitize($this->_bound_parameters[$key], $parameter[0], $key);
+			}
+			else
+			{
+				$parameters[$key] = $parameter[1];
+			}
+
+			if (0 === strpos($parameter[0], 'array_') && 1 < $count = count($parameters[$key]))
+			{
+				// We have to reformat the query, since PDO can't bind arrays of values
+				$str = ':' . $key . '_' . implode(', :' . $key . '_', range(0, $count - 1));
+
+				$sql = str_replace(':' . $key, $str, $sql);
+
+				foreach ($parameters[$key] as $num => $value)
+				{
+					$parameters[$key . '_' . $num] = $value;
+				}
+
+				unset($parameters[$key]);
+			}
+		}
+
+		return $this->_connection->execute($this->getSQL(), $parameters);
+	}
+
+	public function fetch()
+	{
+		return $this->execute()->fetch();
+	}
+
+	public function fetchAll()
+	{
+		return $this->execute()->fetchAll();
+	}
+
+	public function rowCount()
+	{
+		return $this->execute()->rowCount();
+	}
 
 
 

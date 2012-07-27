@@ -20,12 +20,12 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Db\Driver;
-use smCore\Db\AbstractDriver;
+namespace smCore\Db\Driver\PDOMySql;
+use smCore\Db\AbstractDriver, smCore\Db\PDO\Connection;
 
-use PDO;
+use PDO, PDOException, Exception;
 
-class PDOMySql extends AbstractDriver
+class Driver extends AbstractDriver
 {
 	public function __construct(array $options)
 	{
@@ -52,52 +52,14 @@ class PDOMySql extends AbstractDriver
 		// Force 1002 (PDO::MYSQL_ATTR_INIT_COMMAND) to ensure we're working with UTF8
 		$driver_options = array_merge($this->_options['driver_options'], array(1002 => "SET NAMES 'utf8'"));
 
-		$this->_connection = new PDO($dsn . ';charset=utf8', $this->_options['user'], $this->_options['password'], $driver_options);
+		$this->_connection = new Connection($dsn . ';charset=utf8', $this->_options['user'], $this->_options['password'], $driver_options);
 
 		unset($this->_options['password']);
+
+		$this->_connection->setOptions($this->_options);
 	}
 
-	public function deadCode()
-	{
-		$db = Application::get('db');
-
-		// Position binding
-		$db->query('
-			SELECT *
-			FROM my_tablename
-			WHERE title = ?',
-			array(
-				"Blog Post",
-			)
-		);
-
-		// Named binding
-		$db->query('
-			SELECT *
-			FROM my_tablename
-			WHERE title = :title',
-			array(
-				'title' => 'Blog Post',
-			)
-		);
-
-		// Query building
-		$db
-			->select('*')
-			->from('my_tablename')
-			->where('title = :title', array('title' => 'Blog Post'))
-			->execute()
-		;
-
-		$db
-			->select('a.name', 'b.cheese')
-			->from('my_tablename', 'a')
-			->leftJoin('cheeses', 'c', 'a.type = cheeses.type AND cheeses.stuff = ?', array('bind!'))
-			->limit(0, 15)
-		;
-	}
-
-
-
-
+	// ^SQLSTATE\[([A-Z0-9]+)\]: ([^:]+): ([0-9]+) (.*)$
+	// SQLSTATE[42S22]: Column not found: 1054 Unknown column 'dne' in 'field list'
+	// SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'INSERTAINTO panel_test (id, name, dne) VALUES ('1', 'Steven', 'hi')' at line 11
 }

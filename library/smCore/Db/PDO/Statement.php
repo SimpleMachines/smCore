@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Query Result
+ * smCore Database Driver - PDO MySQL
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,8 +20,11 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Db;
+namespace smCore\Db\PDO;
 
-class Result
+use PDOStatement;
+
+class Statement extends PDOStatement
 {
+	private function __construct(){}
 }

@@ -29,112 +29,73 @@ class Expression
 {
 	protected $_sql;
 	protected $_params;
-	protected $_type;
 
-	const TYPE_POSITIONAL = 1;
-	const TYPE_NAMED = 2;
-
-	public function __construct($sql, array $params = array(), array $param_types = array())
+	public function __construct($sql, array $params = array())
 	{
 		$this->_sql = $sql;
-		$this->_params = array();
+		$found_parameters = array();
 
-		// Positional parameters
-		if (false !== strpos($sql, '?'))
+		if (false !== strpos($sql, '{'))
 		{
-			$count = 0;
-			$this->_type = self::TYPE_POSITIONAL;
-
-			$this->_sql = preg_replace_callback('/\?/', function($match) use (&$count)
+			$this->_sql = preg_replace_callback('/\{([a-z_]+):([a-zA-Z0-9_-]+)\}/', function($matches) use (&$found_parameters, $params)
 			{
-				return ':p' . ++$count;
+				$default = null;
+
+				// Were we given a default value for this?
+				if (array_key_exists($matches[2], $params))
+				{
+					$default = Expression::typeSanitize($params[$matches[2]], $matches[1], $matches[2]);
+				}
+
+				$found_parameters[$matches[2]] = array($matches[1], $default);
+
+				return ':' . $matches[2];
 			}, $this->_sql);
 		}
-
-		// Named parameters
-		if (false !== strpos($sql, ':'))
+		else if (false !== strpos($sql, '?'))
 		{
-			if ($this->_type === self::TYPE_POSITIONAL)
-			{
-				throw new Exception('You cannot mix positional and named parameters in an expression.');
-			}
-
-			$this->_type = self::TYPE_NAMED;
+			// Positional
 		}
 
-		// 
-		if (count($param_types) > 0 && count($params) !== count($param_types))
-		{
-			throw new Exception("Number of parameters does not match the number of parameter types.");
-		}
-
-		if (!empty($params))
-		{
-			if (empty($param_types))
-			{
-				$param_types = array_fill(0, count($params), 'text');
-			}
-
-			$i = 0;
-
-			foreach ($params as $key => $value)
-			{
-				list ($type, $value) = $this->_typeSanitize($param_types[$i], $value);
-
-				// Positional
-				if ($this->_type === self::TYPE_POSITIONAL)
-				{
-					$this->_params['p' . ++$i] = array(
-						'value' => $value,
-						'type' => $type
-					);
-				}
-				// Named
-				else
-				{
-					$this->_params[$key] = array(
-						'value' => $value,
-						'type' => $type
-					);
-				}
-			}
-		}
+		$this->_params = $found_parameters;
 	}
 
-	protected function _typeSanitize($type, $value)
+	public static function typeSanitize($value, $type, $name = null)
 	{
-		switch (strtolower($type))
+		$name = $name ? ' for parameter "' . $name . '"' : '';
+
+		switch ($type)
 		{
 			case 'int':
 			case 'integer':
 			{
 				if (!is_int($value) || (string) (int) $value !== (string) $value)
 				{
-					throw new Exception('');
+					throw new Exception('Inorrect value sent' . $name . ', expected integer.');
 				}
 
-				return array('int', (int) $value);
+				return (int) $value;
 			}
 			case 'float':
 			case 'double':
 			{
 				if (!is_numeric($value))
 				{
-					throw new Exception('');
+					throw new Exception('Inorrect value sent' . $name . ', expected float.');
 				}
 
-				return array('float', (float) $value);
+				return (float) $value;
 			}
 			case 'bool':
 			case 'boolean':
 			{
-				return array('boolean', $value ? 1 : 0);
+				return $value ? 1 : 0;
 			}
 			case 'str':
 			case 'string':
 			case 'text':
 			{
-				return array('string', (string) $value);
+				return (string) $value;
 			}
 			case 'date':
 			{
@@ -165,17 +126,19 @@ class Expression
 			{
 				$checked = array();
 
+				$value = (array) $value;
+
 				foreach ($value as $val)
 				{
 					if (!is_int($val) || (string) (int) $val !== (string) $val)
 					{
-						throw new Exception('Array of integers expected, but received a non-integer value.');
+						throw new Exception('Inorrect value sent' . $name . ', expected an array of integers.');
 					}
 
 					$checked[] = (int) $val;
 				}
 
-				return array('array_int', $checked);
+				return $checked;
 			}
 			case 'array_str':
 			case 'array_string':
@@ -183,16 +146,18 @@ class Expression
 			{
 				$checked = array();
 
+				$value = (array) $value;
+
 				foreach ($value as $val)
 				{
 					$checked[] = (string) $val;
 				}
 
-				return array('array_string', $checked);
+				return $checked;
 			}
 			default:
 			{
-				throw new Exception(sprintf("Invalid data type: %s", $type));
+				throw new Exception(sprintf("Unrecognized parameter type: %s", $type));
 			}
 		}
 	}
@@ -205,11 +170,6 @@ class Expression
 	public function getParameters()
 	{
 		return $this->_params;
-	}
-
-	public function getType()
-	{
-		return $this->_type;
 	}
 
 	public function __toString()

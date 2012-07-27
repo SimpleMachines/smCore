@@ -1,9 +1,7 @@
 <?php
 
 /**
- * smCore Database Driver - Abstract
- *
- * Provides some pass-through functions to make things easy on developers
+ * smCore Database Driver - PDO MySQL
  *
  * @package smCore
  * @author smCore Dev Team
@@ -24,15 +22,11 @@
 
 namespace smCore\Db;
 
-use Closure;
-
-abstract class AbstractDriver
+interface ConnectionInterface
 {
-	protected $_connection;
-	protected $_options = array();
+	public function setOptions(array $options);
+	public function setOption($key, $value);
+	public function getOption($key);
 
-	public function getConnection()
-	{
-		return $this->_connection;
-	}
+	//public function execute($sql, array $parameters = null);
 }
