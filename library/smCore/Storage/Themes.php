@@ -33,17 +33,23 @@ class Themes
 	public static function getThemeById($id)
 	{
 		if (array_key_exists($id, $_themes))
+		{
 			return $_themes[$id];
+		}
 
 		$result = Application::get('db')->query("
 			SELECT *
-			FROM beta_themes
-			WHERE id_theme = ?",
-			array($id)
+			FROM {db_prefix}themes
+			WHERE id_theme = {int:id}",
+			array(
+				'id' => $id,
+			)
 		);
 		
 		if ($result->rowCount() < 1)
+		{
 			return false;
+		}
 		else
 		{
 			// Mini-caching

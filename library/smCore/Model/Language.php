@@ -54,7 +54,7 @@ class Language
 
 				$result = $db->query("
 					SELECT id_package, package_name, package_type
-					FROM beta_lang_packages"
+					FROM {db_prefix}lang_packages"
 				);
 
 				$this->_packageData = array(
@@ -113,10 +113,10 @@ class Language
 
 			$result = $db->query("
 				SELECT string_key, string_value
-				FROM beta_lang_strings
-				WHERE string_package = ?",
+				FROM {db_prefix}lang_strings
+				WHERE string_package = {int:id}",
 				array(
-					$id_package,
+					'id' => $id_package,
 				)
 			);
 

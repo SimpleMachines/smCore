@@ -27,7 +27,6 @@
 namespace smCore;
 
 use smCore\Event, smCore\Storage, smCore\Handlers, smCore\Cache, smCore\Db;
-use Zend_Db, Zend_Db_Table_Abstract, Zend_Mail;
 use Twig_Autoloader, Twig_Environment, Twig_Loader_Filesystem;
 use Inspekt, Inspekt_Cage;
 
@@ -90,7 +89,7 @@ class Application
 		self::set('modules', Storage\Factory::getStorage('Modules'));
 		self::set('event_dispatcher', new Event\Dispatcher());
 
-		$lang = Storage\Factory::getStorage('Languages')->getById($user['language']);
+		$lang = Storage\Factory::getStorage('Languages')->getByCode($user['language']);
 		$lang->loadPackageByName('org.smcore.common');
 		self::set('lang', $lang);
 
@@ -152,18 +151,26 @@ class Application
 
 			$result = $db->query("
 				SELECT *
-				FROM beta_themes
-				WHERE id_theme = ?", array($id));
+				FROM {db_prefix}themes
+				WHERE id_theme = {int:id}",
+				array(
+					'id' => $id,
+				)
+			);
 
 			// If the user's theme doesn't exist, try the default theme instead
-			if ($result->rowCount() < 1 && $id != 1)
+			if ($result->rowCount() < 1 && 1 !== $id)
+			{
 				$result = $db->query("
 					SELECT *
-					FROM beta_themes
+					FROM {db_prefix}themes
 					WHERE id_theme = 1");
+			}
 
 			if ($result->rowCount() < 1)
+			{
 				throw new Exception('exceptions.themes.no_default');
+			}
 
 			$theme = $result->fetch();
 			$cache->save($theme, 'theme_' . $id);
@@ -171,7 +178,7 @@ class Application
 
 		Twig_Autoloader::register();
 
-		$twig_loader = new Twig_Loader_Filesystem(Settings::THEME_DIR . '/' . $theme->theme_dir);
+		$twig_loader = new Twig_Loader_Filesystem(Settings::THEME_DIR . '/' . $theme['theme_dir']);
 
 		self::$twig = new Twig_Environment($twig_loader, array(
 			'cache' => Settings::CACHE_DIR,
@@ -182,7 +189,7 @@ class Application
 		self::$twig
 			->addExtension(new TwigExtension())
 			->addGlobal('scripturl', Settings::URL)
-			->addGlobal('theme_url', trim(Settings::URL, '/?') . '/themes/' . $theme->theme_dir)
+			->addGlobal('theme_url', trim(Settings::URL, '/?') . '/themes/' . $theme['theme_dir'])
 			->addGlobal('default_theme_url', trim(Settings::URL, '/?') . '/themes/default')
 			->addGlobal('reload_counter', 0)
 			->addGlobal('time_display', date('g:i:s A', time()))
@@ -276,7 +283,7 @@ class Application
 	/**
 	 * Only load and connect to the database when necessary.
 	 *
-	 * @return Zend_Db The database object created.
+	 * @return object The database object created.
 	 */
 	protected function _loadDatabase()
 	{
@@ -293,7 +300,7 @@ class Application
 	 *
 	 * @todo Read real cache settings from Settings, use the smCore\Cache class instead
 	 *
-	 * @return Zend_Cache A new Zend Cache object to use.
+	 * @return object A new Cache object to use.
 	 */
 	protected function _loadCache()
 	{
@@ -314,7 +321,5 @@ class Application
 	 */
 	protected function _loadMail()
 	{
-		Zend_Mail::setDefaultFrom(Settings::MAIL_FROM, Settings::MAIL_FROM_NAME);
-		return true;
 	}
 }

@@ -30,24 +30,32 @@ class Theme
 		$cache = Application::get('cache');
 		$id = !empty($user['theme']) ? $user['theme'] : 1;
 
-		if (($theme = $cache->load('theme_' . $id)) === false)
+		if (false === $theme = $cache->load('theme_' . $id))
 		{
 			$db = Application::get('db');
 
 			$result = $db->query("
 				SELECT *
-				FROM beta_themes
-				WHERE id_theme = ?", array($id));
+				FROM {db_prefix}themes
+				WHERE id_theme = {int:id}",
+				array(
+					'id' => $id,
+				)
+			);
 
 			// If the user's theme doesn't exist, try the default theme instead
 			if ($result->rowCount() < 1 && $id != 1)
+			{
 				$result = $db->query("
 					SELECT *
-					FROM beta_themes
+					FROM {db_prefix}themes
 					WHERE id_theme = 1");
+			}
 
 			if ($result->rowCount() < 1)
+			{
 				throw new Exception('exceptions.themes.no_default');
+			}
 		
 			$theme = $result->fetch();
 			$cache->save($theme, 'theme_' . $id);

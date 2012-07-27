@@ -41,14 +41,21 @@ class API
 
 		// There's no default API route - you need to tell me what you want!
 		if ($namespace === null || $name === null)
+		{
 			throw new Exception('exceptions.api.invalid_request');
+		}
 
 		$result = $db->query("
 			SELECT *
-			FROM beta_api_hooks
-			WHERE api_hook_namespace = ?
-				AND api_hook_name = ?
-				AND api_hook_enabled = 1", array($namespace, $name));
+			FROM {db_prefix}api_hooks
+			WHERE api_hook_namespace = {string:namespace}
+				AND api_hook_name = {string:name}
+				AND api_hook_enabled = 1",
+			array(
+				'namespace' => $namespace,
+				'name' => $name,
+			)
+		);
 
 		if ($result->rowCount() > 0)
 		{
@@ -57,10 +64,14 @@ class API
 			$callback = explode(',', $hook->api_hook_callback);
 
 			if (is_callable($callback))
+			{
 				self::$data = call_user_func($callback);
+			}
 		}
 		else
+		{
 			self::$data = array('error' => Application::get('lang')->get('exceptions.api.invalid_route'));
+		}
 
 		self::output();
 	}
@@ -99,16 +110,24 @@ class API
 
 		$result = $db->query("
 			SELECT id_user, user_display_name
-			FROM beta_users
-			WHERE user_display_name LIKE ?", array('%' . $value . '%'));
+			FROM {db_prefix}users
+			WHERE user_display_name LIKE {string:pattern}",
+			array(
+				'pattern' => '%' . $value . '%',
+			)
+		);
 
 		if ($result->rowCount() > 0)
+		{
 			while ($row = $result->fetch())
+			{
 				$users[] = array(
 					'id' => $row->id_user,
 					'label' => $row->user_display_name,
 					'value' => $row->user_display_name,
 				);
+			}
+		}
 
 		return $users;
 	}

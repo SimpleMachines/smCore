@@ -23,7 +23,6 @@
 namespace smCore\Storage;
 
 use smCore\Application, smCore\Exception, smCore\Settings, smCore\Model\Language;
-use Zend_Cache;
 
 class Languages
 {
@@ -41,37 +40,45 @@ class Languages
 
 			$result = $db->query("
 				SELECT id_language, language_code, language_name
-				FROM beta_languages"
+				FROM panel_languages"
 			);
 
 			while ($row = $result->fetch())
-				$this->_languages[$row->id_language] = $row;
+			{
+				$this->_languages[$row['language_code']] = $row;
+			}
 
 			$cache->save($this->_languages, 'core_languagestorage');
 
+			// @todo: cache tags
 			// Anything that depends on this should be refreshed
-			$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('core_language'));
+			// $cache->clean('core_language');
 		}
 	}
 
-	public function getById($id)
+	public function getByCode($code)
 	{
-		if (!is_int($id))
+		if (empty($code))
+		{
 			throw new Exception('...');
+		}
 
-		if (!empty($this->_runtimeCache[$id]))
-			return $this->_runtimeCache[$id];
+		if (!empty($this->_runtimeCache[$code]))
+		{
+			return $this->_runtimeCache[$code];
+		}
 
-		if (!empty($this->_languages[$id]))
-			return $this->_runtimeCache[$id] = new Language($this->_languages[$id]->language_name, $this->_languages[$id]->language_code, $id);
+		if (!empty($this->_languages[$code]))
+		{
+			return $this->_runtimeCache[$code] = new Language($this->_languages[$code]['language_name'], $code, $this->_languages[$code]['id_language']);
+		}
 
-		if (!empty($this->_runtimeCache[Settings::DEFAULT_LANG]))
-			return $this->_runtimeCache[Settings::DEFAULT_LANG];
+		if ($code !== Settings::DEFAULT_LANG)
+		{
+			return $this->getByCode(Settings::DEFAULT_LANG);
+		}
 
-		if (!empty($this->_languages[Settings::DEFAULT_LANG]))
-			return $this->_runtimeCache[Settings::DEFAULT_LANG] = new Language($this->_languages[Settings::DEFAULT_LANG]->language_name, $this->_languages[Settings::DEFAULT_LANG]->language_code, Settings::DEFAULT_LANG);
-
-		throw new Exception('There\'s been a bit of a problem loading the default language strings.');
+		throw new Exception('There\'s been a bit of a problem loading the language strings.');
 	}
 
 	public function getAll()

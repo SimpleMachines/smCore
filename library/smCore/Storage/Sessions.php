@@ -36,25 +36,30 @@ class Sessions
 	public function read($id)
 	{
 		if (empty($id) || !preg_match('/^[a-z0-9]{16,32}$/i', $id))
+		{
 			return false;
+		}
 
 		$db = Application::get('db');
 
 		$result = $db->query("
 			SELECT *
-			FROM beta_sessions
-			WHERE id_session = ?
-				AND session_expires > ?",
+			FROM {db_prefix}sessions
+			WHERE id_session = {string:id}
+				AND session_expires > {int:time}",
 			array(
-				$id,
-				Application::get('time'),
+				'id' => $id,
+				'time' => Application::get('time'),
 			)
 		);
 
 		if ($result->rowCount() < 1)
+		{
 			return false;
+		}
 
-		return $result->fetch()->session_data;
+		$row = $result->fetch();
+		return $row['session_data'];
 	}
 
 	/**
@@ -72,16 +77,17 @@ class Sessions
 
 		$result = $db->query("
 			SELECT session_expires
-			FROM beta_sessions
-			WHERE id_session = ?",
+			FROM {db_prefix}sessions
+			WHERE id_session = {string:id}",
 			array(
-				$id,
+				'id' => $id,
 			)
 		);
 
 		if ($result->rowCount() > 0)
 		{
-			$expires = $result->fetch()->session_expires;
+			$row = $result->fetch();
+			$expires = $row['session_expires'];
 		}
 		else
 		{
@@ -89,14 +95,14 @@ class Sessions
 		}
 
 		$db->query("
-			REPLACE INTO beta_sessions
+			REPLACE INTO {db_prefix}sessions
 				(id_session, session_data, session_expires)
 			VALUES
-				(?, ?, ?)",
+				({int:id}, {string:data}, {int:expires})",
 			array(
-				$id,
-				$data,
-				$expires,
+				'id' => $id,
+				'data' => $data,
+				'expires' => $expires,
 			)
 		);
 	}
@@ -111,13 +117,15 @@ class Sessions
 	public function destroy($id)
 	{
 		if (empty($id) || !preg_match('/^[a-z0-9]{16,32}$/i', $id))
+		{
 			return false;
+		}
 
 		Application::get('db')->query("
-			DELETE FROM beta_sessions
-			WHERE id_session = ?",
+			DELETE FROM {db_prefix}sessions
+			WHERE id_session = {string:id}",
 			array(
-				$id,
+				'id' => $id,
 			)
 		);
 
@@ -130,10 +138,10 @@ class Sessions
 	public function deleteExpired()
 	{
 		Application::get('db')->query("
-			DELETE FROM beta_sessions
-			WHERE session_expires < ?",
+			DELETE FROM {db_prefix}sessions
+			WHERE session_expires < {int:time}",
 			array(
-				Application::get('time'),
+				'time' => Application::get('time'),
 			)
 		);
 	}

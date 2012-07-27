@@ -21,7 +21,9 @@
  */
 
 namespace smCore\Form\Control;
-use smCore\Application, smCore\Form\Control, ArrayObject;
+
+use ArrayObject;
+use smCore\Application, smCore\Form\Control;
 
 class User extends Control
 {
@@ -44,8 +46,12 @@ class User extends Control
 		);
 
 		foreach ($this->_properties as $key => $value)
+		{
 			if ($key !== 'validation')
+			{
 				$context[$key] = $value;
+			}
+		}
 
 		return $context;
 	}
@@ -54,7 +60,7 @@ class User extends Control
 	public function getValue()
 	{
 		// Basic caching, so we don't have to do the db query twice
-		if ($this->_users === null)
+		if (null === $this->_users)
 		{
 			$db = Application::get('db');
 
@@ -62,25 +68,35 @@ class User extends Control
 			$this->_users = array();
 
 			if (empty($value))
+			{
 				return $this->_users;
+			}
 
 			if ($value instanceof ArrayObject)
+			{
 				$value = $value->getArrayCopy();
+			}
 			else
+			{
 				$value = array($value);
+			}
 
-			$select = $db->select()
-				->from(
-					'beta_users',
-					array('id_user', 'user_display_name')
+			$result = $db->query("
+				SELECT id_user, user_display_name
+				FROM {db_prefix}users
+				WHERE id_user IN {array_int:ids}",
+				array(
+					'ids' => $value,
 				)
-				->where('id_user IN (?)', $value);
-
-			$result = $db->query($select);
+			);
 
 			if ($result->rowCount() > 0)
+			{
 				while ($row = $result->fetch())
-					$this->_users[$row->id_user] = $row->user_display_name;
+				{
+					$this->_users[$row['id_user']] = $row['user_display_name'];
+				}
+			}
 		}
 
 		return $this->_users;
@@ -92,10 +108,14 @@ class User extends Control
 		$count = count($this->_users);
 
 		if ($this->_properties['limit'] > 0 && $count > $this->_properties['limit'])
+		{
 			return Application::get('lang')->get('form_errors_user_exceeded_limit', array($this->_properties['label'], $this->_properties['limit']));
+		}
 
 		if ($count < $this->_properties['require'])
+		{
 			return Application::get('lang')->get('form_errors_user_not_enough', array($this->_properties['label'], $this->_properties['require']));
+		}
 
 		return parent::validate($form);
 	}

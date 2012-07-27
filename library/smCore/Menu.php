@@ -40,14 +40,16 @@ class Menu
 
 			$result = $db->query("
 				SELECT *
-				FROM beta_menu
+				FROM {db_prefix}menu
 				ORDER BY menu_order ASC");
 
 			// Pack these up into a more usable format
 			$this->_parents = array();
 
 			while ($row = $result->fetch())
-				$this->_parents[$row->menu_parent][] = $row;
+			{
+				$this->_parents[$row['menu_parent']][] = $row;
+			}
 
 			$cache->save($this->_parents, 'core_menu_rows');
 		}
@@ -68,9 +70,13 @@ class Menu
 		foreach ($args as $level => $arg)
 		{
 			if ($arg === false)
+			{
 				unset($this->_active[$level]);
+			}
 			else if ($arg !== null)
+			{
 				$this->_active[$level] = (string) $arg;
+			}
 		}
 	}
 

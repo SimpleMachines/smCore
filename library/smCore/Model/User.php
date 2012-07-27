@@ -35,7 +35,9 @@ class User implements ArrayAccess
 	public function __construct($id)
 	{
 		if (!is_int($id))
+		{
 			throw new Exception('Invalid user ID.');
+		}
 
 		$roles = StorageFactory::getStorage('Roles');
 
@@ -49,33 +51,35 @@ class User implements ArrayAccess
 
 				$result = $db->query("
 					SELECT *
-					FROM beta_users
-					WHERE id_user = ?",
+					FROM {db_prefix}users
+					WHERE id_user = {int:id}",
 					array(
-						$id,
+						'id' => $id,
 					)
 				);
 
 				if ($result->rowCount() < 1)
+				{
 					throw new Exception('Tried to load a user with an invalid ID.');
+				}
 
 				$data = $result->fetch();
 
 				$cache->save($data, 'core_user_' . $id);
 			}
 
-			$this->_primary_role = $roles->getRoleById($data->user_primary_role);
+			$this->_primary_role = $roles->getRoleById($data['user_primary_role']);
 
-			$this->_data = (array) $data;
+			$this->_data = $data;
 
 			// Some shortcuts. We should just make a new array, probably.
-			$this->_data['id'] = (int) $data->id_user;
+			$this->_data['id'] = (int) $data['id_user'];
 			$this->_data['ip'] = Application::get('input')->server->getRaw('REMOTE_ADDR');
-			$this->_data['theme'] = (int) $data->user_theme;
-			$this->_data['language'] = (int) $data->user_language;
-			$this->_data['display_name'] = $data->user_display_name;
+			$this->_data['theme'] = (int) $data['user_theme'];
+			$this->_data['language'] = $data['user_language'] ?: Settings::DEFAULT_LANG;
+			$this->_data['display_name'] = $data['user_display_name'];
 
-			if (!empty($data->user_additional_roles))
+			if (!empty($data['user_additional_roles']))
 			{
 			}
 		}
@@ -85,7 +89,7 @@ class User implements ArrayAccess
 				'id' => 0,
 				'ip' => Application::get('input')->server->getRaw('REMOTE_ADDR'),
 				'display_name' => 'Guest',
-				'language' => (int) Settings::DEFAULT_LANG, // @todo: lang
+				'language' => Settings::DEFAULT_LANG,
 				'theme' => (int) Settings::DEFAULT_THEME,
 				'user_token' => false,
 			);
@@ -99,8 +103,10 @@ class User implements ArrayAccess
 		// Try the primary role first
 		$primary = $this->_primary_role->hasPermission($name);
 
-		if ($primary !== null)
+		if (null !== $primary)
+		{
 			return $primary;
+		}
 
 		// @todo: Try additional roles too
 
@@ -117,7 +123,9 @@ class User implements ArrayAccess
 	public function offsetGet($offset)
 	{
 		if (array_key_exists($offset, $this->_data))
+		{
 			return $this->_data[$offset];
+		}
 
 		return false;
 	}

@@ -26,7 +26,6 @@ namespace smCore\Storage;
 
 use smCore\Application, smCore\Exception, smCore\Settings, smCore\FileIO\Factory as IOFactory, smCore\Autoloader;
 use DirectoryIterator;
-use Zend_Cache;
 
 class Modules
 {
@@ -89,8 +88,9 @@ class Modules
 
 			$cache->save($this->_moduleData, 'core_module_registry_data');
 
+			// @todo: cache tags
 			// Anything that depends on this should be refreshed
-			$cache->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, array('dependency_module_registry'));
+			// $cache->clean('dependency_module_registry');
 		}
 
 		foreach ($this->_moduleData as $module)
