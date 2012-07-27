@@ -26,8 +26,8 @@
 
 namespace smCore;
 
-use smCore\Event\Dispatcher as EventDispatcher, smCore\Storage\Factory as StorageFactory, smCore\Handlers;
-use Zend_Db, Zend_Db_Table_Abstract, Zend_Cache, Zend_Mail;
+use smCore\Event, smCore\Storage, smCore\Handlers, smCore\Cache, smCore\Db;
+use Zend_Db, Zend_Db_Table_Abstract, Zend_Mail;
 use Twig_Autoloader, Twig_Environment, Twig_Loader_Filesystem;
 use Inspekt, Inspekt_Cage;
 
@@ -84,13 +84,13 @@ class Application
 		self::set('request', new Request);
 		self::set('response', new Response);
 
-		$user = StorageFactory::getStorage('Users')->getCurrentUser();
+		$user = Storage\Factory::getStorage('Users')->getCurrentUser();
 		self::set('user', $user);
 
-		self::set('modules', StorageFactory::getStorage('Modules'));
-		self::set('event_dispatcher', new EventDispatcher());
+		self::set('modules', Storage\Factory::getStorage('Modules'));
+		self::set('event_dispatcher', new Event\Dispatcher());
 
-		$lang = StorageFactory::getStorage('Languages')->getById($user['language']);
+		$lang = Storage\Factory::getStorage('Languages')->getById($user['language']);
 		$lang->loadPackageByName('org.smcore.common');
 		self::set('lang', $lang);
 
@@ -280,14 +280,12 @@ class Application
 	 */
 	protected function _loadDatabase()
 	{
-		$db = Zend_Db::factory(Settings::$database['adapter'], Settings::$database);
-		Zend_Db_Table_Abstract::setDefaultAdapter($db);
-		$db->setFetchMode(Zend_Db::FETCH_OBJ);
+		$db = Db\Driver\Factory::factory(Settings::$database['driver'], Settings::$database);
 
 		// No access to database details after this point
 		Settings::$database = null;
 
-		return $db;
+		return $db->getConnection();
 	}
 
 	/**
@@ -299,17 +297,7 @@ class Application
 	 */
 	protected function _loadCache()
 	{
-		return Zend_Cache::factory(
-			'Core',
-			'File',
-			array(
-				'lifetime' => 7200,
-				'automatic_serialization' => true,
-			),
-			array(
-				'cache_dir' => Settings::CACHE_DIR,
-			)
-		);
+		return Cache\Factory::factory(Settings::$cache['adapter'], Settings::$cache);
 	}
 
 	/**

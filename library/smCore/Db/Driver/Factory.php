@@ -27,7 +27,6 @@ class Factory
 	public static function factory($name, $options = array())
 	{
 		$class = "\\smCore\\Db\\Driver\\" . $name . '\\Driver';
-		$driver = new $class($options);
-		return $driver;
+		return new $class($options);
 	}
 }

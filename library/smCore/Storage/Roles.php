@@ -35,7 +35,9 @@ class Roles
 	public function getRoles()
 	{
 		if ($this->_loaded_roles !== null)
+		{
 			return $this->_loaded_roles;
+		}
 
 		$cache = Application::get('cache');
 
@@ -47,36 +49,43 @@ class Roles
 
 			$roles_query = $db->query("
 				SELECT *
-				FROM beta_roles");
+				FROM {db_prefix}roles");
 
 			// If there aren't any roles, don't bother doing anything
 			if ($roles_query->rowCount() > 0)
 			{
-				
 				while ($role = $roles_query->fetch())
-					$this->_loaded_roles[$role->id_role] = array(
-						'id' => $role->id_role,
-						'title' => $role->role_title,
-						'permissions' => !empty($role->role_permission) ? array('org.smcore.core.' . $role->role_permission => true) : array(),
-						'inherits' => $role->role_inherits,
+				{
+					$this->_loaded_roles[$role['id_role']] = array(
+						'id' => $role['id_role'],
+						'title' => $role['role_title'],
+						'permissions' => !empty($role['role_permission']) ? array('org.smcore.core.' . $role['role_permission'] => true) : array(),
+						'inherits' => $role['role_inherits'],
 					);
+				}
 
-				$select = $db
-					->select()
-					->from('beta_permissions')
-					->where('permission_state != ?', array(0))
-					->where('permission_role IN (?)', array_keys($this->_loaded_roles));
-
-				$permissions_query = $db->query($select);
+				$permissions_query = $db->query("
+					SELECT *
+					FROM {db_prefix}permissions
+					WHERE permission_state != 0
+						AND permission_role IN {array_int:roles}",
+					array(
+						'roles' => array_keys($this->_loaded_roles)
+					)
+				);
 
 				if ($permissions_query->rowCount() > 0)
 				{
 					while ($permission = $permissions_query->fetch())
-						$this->_loaded_roles[$permission->permission_role]['permissions'][$permission->permission_namespace . '.' . $permission->permission_name] = $permission->permission_state == "1";
+					{
+						$this->_loaded_roles[$permission['permission_role']]['permissions'][$permission['permission_namespace'] . '.' . $permission['permission_name']] = $permission['permission_state'] == "1";
+					}
 				}
 
 				foreach ($this->_loaded_roles as $id => $role)
+				{
 					$this->_loaded_roles[$id] = new Role($id, $role['title'], $role['inherits'], $role['permissions']);
+				}
 			}
 
 			$cache->save($this->_loaded_roles, 'core_roles');
@@ -98,6 +107,8 @@ class Roles
 		$roles = $this->getRoles();
 
 		if (array_key_exists($id, $roles))
+		{
 			return $roles[$id];
+		}
 	}
 }
