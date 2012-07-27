@@ -17,7 +17,7 @@ class Settings
 	const COOKIE_DOMAIN = '.mysite.com';
 
 	const TIMEZONE = 'America/Los_Angeles'; 
-	const DEFAULT_LANG = 'english_us'; 
+	const DEFAULT_LANG = 'en_US'; 
 	const DEFAULT_THEME = 1;
 
 	const MAIL_FROM = '';
