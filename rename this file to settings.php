@@ -23,12 +23,14 @@ class Settings
 	const MAIL_FROM = '';
 	const MAIL_FROM_NAME = '';
 
+	const UNIQUE_8 = '07h8fAN4';
+
 	public static $database = array(
-		'adapter' => 'Pdo_Mysql',
+		'driver' => 'PDOMySql',
 		'host' => 'localhost',
-		'username' => '',
+		'user' => '',
 		'password' => '',
 		'dbname' => '',
-		'profiler' => false,
+		'prefix' => 'smcore_',
 	);
 }
