@@ -28,7 +28,7 @@ namespace smCore;
 
 use smCore\Event\Dispatcher as EventDispatcher, smCore\Storage\Factory as StorageFactory, smCore\Handlers;
 use Zend_Db, Zend_Db_Table_Abstract, Zend_Cache, Zend_Mail;
-use Twig_Autoloader, Twig_Environment;
+use Twig_Autoloader, Twig_Environment, Twig_Loader_Filesystem;
 use Inspekt, Inspekt_Cage;
 
 class Application
@@ -134,6 +134,7 @@ class Application
 		self::$twig
 			->addGlobal('menu', self::get('menu')->getMenu())
 			->addGlobal('requires_js', self::$context['requires_js'] || self::$context['uses_wysiwyg'])
+			->addGlobal('user', self::get('user'))
 			->display();
 	}
 
@@ -169,9 +170,10 @@ class Application
 		}
 
 		Twig_Autoloader::register();
-		$Twig_theme = Twig_Environment::loadTheme(Settings::THEME_DIR . '/' . $theme->theme_dir . '/include.php', 'haste' . $theme->theme_class);
 
-		self::$twig = new Twig_Environment($Twig_theme, array(
+		$twig_loader = new Twig_Loader_Filesystem(Settings::THEME_DIR . '/' . $theme->theme_dir);
+
+		self::$twig = new Twig_Environment($twig_loader, array(
 			'cache' => Settings::CACHE_DIR,
 			'recompile' => true,
 			'auto_reload' => true,
