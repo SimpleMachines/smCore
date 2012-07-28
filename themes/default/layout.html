@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>{{ page_title|default('smCore') }}</title>
+	<meta charset="utf-8">
+	<meta name="description" content="">
+	<link rel="stylesheet" href="{{ theme_url }}/css/bootstrap.min.css" type="text/css" />
+	<link rel="stylesheet" href="{{ theme_url }}/css/style.css" type="text/css" />
+</head>
+<body>
+
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</a>
+				<a class="brand" href="#">smCore</a>
+				<div class="nav-collapse">
+					<ul class="nav">
+						<li class="active"><a href="{{ scripturl }}/">Home</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container">
+		{% block body %}{% endblock %}
+	</div>
+</body>
+</html>
