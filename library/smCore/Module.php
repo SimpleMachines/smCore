@@ -55,6 +55,8 @@ abstract class Module
 			$this->_config['settings'] = array();
 
 		$this->_config['cache_ns'] = str_replace('.', '_', $this->_config['identifier']);
+
+		Application::$twig->getLoader()->addPath($this->_template_dir);
 	}
 
 	/**
@@ -145,23 +147,16 @@ abstract class Module
 		return $this->_directory;
 	}
 
-	public function addLayer($name, array $context = array())
+	public function render($name, array $context = array())
 	{
-		Application::$twig->addLayer($this->_template_dir . $name . '.tpl', $context);
+		Application::$twig->render($name . '.html', $context);
 
 		return $this;
 	}
 
-	public function addView($name, array $context = array())
+	public function display($name, array $context = array())
 	{
-		Application::$twig->addView($this->_template_dir . $name . '.tpl', $context);
-
-		return $this;
-	}
-
-	public function setPageTitle($title = '')
-	{
-		Application::$twig->addGlobal('page_title', $title);
+		Application::$twig->display($name . '.html', $context);
 
 		return $this;
 	}

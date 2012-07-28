@@ -103,9 +103,8 @@ class Application
 
 		if ($route === false)
 		{
-			self::$twig
-				->addGlobal('page_title', '404')
-				->addView('error_404.tpl');
+			self::$twig->addGlobal('page_title', '404');
+			self::$twig->display('error_404.html');
 		}
 		else
 		{
@@ -113,28 +112,30 @@ class Application
 
 			$module->loadController($route['controller']);
 			$module->runControllerMethod($route['method']);
+
+			$post_router_event = new Event(null, 'org.smcore.core.post_router');
+			$post_router_event->fire();
+
+			if (!isset(self::$context['uses_wysiwyg']))
+			{
+				self::$context['uses_wysiwyg'] = false;
+			}
+
+			if (!isset(self::$context['requires_js']))
+			{
+				self::$context['requires_js'] = false;
+			}
+
+			self::$context['requires_js'] |= self::$context['uses_wysiwyg'];
+
+
+			//	self::$twig->addGlobal('menu', self::get('menu')->getMenu());
+			//	self::$twig->addGlobal('requires_js', self::$context['requires_js'] || self::$context['uses_wysiwyg']);
+			//	self::$twig->addGlobal('user', self::get('user'));
+
+
+
 		}
-
-		$post_router_event = new Event(null, 'org.smcore.core.post_router');
-		$post_router_event->fire();
-
-		if (!isset(self::$context['uses_wysiwyg']))
-		{
-			self::$context['uses_wysiwyg'] = false;
-		}
-
-		if (!isset(self::$context['requires_js']))
-		{
-			self::$context['requires_js'] = false;
-		}
-
-		self::$context['requires_js'] |= self::$context['uses_wysiwyg'];
-
-		self::$twig
-			->addGlobal('menu', self::get('menu')->getMenu())
-			->addGlobal('requires_js', self::$context['requires_js'] || self::$context['uses_wysiwyg'])
-			->addGlobal('user', self::get('user'))
-			->display();
 	}
 
 	// @todo: put this in its own file, a theme storage
@@ -186,18 +187,17 @@ class Application
 			'auto_reload' => true,
 		));
 
-		self::$twig
-			->addExtension(new TwigExtension())
-			->addGlobal('scripturl', Settings::URL)
-			->addGlobal('theme_url', trim(Settings::URL, '/?') . '/themes/' . $theme['theme_dir'])
-			->addGlobal('default_theme_url', trim(Settings::URL, '/?') . '/themes/default')
-			->addGlobal('reload_counter', 0)
-			->addGlobal('time_display', date('g:i:s A', time()))
-			->addGlobal('uses_wysiwyg', false)
-			->addGlobal('requires_js', false)
-			->addLayer('index.tpl', array(
-				'menu' => self::get('menu'),
-			));
+		self::$twig->addExtension(new TwigExtension());
+		self::$twig->addGlobal('scripturl', Settings::URL);
+		self::$twig->addGlobal('theme_url', trim(Settings::URL, '/?') . '/themes/' . $theme['theme_dir']);
+		self::$twig->addGlobal('default_theme_url', trim(Settings::URL, '/?') . '/themes/default');
+		self::$twig->addGlobal('reload_counter', 0);
+		self::$twig->addGlobal('time_display', date('g:i:s A', time()));
+		self::$twig->addGlobal('uses_wysiwyg', false);
+		self::$twig->addGlobal('requires_js', false);
+//		self::$twig->addLayer('index.tpl', array(
+//			'menu' => self::get('menu'),
+//		));
 	}
 
 	/**

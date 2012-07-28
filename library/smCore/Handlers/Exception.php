@@ -44,19 +44,13 @@ class Exception
 		// We can't show a nice screen if the exception came from the template engine or the theme hasn't been loaded
 		if (!($exception instanceof Twig_Error) && Application::$twig !== null)
 		{
-			Application::$twig
-				->resetLayers()
-				->resetViews()
-				->addLayer('index.tpl', array(
-					'menu' => Application::get('menu'),
-					'page_title' => Application::get('lang')->get('error'),
-				))
-				->addView('error.tpl', array(
-					'error' =>$exception->getMessage(),
-					'error_trace' => print_r($exception->getTrace(), true),
-					'show_trace' => $show_trace,
-				))
-				->display();
+			Application::$twig->display('error.html', array(
+				'page_title' => Application::get('lang')->get('error'),
+				'menu' => Application::get('menu'),
+				'error' => $exception->getMessage(),
+				'error_trace' => print_r($exception->getTrace(), true),
+				'show_trace' => $show_trace,
+			));
 		}
 		else
 		{
