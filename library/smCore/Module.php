@@ -24,8 +24,10 @@
 
 namespace smCore;
 
-abstract class Module
+class Module
 {
+	protected $_application;
+
 	protected $_template_dir = null;
 	protected $_language_dir = null;
 
@@ -43,8 +45,10 @@ abstract class Module
 	 * @param array  $config    The contents of this module's config.yaml file.
 	 * @param string $directory The directory where this module is located.
 	 */
-	public function __construct($config, $directory)
+	public function __construct(Application $application, $config, $directory)
 	{
+		$this->_application = $application;
+
 		$this->_config = $config;
 		$this->_directory = $directory;
 
@@ -52,7 +56,9 @@ abstract class Module
 		$this->_template_dir = $this->_directory . '/Views/';
 
 		if (empty($this->_config['settings']))
+		{
 			$this->_config['settings'] = array();
+		}
 
 		$this->_config['cache_ns'] = str_replace('.', '_', $this->_config['identifier']);
 
@@ -95,7 +101,7 @@ abstract class Module
 		$this->_has_dispatched = true;
 
 		$this->_controller->preDispatch();
-		$this->_controller->$name();
+		$this->_controller->$name($this->_application);
 		$this->_controller->postDispatch();
 	}
 
@@ -128,7 +134,9 @@ abstract class Module
 		if (empty($this->_storages[$name]))
 		{
 			if (!file_exists($this->_directory . '/Storages/' . $name . '.php'))
+			{
 				throw new Exception(array('exceptions.modules.invalid_storage', $name));
+			}
 
 			$storageClass = $this->_config['namespace'] . '\\Storages\\' . $name;
 			$this->_storages[$name] = new $storageClass($this);

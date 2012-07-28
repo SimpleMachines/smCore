@@ -24,7 +24,7 @@
 
 namespace smCore\Storage;
 
-use smCore\Application, smCore\Exception, smCore\Settings, smCore\FileIO\Factory as IOFactory, smCore\Autoloader;
+use smCore\Application, smCore\Autoloader, smCore\Exception, smCore\Module, smCore\Settings, smCore\FileIO\Factory as IOFactory;
 use DirectoryIterator;
 
 class Modules
@@ -46,14 +46,14 @@ class Modules
 
 			foreach ($iterator as $module)
 			{
-				if ($module->isDot() || !$module->isDir() || !file_exists($module->getPathname() . '/config.yaml'))
+				if ($module->isDot() || !$module->isDir() || !file_exists($module->getPathname() . '/config.yml'))
 				{
 					continue;
 				}
 
 				try
 				{
-					$config = $reader::read($module->getPathname() . '/config.yaml');
+					$config = $reader::read($module->getPathname() . '/config.yml');
 
 					if (empty($config))
 					{
@@ -104,14 +104,20 @@ class Modules
 		return $this->_modules;
 	}
 
-	public function getModule($identifier)
+	public function getModule($identifier, Application $application)
 	{
 		if (!array_key_exists($identifier, $this->_modules))
 		{
 			if (array_key_exists($identifier, $this->_moduleData))
 			{
 				$moduleClass = $this->_moduleData[$identifier]['config']['namespace'] . '\\Module';
-				$this->_modules[$identifier] = new $moduleClass($this->_moduleData[$identifier]['config'], $this->_moduleData[$identifier]['directory']);
+
+				if (!class_exists($moduleClass))
+				{
+					$moduleClass = 'smCore\\Module';
+				}
+
+				$this->_modules[$identifier] = new $moduleClass($application, $this->_moduleData[$identifier]['config'], $this->_moduleData[$identifier]['directory']);
 			}
 			else
 			{

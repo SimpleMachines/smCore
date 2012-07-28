@@ -7,7 +7,6 @@ class Settings
 	const PATH = '/home/my_site/public_html';
 	const MODULE_DIR = '/home/my_site/public_html/modules';
 	const THEME_DIR = '/home/my_site/public_html/themes';
-	const LANGUAGE_DIR = '/home/my_site/public_html/languages';
 	const CACHE_DIR = '/home/my_site/public_html/cache';
 
 	const URL = 'http://www.youdidntchangeyoursettingsfile.lol';

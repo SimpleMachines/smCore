@@ -61,5 +61,5 @@ class Driver extends AbstractDriver
 
 	// ^SQLSTATE\[([A-Z0-9]+)\]: ([^:]+): ([0-9]+) (.*)$
 	// SQLSTATE[42S22]: Column not found: 1054 Unknown column 'dne' in 'field list'
-	// SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'INSERTAINTO panel_test (id, name, dne) VALUES ('1', 'Steven', 'hi')' at line 11
+	// SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'INSERTAINTO smcore_test (id, name, dne) VALUES ('1', 'Steven', 'hi')' at line 11
 }

@@ -40,7 +40,7 @@ class Languages
 
 			$result = $db->query("
 				SELECT id_language, language_code, language_name
-				FROM panel_languages"
+				FROM {db_prefix}languages"
 			);
 
 			while ($row = $result->fetch())

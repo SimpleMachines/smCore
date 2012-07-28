@@ -108,7 +108,7 @@ class Application
 		}
 		else
 		{
-			$module = self::get('modules')->getModule($route['module']);
+			$module = self::get('modules')->getModule($route['module'], $this);
 
 			$module->loadController($route['controller']);
 			$module->runControllerMethod($route['method']);
