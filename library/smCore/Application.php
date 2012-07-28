@@ -46,9 +46,9 @@ class Application
 
 	protected function __clone(){}
 
-	public function __construct()
+	public function __construct($settings)
 	{
-		require_once(dirname(dirname(__DIR__)) . '/settings.php');
+		require_once $settings;
 	}
 
 	/**
