@@ -47,4 +47,6 @@ interface ConnectionInterface
 	public function commit();
 	public function rollBack();
 	public function inTransaction();
+
+	public function getQueryCount();
 }

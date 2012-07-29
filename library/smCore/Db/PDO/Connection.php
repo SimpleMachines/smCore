@@ -29,6 +29,7 @@ class Connection implements ConnectionInterface
 {
 	protected $_options = array();
 	protected $_connection;
+	protected $_queryCount = 0;
 
 	/**
 	 * Create a new PDO connection
@@ -50,6 +51,8 @@ class Connection implements ConnectionInterface
 
 	public function query($sql, array $parameters = array(), array $options = array())
 	{
+		$this->_queryCount++;
+
 		$found_parameters = array();
 
 		if (false !== strpos($sql, '{'))
@@ -102,6 +105,8 @@ class Connection implements ConnectionInterface
 
 	public function insert($table, array $data, array $options = array())
 	{
+		$this->_queryCount++;
+
 		$keys = array_keys($data);
 		$values = array_values($data);
 
@@ -136,10 +141,12 @@ class Connection implements ConnectionInterface
 
 	public function replace($table, array $data, array $options = array())
 	{
+		$this->_queryCount++;
 	}
 
 	public function update($table, array $data, $condition, array $options = array())
 	{
+		$this->_queryCount++;
 	}
 
 	public function lastInsertId()
@@ -214,6 +221,15 @@ class Connection implements ConnectionInterface
 		return $this->_connection->inTransaction();
 	}
 
+	/**
+	 * Get the number of queries that have been run on this connection
+	 *
+	 * @return int
+	 */
+	public function getQueryCount()
+	{
+		return $this->_queryCount;
+	}
 
 	/**
 	 * Set non-driver options for this connection
