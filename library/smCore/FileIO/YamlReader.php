@@ -23,6 +23,7 @@
 namespace smCore\FileIO;
 
 use Symfony\Component\Yaml\Yaml;
+use Exception;
 
 class YamlReader extends Reader
 {
@@ -42,7 +43,7 @@ class YamlReader extends Reader
 		{
 			$data = Yaml::parse($filename);
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 			// Yaml::parse() throws an exception on bad data. Let's not throw a hissy fit just yet.
 		}

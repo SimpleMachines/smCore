@@ -57,7 +57,9 @@ class Exception
 			echo 'Uncaught exception error:<hr /><pre>' . $exception->getMessage() . '</pre>';
 
 			if ($show_trace)
+			{
 				echo '<br /><pre>' . print_r($exception->getTrace(), true) . '</pre>';
+			}
 		}
 
 		die();

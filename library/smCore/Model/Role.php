@@ -40,7 +40,9 @@ class Role
 		$this->_name = $name;
 
 		if ($inherits > 0)
+		{
 			$this->_inherits = $inherits;
+		}
 
 		$this->_permissions = $permissions;
 	}
@@ -49,17 +51,23 @@ class Role
 	{
 		// Recursive permissions? Not on my watch.
 		if ($recursion > self::RECURSION_LIMIT)
+		{
 			return false;
+		}
 
 		if (isset($this->_permissions[$name]))
+		{
 			return $this->_permissions[$name];
+		}
 
 		if ($this->_inherits !== null)
 		{
 			$inherits = StorageFactory::getStorage('roles')->getRoleById($this->_inherits)->hasPermission($name, $recursion + 1);
 
 			if ($inherits !== null)
+			{
 				return $inherits;
+			}
 		}
 	}
 

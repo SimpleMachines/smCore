@@ -39,7 +39,7 @@ class Utility
 		$minutes = 0;
 		$seconds = 0;
 
-		if ($time !== null)
+		if (null !== $time)
 		{
 			if (preg_match('~^(1[0-2]|0?[1-9]) ([ap]m)$~', $time, $matches))
 			{
@@ -60,16 +60,24 @@ class Utility
 				$ampm = $matches[4];
 			}
 			else
+			{
 				return false;
+			}
 
-			if ($ampm == 'pm' && $hours != 12)
+			if ('pm' === $ampm && 12 !== $hours)
+			{
 				$hours += 12;
-			else if ($hours == 12 && $ampm == 'am')
+			}
+			else if (12 === $hours && 'am' === $ampm)
+			{
 				$hours = 0;
+			}
 		}
 
 		if (!checkdate($month, $day, $year))
+		{
 			return false;
+		}
 
 		return mktime($hours, $minutes, $seconds, $month, $day, $year);
 	}
@@ -89,16 +97,24 @@ class Utility
 	public static function randString($length, $set = 'hex')
 	{
 		if ($set == 'alphanum')
+		{
 			$characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+		}
 		else if ($set == 'full')
+		{
 			$characters = 'aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789!@#$%&*:;';
+		}
 		else
+		{
 			$characters = 'abcdef0123456789';
+		}
 
 		$string = '';
 
 		for ($i = 0; $i < $length; $i++)
+		{
 			$string .= $characters[mt_rand(0, strlen($characters) - 1)];
+		}
 
 		return $string;
 	}

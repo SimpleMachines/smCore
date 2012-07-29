@@ -37,7 +37,9 @@ class TwigExtension extends Twig_Extension
 		$args = func_get_args();
 
 		if (count($args) < 1)
+		{
 			return '';
+		}
 
 		return Application::get('lang')->get($args[0], array_slice($args, 1));
 	}
@@ -64,10 +66,14 @@ class TwigExtension extends Twig_Extension
 	public static function filter_split($value, $delimiter, $limit = null)
 	{
 		if (strlen($delimiter) < 1)
+		{
 			throw new Twig_Error_Runtime();
+		}
 
 		if (null === $limit)
+		{
 			return explode($delimiter, $value);
+		}
 
 		return explode($delimiter, $value, $limit);
 	}

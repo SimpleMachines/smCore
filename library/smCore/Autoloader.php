@@ -50,7 +50,9 @@ class Autoloader
 
 		// If this autoloader isn't a default and it doesn't match, skip it
 		if (null !== $this->namespace && 0 !== strpos($name, $this->namespace))
+		{
 			return;
+		}
 
 		if ($this->namespace === null)
 		{

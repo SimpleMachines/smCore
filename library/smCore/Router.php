@@ -46,21 +46,21 @@ class Router
 		$path = trim($path, '/?');
 
 		// These aren't real routes - cut them off early.
-		if (strpos($path, 'themes') === 0 || strpos($path, 'resources') === 0)
+		if (0 === strpos($path, 'themes') || 0 === strpos($path, 'resources'))
 		{
-			// @todo: send a 404
-			return false;
+			return 404;
 		}
-		else if (strpos($path, 'cache') === 0 || strpos($path, 'library') === 0 || strpos($path, 'languages') === 0)
+		else if (0 === strpos($path, 'cache') || 0 === strpos($path, 'library') || 0 === strpos($path, 'languages'))
 		{
-			// @todo: send a 403
-			return false;
+			return 403;
 		}
 
 		if (empty($path))
 		{
 			if (!empty($this->_routes['default']))
+			{
 				return $this->_routes['default'];
+			}
 		}
 		else if (array_key_exists($path, $this->_routes['literal']))
 		{
@@ -79,13 +79,15 @@ class Router
 			}
 		}
 
-		return false;
+		return 404;
 	}
 
 	public function getMatch($name)
 	{
 		if (array_key_exists($name, $this->_matches))
+		{
 			return $this->_matches[$name];
+		}
 
 		return null;
 	}
@@ -95,8 +97,10 @@ class Router
 	 */
 	protected function _loadRoutes()
 	{
-		if (($this->_routes = Application::get('cache')->load('core_routes')) !== false)
+		if (false !== $this->_routes = Application::get('cache')->load('core_routes'))
+		{
 			return;
+		}
 
 		// We don't want to do a regex match if we don't have to
 		$this->_routes = array(
@@ -114,7 +118,9 @@ class Router
 
 			// Doesn't have any routes… which is weird, but okay.
 			if (empty($config['routes']))
+			{
 				continue;
+			}
 
 			self::_addRoutes($config['routes'], $id);
 		}
@@ -137,7 +143,9 @@ class Router
 		static $disallowedMethodNames = null;
 
 		if ($disallowedMethodNames === null)
+		{
 			$disallowedMethodNames = get_class_methods('\smCore\Module\Controller');
+		}
 
 		/* @todo: use these?
 		array(
@@ -235,10 +243,14 @@ class Router
 
 			// @todo: throw an Exception
 			if (in_array($method, $disallowedMethodNames))
+			{
 				continue;
+			}
 
 			if (!is_array($route['match']))
+			{
 				$route['match'] = array($route['match']);
+			}
 
 			// @todo: clean the regexes?
 			foreach ($route['match'] as $match)
@@ -247,14 +259,16 @@ class Router
 				$match = trim($match, '/');
 
 				// If either of these characters is in the route, it has to be a regex
-				if (strpos($match, '(') !== false || strpos($match, '[') !== false)
+				if (false !== strpos($match, '(') || false !== strpos($match, '['))
 				{
 					$type = 'regex';
 					$match = str_replace('/', '\\/', $match);
 
 					// Test for a valid regex... @todo: throw an Exception?
-					if (preg_match('/' . $match . '/', '') === false)
+					if (false === preg_match('/' . $match . '/', ''))
+					{
 						continue;
+					}
 
 					$this->_routes['regex'][] = array(
 						'match' => $match,
@@ -263,7 +277,7 @@ class Router
 						'method' => $method,
 					);
 				}
-				else if (strpos($match, ':') !== false)
+				else if (false !== strpos($match, ':'))
 				{
 					$type = 'regex';
 					$match = preg_replace('/:([^\/]+)/', '(?<$1>[^/]+)', $match);

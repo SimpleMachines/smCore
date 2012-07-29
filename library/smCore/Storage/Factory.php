@@ -30,50 +30,62 @@ class Factory
 	{
 		$name = strtolower($name);
 
-		if ($name === 'themes')
+		if ('themes' === $name)
 		{
 			if (empty(self::$_storages['themes']))
+			{
 				self::$_storages['themes'] = new Themes();
+			}
 
 			return self::$_storages['themes'];
 		}
 
-		if ($name === 'roles')
+		if ('roles' === $name)
 		{
 			if (empty(self::$_storages['roles']))
+			{
 				self::$_storages['roles'] = new Roles();
+			}
 
 			return self::$_storages['roles'];
 		}
 
-		if ($name === 'users')
+		if ('users' === $name)
 		{
 			if (empty(self::$_storages['users']))
+			{
 				self::$_storages['users'] = new Users();
+			}
 
 			return self::$_storages['users'];
 		}
 
-		if ($name === 'modules')
+		if ('modules' === $name)
 		{
 			if (empty(self::$_storages['modules']))
+			{
 				self::$_storages['modules'] = new Modules();
+			}
 
 			return self::$_storages['modules'];
 		}
 
-		if ($name === 'sessions')
+		if ('sessions' === $name)
 		{
 			if (empty(self::$_storages['sessions']))
+			{
 				self::$_storages['sessions'] = new Sessions();
+			}
 
 			return self::$_storages['sessions'];
 		}
 
-		if ($name === 'languages')
+		if ('languages' === $name)
 		{
 			if (empty(self::$_storages['languages']))
+			{
 				self::$_storages['languages'] = new Languages();
+			}
 
 			return self::$_storages['languages'];
 		}

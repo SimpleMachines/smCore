@@ -35,11 +35,13 @@ class JsonReader extends Reader
 	public function read($filename)
 	{
 		if (!file_exists($filename) || !is_readable($filename))
+		{
 			return;
+		}
 
 		$data = json_decode(file_get_contents($filename), true);
 
-		if ($data === null)
+		if (null === $data)
 		{
 			// @todo: do something with json_last_error()
 		}

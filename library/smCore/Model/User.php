@@ -45,7 +45,7 @@ class User implements ArrayAccess
 		{
 			$cache = Application::get('cache');
 
-			//if (($data = $cache->load('core_user_' . $id)) === null)
+			//if (null === $data = $cache->load('core_user_' . $id))
 			{
 				$db = Application::get('db');
 

@@ -93,7 +93,9 @@ class Session
 	{
 		// All nice and dandy?
 		if (preg_match('~^[A-Za-z0-9]{16,32}$~', $id) == 0)
+		{
 			return false;
+		}
 
 		return StorageFactory::getStorage('sessions')->write($id, $data);
 	}

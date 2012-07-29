@@ -72,11 +72,15 @@ class Module
 	 */
 	public function loadController($name)
 	{
-		if ($this->_controller !== null)
+		if (null !== $this->_controller)
+		{
 			throw new Exception('A controller has already been loaded for this module.');
+		}
 
 		if (!file_exists($this->_directory . '/Controllers/' . $name . '.php'))
+		{
 			throw new Exception(array('exceptions.modules.invalid_controller', $name));
+		}
 
 		$controllerClass = $this->_config['namespace'] . '\\Controllers\\' . $name;
 		$this->_controller = new $controllerClass($this);
@@ -89,14 +93,20 @@ class Module
 	 */
 	public function runControllerMethod($name)
 	{
-		if ($this->_controller === null)
+		if (null === $this->_controller)
+		{
 			throw new Exception('exceptions.modules.no_methods_before_load');
+		}
 
 		if ($this->_has_dispatched)
+		{
 			throw new Exception('A controller method has already been dispatched.');
+		}
 
 		if (!is_callable(array($this->_controller, $name)))
+		{
 			throw new Exception('exceptions.modules.method_not_callable');
+		}
 
 		$this->_has_dispatched = true;
 
@@ -115,7 +125,9 @@ class Module
 	public function getModel($name)
 	{
 		if (!file_exists($this->_directory . '/Models/' . $name . '.php'))
+		{
 			throw new Exception(array('exceptions.modules.invalid_model', $name));
+		}
 
 		$modelClass = $this->_config['namespace'] . '\\Models\\' . $name;
 
@@ -178,9 +190,13 @@ class Module
 	public function loadLangPackage($package_name = null, $force_reload = false)
 	{
 		if (empty($package_name))
+		{
 			Application::get('lang')->loadPackageByName($this->_config['identifier']);
+		}
 		else
+		{
 			Application::get('lang')->loadPackageByName($this->_config['identifier'] . '.' . $package_name);
+		}
 	}
 
 	/**
@@ -248,10 +264,14 @@ class Module
 	public function requirePermission($name, $use_namespace = true)
 	{
 		if ($use_namespace)
+		{
 			$name = $this->_config['identifier'] . '.' . $name;
+		}
 
 		if (!Application::get('user')->hasPermission($name))
+		{
 			throw new Exception('You do not have the permissions required to access this page.');
+		}
 
 		return $this;
 	}
@@ -266,7 +286,9 @@ class Module
 	public function getSetting($name)
 	{
 		if (array_key_exists($name, $this->_config['settings']))
+		{
 			return $this->_config['settings'][$name];
+		}
 
 		return null;
 	}
@@ -282,7 +304,9 @@ class Module
 	public function cacheSave($data, $key, array $tags = array(), $lifetime = false)
 	{
 		if (empty($key))
+		{
 			throw new Exception('exceptions.modules.invalid_cache_key');
+		}
 
 		$tags = array_merge(array($this->_config['identifier']), $tags);
 
@@ -297,7 +321,9 @@ class Module
 	public function cacheLoad($key)
 	{
 		if (empty($key))
+		{
 			throw new Exception('exceptions.modules.invalid_cache_key');
+		}
 
 		return Application::get('cache')->load($this->_config['cache_ns'] . '_' . $key);
 	}
@@ -310,7 +336,9 @@ class Module
 	public function cacheTest($key)
 	{
 		if (empty($key))
+		{
 			throw new Exception('exceptions.modules.invalid_cache_key');
+		}
 
 		return Application::get('cache')->test($this->_config['cache_ns'] . '_' . $key);
 	}

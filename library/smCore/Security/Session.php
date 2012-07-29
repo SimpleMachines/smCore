@@ -51,8 +51,10 @@ class Session
 		if (self::$_started === false)
 		{
 			// We should start anew. What about when PHP already started? Kill it.
-			if (ini_get('session.auto_start') == 1)
+			if (1 == ini_get('session.auto_start'))
+			{
 				session_write_close();
+			}
 
 			// Override ini parameters, if we can. That will happen both with default and user-provided options.
 			self::_overrideIni();
@@ -93,7 +95,9 @@ class Session
 		$cookie = Application::get('input')->cookie->getRaw(Settings::COOKIE_NAME);
 
 		if (empty($cookie))
+		{
 			return false;
+		}
 
 		return true;
 	}

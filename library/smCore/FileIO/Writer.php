@@ -54,14 +54,18 @@ abstract class Writer
 
 			// @todo: make sure this is multibyte safe
 			if (flock($fp, LOCK_EX))
+			{
 				$bytes_written = fwrite($fp, $data);
+			}
 			else
+			{
 				$bytes_written = false;
+			}
 
 			flock($fp, LOCK_UN);
 			fclose($fp);
 
-			return $bytes_written !== false;
+			return false !== $bytes_written;
 		}
 
 		return false;

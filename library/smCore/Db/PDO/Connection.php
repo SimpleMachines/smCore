@@ -116,7 +116,7 @@ class Connection implements ConnectionInterface
 	/**
 	 * Convenience method to run a query or set of queries
 	 *
-	 * @param  Closure $closure
+	 * @param Closure $closure
 	 */
 	public function transactional(Closure $closure)
 	{
@@ -134,19 +134,10 @@ class Connection implements ConnectionInterface
 		}
 	}
 
-
-
-
-
-
-
-
-
-
-
 	public function replace($table, array $data, array $options = array())
 	{
 	}
+
 	public function update($table, array $data, $condition, array $options = array())
 	{
 	}
@@ -155,6 +146,7 @@ class Connection implements ConnectionInterface
 	{
 		return $this->_connection->lastInsertId();
 	}
+
 	public function quote($value)
 	{
 		return $this->_connection->quote($value);
@@ -169,16 +161,24 @@ class Connection implements ConnectionInterface
 	}
 	*/
 
+	/**
+	 * Start a transaction
+	 */
 	public function beginTransaction()
 	{
 		if ($this->_connection->inTransaction())
 		{
+			// @todo
 		}
 		else
 		{
 			$this->_connection->beginTransaction();
 		}
 	}
+
+	/**
+	 * Commit the current transaction
+	 */
 	public function commit()
 	{
 		if (!$this->_connection->inTransaction())
@@ -188,6 +188,12 @@ class Connection implements ConnectionInterface
 
 		$this->_connection->commit();
 	}
+
+	/**
+	 * Roll back the current transaction
+	 *
+	 * @return 
+	 */
 	public function rollBack()
 	{
 		if (!$this->_connection->inTransaction())
@@ -197,19 +203,16 @@ class Connection implements ConnectionInterface
 
 		$this->_connection->rollBack();
 	}
+
+	/**
+	 * Check whether or not we're in a transaction right now
+	 *
+	 * @return boolean
+	 */
 	public function inTransaction()
 	{
 		return $this->_connection->inTransaction();
 	}
-
-
-
-
-
-
-
-
-
 
 
 	/**

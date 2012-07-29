@@ -29,7 +29,9 @@ class Memcached extends AbstractDriver
 	public function __construct($options)
 	{
 		if (!extension_loaded('memcached'))
+		{
 			throw new Exception('The memcached extension is not loaded.');
+		}
 
 		$options = array_merge(array(
 			'servers' => array(),
@@ -50,7 +52,9 @@ class Memcached extends AbstractDriver
 		else
 		{
 			if (isset($options['servers']['host']))
+			{
 				$options['servers'] = array($options['servers']);
+			}
 
 			foreach ($options['servers'] as $server)
 			{
@@ -66,7 +70,9 @@ class Memcached extends AbstractDriver
 		$value = $this->_memcached->get(Settings::UNIQUE_8 . $key);
 
 		if (is_array($value) && isset($value[0]))
+		{
 			return $value[0];
+		}
 
 		return false;
 	}
@@ -83,7 +89,9 @@ class Memcached extends AbstractDriver
 		$value = $this->_memcached->get(Settings::UNIQUE_8 . $key);
 
 		if (is_array($value) && isset($value[1]))
+		{
 			return $value[1];
+		}
 
 		return false;
 	}

@@ -58,50 +58,58 @@ class Factory
 	 *
 	 * @param string $type
 	 *
-	 * @throws smCore\Exception
-	 *
 	 * @return smCore\FileIO\Reader|null
 	 */
 	public static function getReader($type)
 	{
 		$type = strtolower($type);
 
-		if ($type === 'yaml')
+		if ('yaml' === $type)
 		{
 			if (empty(self::$_readers['yaml']))
+			{
 				self::$_readers['yaml'] = new YamlReader();
+			}
 
 			return self::$_readers['yaml'];
 		}
 
-		if ($type === 'xml')
+		if ('xml' === $type)
 		{
 			if (empty(self::$_readers['xml']))
+			{
 				self::$_readers['xml'] = new XmlReader();
+			}
 
 			return self::$_readers['xml'];
 		}
 
-		if ($type === 'json')
+		if ('json' === $type)
 		{
 			if (empty(self::$_readers['json']))
+			{
 				self::$_readers['json'] = new JsonReader();
+			}
 
 			return self::$_readers['json'];
 		}
 
-		if ($type === 'ini')
+		if ('ini' === $type)
 		{
 			if (empty(self::$_readers['ini']))
+			{
 				self::$_readers['ini'] = new IniReader();
+			}
 
 			return self::$_readers['ini'];
 		}
 
-		if ($type === 'csv')
+		if ('csv' === $type)
 		{
 			if (empty(self::$_readers['csv']))
+			{
 				self::$_readers['csv'] = new CSVReader();
+			}
 
 			return self::$_readers['csv'];
 		}
@@ -117,50 +125,58 @@ class Factory
 	 *
 	 * @param string $type
 	 *
-	 * @throws smCore\Exception
-	 *
 	 * @return smCore\FileIO\Writer|null
 	 */
 	public static function getWriter($type)
 	{
 		$type = strtolower($type);
 
-		if ($type === 'yaml')
+		if ('yaml' === $type)
 		{
 			if (empty(self::$_writers['yaml']))
+			{
 				self::$_writers['yaml'] = new YamlWriter();
+			}
 
 			return self::$_writers['yaml'];
 		}
 
-		if ($type === 'xml')
+		if ('xml' === $type)
 		{
 			if (empty(self::$_writers['xml']))
+			{
 				self::$_writers['xml'] = new XmlWriter();
+			}
 
 			return self::$_writers['xml'];
 		}
 
-		if ($type === 'json')
+		if ('json' === $type)
 		{
 			if (empty(self::$_writers['json']))
+			{
 				self::$_writers['json'] = new JsonWriter();
+			}
 
 			return self::$_writers['json'];
 		}
 
-		if ($type === 'ini')
+		if ('ini' === $type)
 		{
 			if (empty(self::$_writers['ini']))
+			{
 				self::$_writers['ini'] = new IniWriter();
+			}
 
 			return self::$_writers['ini'];
 		}
 
-		if ($type === 'csv')
+		if ('csv' === $type)
 		{
 			if (empty(self::$_writers['csv']))
+			{
 				self::$_writers['csv'] = new CSVWriter();
+			}
 
 			return self::$_writers['csv'];
 		}

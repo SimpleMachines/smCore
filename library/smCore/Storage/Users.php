@@ -31,7 +31,7 @@ class Users
 
 	public function getCurrentUser()
 	{
-		if ($this->_current_user === null)
+		if (null === $this->_current_user)
 		{
 			if (Session::exists())
 			{
@@ -44,8 +44,10 @@ class Users
 				}
 			}
 
-			if ($this->_current_user === null)
+			if (null === $this->_current_user)
+			{
 				$this->_current_user = $this->getUserById(0);
+			}
 		}
 
 		return $this->_current_user;
@@ -54,7 +56,9 @@ class Users
 	public function getUserById($id)
 	{
 		if (!is_int($id))
+		{
 			throw new Exception('Invalid user ID');
+		}
 
 		// @todo: load user from database info
 		return new User($id);

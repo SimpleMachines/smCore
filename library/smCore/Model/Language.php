@@ -81,10 +81,14 @@ class Language
 		$packages = $this->_getPackageData();
 
 		if (empty($packages['types'][$type]))
+		{
 			return;
+		}
 
 		foreach ($packages['types'][$type] as $package)
+		{
 			$this->_loadPackageById($package, $force_recompile);
+		}
 
 		return $this;
 	}
@@ -94,7 +98,9 @@ class Language
 		$packages = $this->_getPackageData();
 
 		if (empty($packages['names'][$name]))
+		{
 			return;
+		}
 
 		$this->_loadPackageById($packages['names'][$name], $force_recompile);
 
@@ -107,7 +113,7 @@ class Language
 
 		$cache_key = 'lang_package_' . (int) $id_package;
 
-//		if ($force_recompile || false === $data = $cache->load($cache_key))
+		if ($force_recompile || false === $data = $cache->load($cache_key))
 		{
 			$db = Application::get('db');
 
@@ -125,7 +131,9 @@ class Language
 			$data = array();
 
 			foreach ($strings as $row)
+			{
 				$data[$row->string_key] = $row->string_value;
+			}
 
 			$cache->save($data, $cache_key, array('smcore_language', 'smcore_language_' . $this->_code));
 		}
@@ -154,7 +162,9 @@ class Language
 	public function keyExists($key)
 	{
 		if (is_array($key))
+		{
 			$key = implode('.', $key);
+		}
 
 		return array_key_exists($key, $this->_strings);
 	}
@@ -172,15 +182,21 @@ class Language
 	public function get($key, $replacements = array())
 	{
 		if (empty($key))
+		{
 			throw new Exception('exceptions.lang.empty_index');
+		}
 
 		if (is_array($key))
+		{
 			$key = implode('.', $key);
+		}
 
 		if ($this->keyExists($key))
 		{
 			if (!empty($replacements))
+			{
 				return vsprintf($this->_strings[$key], $replacements);
+			}
 
 			return $this->_strings[$key];
 		}

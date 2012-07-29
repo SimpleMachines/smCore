@@ -128,13 +128,9 @@ class Application
 
 			self::$context['requires_js'] |= self::$context['uses_wysiwyg'];
 
-
 			//	self::$twig->addGlobal('menu', self::get('menu')->getMenu());
 			//	self::$twig->addGlobal('requires_js', self::$context['requires_js'] || self::$context['uses_wysiwyg']);
 			//	self::$twig->addGlobal('user', self::get('user'));
-
-
-
 		}
 	}
 

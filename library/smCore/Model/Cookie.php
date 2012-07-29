@@ -62,16 +62,24 @@ class Cookie
 	public function validateSession()
 	{
 		if ($this->_name !== Settings::COOKIE_NAME)
+		{
 			return false;
+		}
 
 		if ($this->_expire < Application::get('time'))
+		{
 			return false;
+		}
 
-		if ($this->_secure !== 0 && $this->_secure !== 1)
+		if (0 !== $this->_secure && 1 !== $this->_secure)
+		{
 			return false;
+		}
 
-		if ($this->_httponly !== 0 && $this->_httponly !== 1)
+		if (0 !== $this->_httponly && 1 !== $this->_httponly)
+		{
 			return false;
+		}
 
 		return true;
 	}
@@ -88,7 +96,9 @@ class Cookie
 		$cookie_value = Application::get('input')->cookie->getRaw(Settings::COOKIE_NAME);
 
 		if (empty($cookie_value))
+		{
 			return false;
+		}
 
 		// Lets see what you got here...
 		return @unserialize($cookie_value);
@@ -104,7 +114,9 @@ class Cookie
 	public static function readSessionCookie()
 	{
 		if (($data = self::validateFromRequest()) === false)
+		{
 			throw new Exception('security_invalid_cookie', 0, null, 'security');
+		}
 
 		$cookie = new self(Settings::COOKIE_NAME);
 
@@ -129,28 +141,38 @@ class Cookie
 	{
 		// Parse the URL with PHP to make life easier.
 		if (!empty($fakeUrl))
+		{
 			$parsed_url = parse_url($fakeUrl);
+		}
 		else
+		{
 			$parsed_url = parse_url(Settings::APP_URL);
+		}
 
 		$localCookies = Configuration::getConf()->getLocalCookies();
 		$globalCookies = Configuration::getConf()->getGlobalCookies();
 
 		// Is local cookies off?
 		if (empty($localCookies))
+		{
 			$parsed_url['path'] = '';
+		}
 
-		// Globalize cookies across domains (filter out IP-addresses)
-		if ($globalCookies && preg_match('~^\d{1,3}(\.\d{1,3}){3}$~', $parsed_url['host']) == 0 && preg_match('~(?:[^\.]+\.)?([^\.]{2,}\..+)\z~i', $parsed_url['host'], $parts) == 1)
+		if ($globalCookies && 0 === preg_match('~^\d{1,3}(\.\d{1,3}){3}$~', $parsed_url['host']) && 1 === preg_match('~(?:[^\.]+\.)?([^\.]{2,}\..+)\z~i', $parsed_url['host'], $parts))
+		{
+			// Globalize cookies across domains (filter out IP-addresses)
 			$parsed_url['host'] = '.' . $parts[1];
-
-		// We shouldn't use a host at all if both options are off.
-		elseif (!$localCookies && !$globalCookies)
+		}
+		else if (!$localCookies && !$globalCookies)
+		{
+			// We shouldn't use a host at all if both options are off.
 			$parsed_url['host'] = '';
-
-		// The host also shouldn't be set if there aren't any dots in it.
-		elseif (!isset($parsed_url['host']) || strpos($parsed_url['host'], '.') === false)
+		}
+		else if (!isset($parsed_url['host']) || false === strpos($parsed_url['host'], '.'))
+		{
+			// The host also shouldn't be set if there aren't any dots in it.
 			$parsed_url['host'] = '';
+		}
 
 		$this->_domain = $parsed_url['host'];
 		$this->_path = $parsed_url['path'] . '/';
@@ -171,7 +193,9 @@ class Cookie
 		$cookieValue = Request::getInstance()->getCookieValue($cookieName);
 
 		if (!empty($cookieValue))
+		{
 			Request::getInstance()->unsetCookieValue($cookieName);
+		}
 
 		$cookie = new Cookie();
 		return $cookie;
@@ -190,6 +214,7 @@ class Cookie
 	{
 		$this->_name = Settings::COOKIE_NAME;
 		$this->_expire = time() + $length;
+
 		if (!empty($id_user))
 		{
 			$localCookies = Configuration::getConf()->getLocalCookies();
@@ -197,6 +222,7 @@ class Cookie
 			$cookieState = (empty($localCookies) ? 0 : 1) | (empty($globalCookies) ? 0 : 2);
 			$this->_data = array($id_user, $password, time() + $length, $cookieState);
 		}
+
 		$this->_secure = Configuration::getConf()->getSecureCookies();
 		$this->_httponly = Configuration::getConf()->getHttpOnly();
 		$this->initFromUrl($fakeUrl);

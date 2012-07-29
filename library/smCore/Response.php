@@ -57,7 +57,9 @@ class Response
 		// Search engines leak prevention
 		// Do not let search engines index anything if there is something in $_GET.
 		if (Application::get('request')->hasGetParams())
+		{
 			$this->_meta[] = '<meta name="robots" content="noindex" />';
+		}
 	}
 
 	/**
@@ -84,12 +86,18 @@ class Response
 
 		// Only allow one HTTP response code. This helps us add simple headers via ->addHeader(404)
 		if (is_int($header) && defined('self::HTTP_' . $header))
+		{
 			$this->_headers['http_response_code'] = constant('self::HTTP_' . $header);
+		}
 
-		if (strpos($header, 'HTTP/1.1') === 0)
+		if (0 === strpos($header, 'HTTP/1.1'))
+		{
 			$this->_headers['http_response_code'] = $header;
+		}
 		else
+		{
 			$this->_headers[] = $header;
+		}
 
 		// Allow header chaining
 		return $this;
@@ -111,8 +119,12 @@ class Response
 	public function sendOutput()
 	{
 		if (!empty($this->_headers))
+		{
 			foreach ($this->_headers as $header)
+			{
 				header($header);
+			}
+		}
 
 		// @todo output stuff
 

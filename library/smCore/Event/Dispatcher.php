@@ -30,13 +30,15 @@ class Dispatcher
 
 	public function __construct()
 	{
-//		if ((self::$_listeners = Application::get('cache')->load('core_event_listeners')) === false)
+//		if (false === self::$_listeners = Application::get('cache')->load('core_event_listeners'))
+		{
 			self::recompile();
+		}
 	}
 
 	private function __clone(){}
 
-	static function recompile()
+	public static function recompile()
 	{
 		self::$_listeners = array();
 		$modules = Application::get('modules');
@@ -48,12 +50,16 @@ class Dispatcher
 
 			// Doesn't have any listeners, so skip it
 			if (empty($config['events']))
+			{
 				continue;
+			}
 
 			foreach ($config['events'] as $name => $listener)
 			{
 				if (empty($listener['enabled']))
+				{
 					continue;
+				}
 
 				self::$_listeners[$name][] = $listener['callback'];
 			}
@@ -62,31 +68,41 @@ class Dispatcher
 		Application::get('cache')->save(self::$_listeners, 'core_event_listeners', array('dependency_module_registry'));
 	}
 
-	static function fire(Event $event)
+	public static function fire(Event $event)
 	{
 		$name = $event->getName();
 
 		if (empty(self::$_listeners[$name]))
+		{
 			return;
+		}
 
 		foreach (self::$_listeners[$name] as $listener)
+		{
 			if (is_callable($listener))
 			{
 				$result = call_user_func($listener, $event);
 
 				// An event sequence can be interrupted by returning a non-null value
 				if ($result !== null)
+				{
 					return $result;
+				}
 			}
+		}
 	}
 
-	static function getListeners($name = null)
+	public static function getListeners($name = null)
 	{
-		if ($name === null)
+		if (null === $name)
+		{
 			return self::$_listeners;
+		}
 
 		if (empty(self::$_listeners[$name]))
+		{
 			return array();
+		}
 
 		return self::$_listeners[$name];
 	}

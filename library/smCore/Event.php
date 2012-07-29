@@ -26,57 +26,59 @@ use smCore\Event\Dispatcher;
 
 class Event
 {
-	protected $owner;
-	protected $name;
-	protected $arguments;
-	protected $value = null;
-	protected $fired = false;
+	protected $_owner;
+	protected $_name;
+	protected $_arguments;
+	protected $_value = null;
+	protected $_fired = false;
 
 	public function __construct($owner, $name, $arguments = array())
 	{
-		$this->owner = $owner;
-		$this->name = $name;
+		$this->_owner = $owner;
+		$this->_name = $name;
 
 		if (!is_array($arguments))
+		{
 			$arguments = array($arguments);
+		}
 
-		$this->arguments = $arguments;
+		$this->_arguments = $arguments;
 	}
 
 	public function getOwner()
 	{
-		return $this->owner;
+		return $this->_owner;
 	}
 
 	public function getName()
 	{
-		return $this->name;
+		return $this->_name;
 	}
 
 	public function getArguments()
 	{
-		return $this->arguments;
+		return $this->_arguments;
 	}
 
 	public function getValue()
 	{
-		return $this->value;
+		return $this->_value;
 	}
 
 	public function setValue($value)
 	{
-		$this->value = $value;
+		$this->_value = $value;
 	}
 
 	public function fired()
 	{
-		return $this->fired;
+		return $this->_fired;
 	}
 
 	// Just a shortcut to let the dispatcher know to wake up and do something
 	public function fire()
 	{
 		Dispatcher::fire($this);
-		$this->fired = true;
+		$this->_fired = true;
 	}
 }

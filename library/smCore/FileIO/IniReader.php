@@ -36,8 +36,10 @@ class IniReader extends Reader
 	{
 		$data = parse_ini_file($filename, true);
 
-		if ($data === false)
+		if (false === $data)
+		{
 			return;
+		}
 
 		return $data;
 	}

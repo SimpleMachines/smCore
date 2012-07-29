@@ -103,13 +103,15 @@ class Request
 		}
 
 		if ($_SERVER['HTTP_HOST'] != $_SERVER['SERVER_NAME'])
+		{
 			$this->_subdomain = rtrim(str_replace($_SERVER['SERVER_NAME'], '', $_SERVER['HTTP_HOST']), '.');
+		}
 
 		$_GET = array();
 
 		if (!empty($this->_url))
 		{
-			if (strpos($this->_url, '?', 1) !== false)
+			if (false !== strpos($this->_url, '?', 1))
 			{
 				$query = substr($this->_url, strpos($this->_url, '?', 1) + 1);
 				$this->_path = substr($this->_url, 0, strpos($this->_url, '?', 1));
@@ -122,15 +124,21 @@ class Request
 
 					foreach ($parameters as $parameter)
 					{
-						if (strpos($parameter, '=') !== false)
+						if (false !== strpos($parameter, '='))
+						{
 							$_GET[substr($parameter, 0, strpos($parameter, '='))] = substr($parameter, strpos($parameter, '=') + 1);
+						}
 						else
+						{
 							$_GET[$parameter] = '';
+						}
 					}
 				}
 			}
 			else
+			{
 				$this->_path = $this->_url;
+			}
 
 			// Find out what format this request is in
 			if (substr($this->_path, -5) === '.json')

@@ -41,7 +41,9 @@ class Error
 	{
 		// This error code is not included in error_reporting
 		if (!(error_reporting() & $errno))
+		{
 			return;
+		}
 
 		die('Error: ' . $errstr . ' in ' . $errfile . ' on line ' . $errline . '.');
 	}
