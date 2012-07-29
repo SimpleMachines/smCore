@@ -2,4 +2,16 @@
 
 body {
 	padding-top: 60px;
-}
+	}
+
+#footer {
+	border-top: 1px solid #ddd;
+	color: #666;
+	font-size: .9em;
+	padding: 3px .8em;
+	}
+
+#footer a,
+#footer a:hover {
+	color: #666;
+	}

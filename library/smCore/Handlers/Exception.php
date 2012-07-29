@@ -45,9 +45,7 @@ class Exception
 		if (!($exception instanceof Twig_Error) && Application::$twig !== null)
 		{
 			Application::$twig->display('error.html', array(
-				'page_title' => Application::get('lang')->get('error'),
-				'menu' => Application::get('menu'),
-				'error' => $exception->getMessage(),
+				'error_message' => $exception->getMessage(),
 				'error_trace' => print_r($exception->getTrace(), true),
 				'show_trace' => $show_trace,
 			));

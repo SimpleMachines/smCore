@@ -101,9 +101,8 @@ class Application
 		$route = $router->match(self::get('request')->getPath());
 		self::set('router', $router);
 
-		if ($route === false)
+		if (is_int($route))
 		{
-			self::$twig->addGlobal('page_title', '404');
 			self::$twig->display('error_404.html');
 		}
 		else

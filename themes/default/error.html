@@ -1,1 +1,9 @@
-Error!
+{% extends "layout.html" %}
+
+{% set page_title = "An Error Has Occurred!" %}
+
+{% block body %}
+<div class="alert alert-error">
+	<strong>An Error Has Occurred!</strong> {{ error_message }}
+</div>
+{% endblock %}
