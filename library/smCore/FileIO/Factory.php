@@ -47,8 +47,21 @@ class Factory
 	{
 		$ext = end(explode('.', $filename));
 
-		if (in_array($ext, array('ini', 'json', 'xml', 'yaml')))
-			return $ext;
+		$types = array(
+			'csv' => 'csv',
+			'ini' => 'ini',
+			'json' => 'json',
+			'xml' => 'xml',
+			'yaml' => 'yml',
+			'yml' => 'yaml',
+		);
+
+		// @todo: extensibility
+
+		if (!empty($types[$ext]))
+		{
+			return $types[$ext];
+		}
 
 		return null;
 	}
