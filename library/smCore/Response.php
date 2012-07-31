@@ -85,12 +85,11 @@ class Response
 		$header = trim($header);
 
 		// Only allow one HTTP response code. This helps us add simple headers via ->addHeader(404)
-		if (is_int($header) && defined('self::HTTP_' . $header))
+		if (ctype_digit($header) && defined('self::HTTP_' . $header))
 		{
 			$this->_headers['http_response_code'] = constant('self::HTTP_' . $header);
 		}
-
-		if (0 === strpos($header, 'HTTP/1.1'))
+		else if (0 === strpos($header, 'HTTP/1.1'))
 		{
 			$this->_headers['http_response_code'] = $header;
 		}

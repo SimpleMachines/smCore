@@ -44,11 +44,11 @@ class Language
 
 	protected function _getPackageData()
 	{
-		if ($this->_packageData === null)
+		if (null === $this->_packageData)
 		{
 			$cache = Application::get('cache');
 
-			if (false === $this->_packageData = $cache->load('smcore_language_packages'))
+//			if (false === $this->_packageData = $cache->load('smcore_language_packages'))
 			{
 				$db = Application::get('db');
 
@@ -66,8 +66,8 @@ class Language
 				{
 					while ($package = $result->fetch())
 					{
-						$this->_packageData['types'][$package->package_type][] = (int) $package->id_package;
-						$this->_packageData['names'][$package->package_name] = (int) $package->id_package;
+						$this->_packageData['types'][$package['package_type']][] = (int) $package['id_package'];
+						$this->_packageData['names'][$package['package_name']] = (int) $package['id_package'];
 					}
 				}
 
@@ -134,7 +134,7 @@ class Language
 
 			foreach ($strings as $row)
 			{
-				$data[$row->string_key] = $row->string_value;
+				$data[$row['string_key']] = $row['string_value'];
 			}
 
 			$cache->save($cache_key, $data, array('smcore_language', 'smcore_language_' . $this->_code));
@@ -202,7 +202,7 @@ class Language
 
 			return $this->_strings[$key];
 		}
- 
+
  		// Return the key, so we at least know what's not there
 		return $key;
 	}
