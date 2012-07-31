@@ -46,9 +46,10 @@ class Application
 
 	protected function __clone(){}
 
-	public function __construct($settings)
+	public function __construct($settings, $environment = 'default')
 	{
 		require_once $settings;
+		new Settings($environment);
 	}
 
 	/**
@@ -136,8 +137,8 @@ class Application
 	// @todo: put this in its own file, a theme storage
 	protected function _setupTheme()
 	{
-		$cache = Application::get('cache');
-		$user = Application::get('user');
+		$cache = self::get('cache');
+		$user = self::get('user');
 
 		$id = $user['theme'];
 
@@ -292,8 +293,6 @@ class Application
 
 	/**
 	 * Load the cache when necessary. Lazy loaded upon first call to Application::get('cache')
-	 *
-	 * @todo Read real cache settings from Settings, use the smCore\Cache class instead
 	 *
 	 * @return object A new Cache object to use.
 	 */
