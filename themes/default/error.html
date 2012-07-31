@@ -4,6 +4,11 @@
 
 {% block body %}
 <div class="alert alert-error">
-	<strong>An Error Has Occurred!</strong> {{ error_message }}
+{%- if code is defined %}
+	<h2>Error {{ code }}</h2>
+{%- else %}
+	<h2>An Error Has Occurred!</h2>
+{%- endif %}
+	{{ error_message }}
 </div>
-{% endblock %}
+{%- endblock %}
