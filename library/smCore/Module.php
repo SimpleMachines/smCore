@@ -369,4 +369,18 @@ class Module
 			throw new Exception($langException ? $this->lang($langException) : 'exceptions.modules.invalid_csrf');
 		}
 	}
+
+	/**
+	 * Method to run when this module is installed
+	 */
+	public function install()
+	{
+	}
+
+	/**
+	 * Method to run when this module is uninstalled
+	 */
+	public function uninstall()
+	{
+	}
 }
