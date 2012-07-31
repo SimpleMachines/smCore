@@ -102,8 +102,7 @@ class Application
 		{
 			$module = self::get('modules')->getModule($route['module'], $this);
 
-			$module->loadController($route['controller']);
-			$module->runControllerMethod($route['method']);
+			$returned = $module->runControllerMethod($route['controller'], $route['method']);
 
 			$post_router_event = new Event(null, 'org.smcore.core.post_router');
 			$post_router_event->fire();

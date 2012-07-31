@@ -60,57 +60,42 @@ class Module
 
 		$this->_config['cache_ns'] = str_replace('.', '_', $this->_config['identifier']);
 
-		Application::$twig->getLoader()->addPath($this->_template_dir);
-	}
-
-	/**
-	 * Load a controller in this module's /Controllers/ directory by name.
-	 *
-	 * @param string $name The name of the controller to load.
-	 */
-	public function loadController($name)
-	{
-		if (null !== $this->_controller)
-		{
-			throw new Exception('A controller has already been loaded for this module.');
-		}
-
-		if (!file_exists($this->_directory . '/Controllers/' . $name . '.php'))
-		{
-			throw new Exception(array('exceptions.modules.invalid_controller', $name));
-		}
-
-		$controllerClass = $this->_config['namespace'] . '\\Controllers\\' . $name;
-		$this->_controller = new $controllerClass($this);
+		Application::get('twig')->getLoader()->addPath($this->_template_dir);
 	}
 
 	/**
 	 * Dispatch a method under the loaded controller.
 	 *
-	 * @param string $name The method name to dispatch.
+	 * @param string $controller The controller name to load.
+	 * @param string $method     The method name to dispatch.
 	 */
-	public function runControllerMethod($name)
+	public function runControllerMethod($controller, $method)
 	{
-		if (null === $this->_controller)
-		{
-			throw new Exception('exceptions.modules.no_methods_before_load');
-		}
-
 		if ($this->_has_dispatched)
 		{
 			throw new Exception('A controller method has already been dispatched.');
 		}
 
-		if (!is_callable(array($this->_controller, $name)))
+		if (!file_exists($this->_directory . '/Controllers/' . $controller . '.php'))
+		{
+			throw new Exception(array('exceptions.modules.invalid_controller', $controller));
+		}
+
+		$controllerClass = $this->_config['namespace'] . '\\Controllers\\' . $controller;
+		$controller = new $controllerClass($this);
+
+		if (!is_callable(array($controller, $method)))
 		{
 			throw new Exception('exceptions.modules.method_not_callable');
 		}
 
+		$controller->preDispatch();
+		$output = $controller->$method();
+		$controller->postDispatch();
+
 		$this->_has_dispatched = true;
 
-		$this->_controller->preDispatch();
-		$this->_controller->$name();
-		$this->_controller->postDispatch();
+		return $output;
 	}
 
 	/**
