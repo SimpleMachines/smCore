@@ -114,6 +114,18 @@ class Response
 	}
 
 	/**
+	 * 
+	 *
+	 * @param string $body
+	 */
+	public function setBody($body)
+	{
+		$this->_body = $body;
+
+		return $this;
+	}
+
+	/**
 	 * Send the output to the browser. End this execution.
 	 */
 	public function sendOutput()
@@ -127,6 +139,7 @@ class Response
 		}
 
 		// @todo output stuff
+		echo $this->_body;
 
 		die();
 	}

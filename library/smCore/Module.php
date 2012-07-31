@@ -152,14 +152,12 @@ class Module
 
 	public function render($name, array $context = array())
 	{
-		Application::$twig->render($name . '.html', $context);
-
-		return $this;
+		return Application::get('twig')->render($name . '.html', $context);
 	}
 
 	public function display($name, array $context = array())
 	{
-		Application::$twig->display($name . '.html', $context);
+		Application::get('twig')->display($name . '.html', $context);
 
 		return $this;
 	}

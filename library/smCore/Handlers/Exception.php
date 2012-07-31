@@ -41,25 +41,28 @@ class Exception
 	{
 		$show_trace = Application::get('user', false) !== null && Application::get('user')->hasPermission('org.smcore.core.is_admin');
 
+		$response = Application::get('response');
+		$twig = Application::get('twig', false);
+
 		// We can't show a nice screen if the exception came from the template engine or the theme hasn't been loaded
-		if (!($exception instanceof Twig_Error) && Application::$twig !== null)
+		if (!($exception instanceof Twig_Error) && $twig !== null)
 		{
-			Application::$twig->display('error.html', array(
+			$response->setBody($twig->render('error.html', array(
 				'error_message' => $exception->getMessage(),
 				'error_trace' => print_r($exception->getTrace(), true),
 				'show_trace' => $show_trace,
-			));
+			)));
 		}
 		else
 		{
-			echo 'Uncaught exception error:<hr /><pre>' . $exception->getMessage() . '</pre>';
-
-			if ($show_trace)
-			{
-				echo '<br /><pre>' . print_r($exception->getTrace(), true) . '</pre>';
-			}
+			$response->setBody('Uncaught exception error:<hr /><pre>' . $exception->getMessage() . '</pre>' . ($show_trace ? '<br /><pre>' . print_r($exception->getTrace(), true) . '</pre>' : ''));
 		}
 
-		die();
+		if ($this->code !== 0)
+		{
+			$response->addHeader($this->code);
+		}
+
+		$response->sendOutput();
 	}
 }

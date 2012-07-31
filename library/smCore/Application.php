@@ -32,8 +32,6 @@ use Inspekt, Inspekt_Cage;
 
 class Application
 {
-	public static $twig;
-
 	public static $start_time = null;
 
 	protected static $_registry = array();
@@ -96,7 +94,14 @@ class Application
 
 		if (is_int($route))
 		{
-			self::$twig->display('error_404.html');
+			// @todo: show the correct error screen
+			$response
+				->addHeader($route)
+				->setBody(self::get('twig')->render('error.html', array(
+					'code' => $route,
+					'error_message' => $lang->get('exceptions.error_code_' . $route) ?: $lang->get('exceptions.error_code_unknown'),
+				)))
+			;
 		}
 		else
 		{
@@ -106,10 +111,9 @@ class Application
 
 			$post_router_event = new Event(null, 'org.smcore.core.post_router');
 			$post_router_event->fire();
-
-			//	self::$twig->addGlobal('menu', self::get('menu')->getMenu());
-			//	self::$twig->addGlobal('user', self::get('user'));
 		}
+
+		$response->sendOutput();
 	}
 
 	// @todo: put this in its own file, a theme storage
@@ -155,21 +159,19 @@ class Application
 
 		$twig_loader = new Twig_Loader_Filesystem(Settings::THEME_DIR . '/' . $theme['theme_dir']);
 
-		self::$twig = new Twig_Environment($twig_loader, array(
+		$twig = self::set('twig', new Twig_Environment($twig_loader, array(
 			'cache' => Settings::CACHE_DIR,
 			'recompile' => true,
 			'auto_reload' => true,
-		));
+		)));
 
-		self::$twig->addExtension(new TwigExtension());
-		self::$twig->addGlobal('scripturl', Settings::URL);
-		self::$twig->addGlobal('theme_url', trim(Settings::URL, '/?') . '/themes/' . $theme['theme_dir']);
-		self::$twig->addGlobal('default_theme_url', trim(Settings::URL, '/?') . '/themes/default');
-		self::$twig->addGlobal('reload_counter', 0);
-		self::$twig->addGlobal('time_display', date('g:i:s A', time()));
-		self::$twig->addGlobal('uses_wysiwyg', false);
-		self::$twig->addGlobal('requires_js', false);
-//		self::$twig->addLayer('index.tpl', array(
+		$twig->addExtension(new TwigExtension());
+		$twig->addGlobal('scripturl', Settings::URL);
+		$twig->addGlobal('theme_url', trim(Settings::URL, '/?') . '/themes/' . $theme['theme_dir']);
+		$twig->addGlobal('default_theme_url', trim(Settings::URL, '/?') . '/themes/default');
+		$twig->addGlobal('reload_counter', 0);
+		$twig->addGlobal('time_display', date('g:i:s A', time()));
+//		$twig->addLayer('index.tpl', array(
 //			'menu' => self::get('menu'),
 //		));
 	}
