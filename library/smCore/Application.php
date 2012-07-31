@@ -32,12 +32,7 @@ use Inspekt, Inspekt_Cage;
 
 class Application
 {
-	// Only allow one call to the run() function
-	private static $_run = false;
-
 	public static $twig;
-
-	public static $context = array();
 
 	public static $start_time = null;
 
@@ -57,12 +52,10 @@ class Application
 	 */
 	public function run()
 	{
-		if (self::$_run)
+		if (self::$start_time !== null)
 		{
 			throw new Exception('Cannot load the application again!');
 		}
-
-		self::$_run = true;
 
 		self::$start_time = microtime(true);
 		date_default_timezone_set(Settings::TIMEZONE);
@@ -115,20 +108,7 @@ class Application
 			$post_router_event = new Event(null, 'org.smcore.core.post_router');
 			$post_router_event->fire();
 
-			if (!isset(self::$context['uses_wysiwyg']))
-			{
-				self::$context['uses_wysiwyg'] = false;
-			}
-
-			if (!isset(self::$context['requires_js']))
-			{
-				self::$context['requires_js'] = false;
-			}
-
-			self::$context['requires_js'] |= self::$context['uses_wysiwyg'];
-
 			//	self::$twig->addGlobal('menu', self::get('menu')->getMenu());
-			//	self::$twig->addGlobal('requires_js', self::$context['requires_js'] || self::$context['uses_wysiwyg']);
 			//	self::$twig->addGlobal('user', self::get('user'));
 		}
 	}
