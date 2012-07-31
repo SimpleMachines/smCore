@@ -81,18 +81,17 @@ class Application
 		self::addLazyLoader('theme', array($this, '_loadTheme'));
 
 		self::set('input', Inspekt::makeSuperCage(null, false));
-		self::set('request', new Request);
-		self::set('response', new Response);
 
-		$user = Storage\Factory::getStorage('Users')->getCurrentUser();
-		self::set('user', $user);
+		$request = self::set('request', new Request);
+		$response = self::set('response', new Response);
+
+		$user = self::set('user', Storage\Factory::getStorage('Users')->getCurrentUser());
 
 		self::set('modules', Storage\Factory::getStorage('Modules'));
 		self::set('event_dispatcher', new Event\Dispatcher());
 
-		$lang = Storage\Factory::getStorage('Languages')->getByCode($user['language']);
+		$lang = self::set('lang', Storage\Factory::getStorage('Languages')->getByCode($user['language']));
 		$lang->loadPackageByName('org.smcore.common');
-		self::set('lang', $lang);
 
 		self::set('menu', new Menu());
 
@@ -211,6 +210,8 @@ class Application
 		else
 		{
 			self::$_registry[$key] = $value;
+
+			return self::$_registry[$key];
 		}
 	}
 
