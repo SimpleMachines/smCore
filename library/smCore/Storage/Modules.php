@@ -104,7 +104,7 @@ class Modules
 		return $this->_modules;
 	}
 
-	public function getModule($identifier, Application $application)
+	public function getModule($identifier)
 	{
 		if (!array_key_exists($identifier, $this->_modules))
 		{
@@ -117,7 +117,7 @@ class Modules
 					$moduleClass = 'smCore\\Module';
 				}
 
-				$this->_modules[$identifier] = new $moduleClass($application, $this->_moduleData[$identifier]['config'], $this->_moduleData[$identifier]['directory']);
+				$this->_modules[$identifier] = new $moduleClass($this->_moduleData[$identifier]['config'], $this->_moduleData[$identifier]['directory']);
 			}
 			else
 			{

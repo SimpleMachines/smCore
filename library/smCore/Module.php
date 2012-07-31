@@ -45,10 +45,8 @@ class Module
 	 * @param array  $config    The contents of this module's config.yaml file.
 	 * @param string $directory The directory where this module is located.
 	 */
-	public function __construct(Application $application, $config, $directory)
+	public function __construct($config, $directory)
 	{
-		$this->_application = $application;
-
 		$this->_config = $config;
 		$this->_directory = $directory;
 
@@ -111,7 +109,7 @@ class Module
 		$this->_has_dispatched = true;
 
 		$this->_controller->preDispatch();
-		$this->_controller->$name($this->_application);
+		$this->_controller->$name();
 		$this->_controller->postDispatch();
 	}
 
