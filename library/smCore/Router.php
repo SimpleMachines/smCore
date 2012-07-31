@@ -256,7 +256,7 @@ class Router
 			foreach ($route['match'] as $match)
 			{
 				$type = 'strict';
-				$match = trim($match, '/');
+				$match = trim($match, '/ ');
 
 				// If either of these characters is in the route, it has to be a regex
 				if (false !== strpos($match, '(') || false !== strpos($match, '['))
@@ -289,7 +289,7 @@ class Router
 						'method' => $method,
 					);
 				}
-				else if (empty($match))
+				else if (empty($match) && 0 === strlen($match))
 				{
 					$this->_routes['default'] = array(
 						'module' => $identifier,
