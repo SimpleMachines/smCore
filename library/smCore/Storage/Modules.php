@@ -86,7 +86,7 @@ class Modules
 				);
 			}
 
-			$cache->save($this->_moduleData, 'core_module_registry_data');
+			$cache->save('core_module_registry_data', $this->_moduleData);
 
 			// @todo: cache tags
 			// Anything that depends on this should be refreshed

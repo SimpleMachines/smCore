@@ -51,7 +51,7 @@ class Menu
 				$this->_parents[$row['menu_parent']][] = $row;
 			}
 
-			$cache->save($this->_parents, 'core_menu_rows');
+			$cache->save('core_menu_rows', $this->_parents);
 		}
 
 		$this->_buildMenu($this->_menu);

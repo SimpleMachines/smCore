@@ -310,7 +310,7 @@ class Module
 
 		$tags = array_merge(array($this->_config['identifier']), $tags);
 
-		Application::get('cache')->save($data, $this->_config['cache_ns'] . '_' . $key, $tags, $lifetime);
+		Application::get('cache')->save($this->_config['cache_ns'] . '_' . $key, $data, $tags, $lifetime);
 	}
 
 	/**

@@ -70,6 +70,8 @@ class Language
 						$this->_packageData['names'][$package->package_name] = (int) $package->id_package;
 					}
 				}
+
+				$cache->save('smcore_language_packages', $this->_packageData);
 			}
 		}
 
@@ -135,7 +137,7 @@ class Language
 				$data[$row->string_key] = $row->string_value;
 			}
 
-			$cache->save($data, $cache_key, array('smcore_language', 'smcore_language_' . $this->_code));
+			$cache->save($cache_key, $data, array('smcore_language', 'smcore_language_' . $this->_code));
 		}
 
 		$this->_addStrings($data);
@@ -274,7 +276,7 @@ class Language
 			$compiled = array();
 			$this->_compileStrings(array(), $strings, $compiled);
 
-			$cache->save($compiled, $cache_name, array('core_language', 'core_language_' . $this->language));
+			$cache->save($cache_name, $compiled, array('core_language', 'core_language_' . $this->language));
 		}
 
 		$this->_addStrings($compiled);

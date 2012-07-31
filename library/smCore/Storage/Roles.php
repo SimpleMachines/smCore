@@ -88,7 +88,7 @@ class Roles
 				}
 			}
 
-			$cache->save($this->_loaded_roles, 'core_roles');
+			$cache->save('core_roles', $this->_loaded_roles);
 		}
 
 		return $this->_loaded_roles;

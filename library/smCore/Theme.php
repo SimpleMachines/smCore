@@ -58,7 +58,7 @@ class Theme
 			}
 		
 			$theme = $result->fetch();
-			$cache->save($theme, 'theme_' . $id);
+			$cache->save('theme_' . $id, $theme);
 		}
 	}
 

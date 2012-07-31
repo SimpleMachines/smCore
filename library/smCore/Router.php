@@ -126,7 +126,7 @@ class Router
 		}
 
 		// @todo: Use app constants so we don't have to remember different tags. Application::DEPENDENCY_MODULE_REGISTRY = '...';
-		Application::get('cache')->save($this->_routes, 'core_routes', array('dependency_module_registry'));
+		Application::get('cache')->save('core_routes', $this->_routes, array('dependency_module_registry'));
 	}
 
 	/**

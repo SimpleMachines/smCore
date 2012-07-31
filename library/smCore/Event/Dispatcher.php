@@ -30,7 +30,7 @@ class Dispatcher
 
 	public function __construct()
 	{
-//		if (false === self::$_listeners = Application::get('cache')->load('core_event_listeners'))
+		if (false === self::$_listeners = Application::get('cache')->load('core_event_listeners'))
 		{
 			self::recompile();
 		}
@@ -65,7 +65,7 @@ class Dispatcher
 			}
 		}
 
-		Application::get('cache')->save(self::$_listeners, 'core_event_listeners', array('dependency_module_registry'));
+		Application::get('cache')->save('core_event_listeners', self::$_listeners, array('dependency_module_registry'));
 	}
 
 	public static function fire(Event $event)

@@ -48,7 +48,7 @@ class Languages
 				$this->_languages[$row['language_code']] = $row;
 			}
 
-			$cache->save($this->_languages, 'core_languagestorage');
+			$cache->save('core_languagestorage', $this->_languages);
 
 			// @todo: cache tags
 			// Anything that depends on this should be refreshed

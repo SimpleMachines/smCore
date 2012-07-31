@@ -169,7 +169,7 @@ class Application
 			}
 
 			$theme = $result->fetch();
-			$cache->save($theme, 'theme_' . $id);
+			$cache->save('theme_' . $id, $theme);
 		}
 
 		Twig_Autoloader::register();
