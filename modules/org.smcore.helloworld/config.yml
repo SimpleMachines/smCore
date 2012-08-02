@@ -14,3 +14,4 @@ routes:
     main:
         match: ["", "home"]
         controller: Main
+        method: myMainMethod
