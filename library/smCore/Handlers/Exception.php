@@ -58,9 +58,9 @@ class Exception
 			$response->setBody('Uncaught exception error:<hr /><pre>' . $exception->getMessage() . '</pre>' . ($show_trace ? '<br /><pre>' . print_r($exception->getTrace(), true) . '</pre>' : ''));
 		}
 
-		if ($this->code !== 0)
+		if ($exception->getCode() !== 0)
 		{
-			$response->addHeader($this->code);
+			$response->addHeader($this->getCode());
 		}
 
 		$response->sendOutput();
