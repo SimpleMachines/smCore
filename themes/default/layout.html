@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 {% block head %}
-	<title>{{ page_title|default('smCore') }}</title>
+	<title>{{ page_title is defined ? 'smCore - ' ~ page_title : 'smCore' }}</title>
 	<meta charset="utf-8">
 	<meta name="description" content="">
 	<link rel="stylesheet" href="{{ theme_url }}/css/bootstrap.min.css" type="text/css" />
@@ -33,7 +33,7 @@
 {% block body %}{% endblock %}
 
 		<div id="footer">
-			smCore 1.0 Alpha 1 | smCore &copy;2012, <a href="http://simplemachine.org">Simple Machines</a>
+			&copy;2012 me | <a href="http://smcore.org/">smCore 1.0 Alpha 1</a> &copy;2012, <a href="http://simplemachines.org">Simple Machines</a>
 		</div>
 	</div>
 </body>
