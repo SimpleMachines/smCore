@@ -86,7 +86,8 @@ class Application
 
 		self::set('menu', new Menu());
 
-		$this->_setupTheme();
+		// @todo don't just call this here
+		self::get('theme');
 
 		$router = new Router();
 		$route = $router->match(self::get('request')->getPath());
@@ -115,66 +116,6 @@ class Application
 		}
 
 		$response->sendOutput();
-	}
-
-	// @todo: put this in its own file, a theme storage
-	protected function _setupTheme()
-	{
-		$cache = self::get('cache');
-		$user = self::get('user');
-
-		$id = $user['theme'];
-
-		if (($theme = $cache->load('theme_' . $id)) === false)
-		{
-			$db = self::get('db');
-
-			$result = $db->query("
-				SELECT *
-				FROM {db_prefix}themes
-				WHERE id_theme = {int:id}",
-				array(
-					'id' => $id,
-				)
-			);
-
-			// If the user's theme doesn't exist, try the default theme instead
-			if ($result->rowCount() < 1 && 1 !== $id)
-			{
-				$result = $db->query("
-					SELECT *
-					FROM {db_prefix}themes
-					WHERE id_theme = 1");
-			}
-
-			if ($result->rowCount() < 1)
-			{
-				throw new Exception('exceptions.themes.no_default');
-			}
-
-			$theme = $result->fetch();
-			$cache->save('theme_' . $id, $theme);
-		}
-
-		Twig_Autoloader::register();
-
-		$twig_loader = new Twig_Loader_Filesystem(Settings::THEME_DIR . '/' . $theme['theme_dir']);
-
-		$twig = self::set('twig', new Twig_Environment($twig_loader, array(
-			'cache' => Settings::CACHE_DIR,
-			'recompile' => true,
-			'auto_reload' => true,
-		)));
-
-		$twig->addExtension(new TwigExtension());
-		$twig->addGlobal('scripturl', Settings::URL);
-		$twig->addGlobal('theme_url', trim(Settings::URL, '/?') . '/themes/' . $theme['theme_dir']);
-		$twig->addGlobal('default_theme_url', trim(Settings::URL, '/?') . '/themes/default');
-		$twig->addGlobal('reload_counter', 0);
-		$twig->addGlobal('time_display', date('g:i:s A', time()));
-//		$twig->addLayer('index.tpl', array(
-//			'menu' => self::get('menu'),
-//		));
 	}
 
 	/**
@@ -291,6 +232,39 @@ class Application
 	 */
 	protected function _loadTheme()
 	{
+		$user = self::get('user');
+		$id = $user['theme'];
+		$themes = Storage\Factory::getStorage('Themes');
+
+		try
+		{
+			$theme = $themes->getById($user['theme']);
+		}
+		catch (Exception $e)
+		{
+			if (Settings::DEFAULT_THEME !== $id)
+			{
+				$theme = $themes->getById(Settings::DEFAULT_THEME);
+			}
+		}
+
+		Twig_Autoloader::register();
+
+		$twig_loader = new Twig_Loader_Filesystem(Settings::THEME_DIR . '/' . $theme->getDirectory());
+
+		$twig = self::set('twig', new Twig_Environment($twig_loader, array(
+			'cache' => Settings::CACHE_DIR,
+			'recompile' => true,
+			'auto_reload' => true,
+		)));
+
+		$twig->addExtension(new TwigExtension());
+		$twig->addGlobal('scripturl', Settings::URL);
+		$twig->addGlobal('theme_url', trim(Settings::URL, '/?') . '/themes/' . $theme->getDirectory());
+		$twig->addGlobal('default_theme_url', trim(Settings::URL, '/?') . '/themes/default');
+		$twig->addGlobal('reload_counter', 0); // @todo
+
+		return $theme;
 	}
 
 	/**

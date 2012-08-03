@@ -20,50 +20,53 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Storages;
+namespace smCore\Storage;
+
+use smCore\Application, smCore\Exception, smCore\Model\Theme, smCore\Settings;
 
 class Themes
 {
-	protected static $_themes = array();
+	protected $_cache = array();
 
-	public static function getThemes()
+	public function getAll()
 	{
 	}
 
-	public static function getThemeById($id)
+	public function getById($id)
 	{
-		if (array_key_exists($id, $_themes))
+		$cache = Application::get('cache');
+
+		if (false === $theme = $cache->load('smcore_theme_' . $id))
 		{
-			return $_themes[$id];
+			$db = Application::get('db');
+
+			$result = $db->query("
+				SELECT *
+				FROM {db_prefix}themes
+				WHERE id_theme = {int:id}",
+				array(
+					'id' => $id,
+				)
+			);
+
+			if ($result->rowCount() < 1)
+			{
+				throw new Exception('exceptions.themes.id_doesnt_exist');
+			}
+
+			$theme = $result->fetch();
+			$cache->save('smcore_theme_' . $id, $theme);
 		}
 
-		$result = Application::get('db')->query("
-			SELECT *
-			FROM {db_prefix}themes
-			WHERE id_theme = {int:id}",
-			array(
-				'id' => $id,
-			)
-		);
-		
-		if ($result->rowCount() < 1)
-		{
-			return false;
-		}
-		else
-		{
-			// Mini-caching
-			$_themes[$id] = $result->fetch();
-			return $_themes[$id];
-		}
+		return new Theme($theme['id_theme'], $theme['theme_dir'], $theme['theme_name']);
 	}
 
-	public static function getDefaultTheme()
+	public function getDefault()
 	{
-		return self::getThemeById(Application::APP_DEFAULT_THEME);
+		return $this->getById(Settings::DEFAULT_THEME);
 	}
 
-	public static function getThemePath($id)
+	public function getPathForId($id)
 	{
 	}
 }
