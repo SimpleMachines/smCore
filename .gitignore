@@ -1,7 +1,27 @@
-/nbproject/private/
-/nbproject
-.settings
-.idea
-.buildpath
-.project
-Settings.php
+# smCore
+
+settings.php
+
+
+# OS-generated
+
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+
+# Editor-specific
+
+/*.sublime-project
+*.sublime-workspace
+*.esproj
+
+
+# Other
+
+*~
