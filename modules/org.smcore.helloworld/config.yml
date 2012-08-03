@@ -1,0 +1,17 @@
+name: Hello World Module
+description: |
+    This is the description for the Hello World module.
+identifier: org.smcore.helloworld
+version: 1.0
+author:
+    name: smCore Dev Team
+    website: http://smcore.org
+
+namespace: smCore\HelloWorld
+lang_namespace: helloworld
+
+routes:
+    main:
+        match: ["", "home"]
+        controller: Main
+        method: myMainMethod

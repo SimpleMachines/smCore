@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% set page_title = "An Error Has Occurred!" %}
+
+{% block body %}
+<div class="alert alert-error">
+{%- if code is defined %}
+	<h2>Error {{ code }}</h2>
+{%- else %}
+	<h2>An Error Has Occurred!</h2>
+{%- endif %}
+	{{ error_message }}
+</div>
+{%- endblock %}
