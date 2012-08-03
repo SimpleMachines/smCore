@@ -156,41 +156,33 @@ class Language
 	/**
 	 * Generic keyExists function, lets us know if a specific language key is in the currently loaded strings.
 	 *
-	 * @param string|array $key The key to search for. If this is an array, it will be imploded by the key separator.
-	 * @return boolean Whether or not the key could be found.
+	 * @param string $key The key to search for. If this is an array, it will be imploded by the key separator.
 	 *
-	 * @access public
+	 * @return boolean Whether or not the key could be found.
 	 */
 	public function keyExists($key)
 	{
-		if (is_array($key))
+		if (empty($key) || !is_string($key))
 		{
-			$key = implode('.', $key);
+			throw new Exception('exceptions.lang.empty_index');
 		}
 
 		return array_key_exists($key, $this->_strings);
 	}
 
 	/**
-	 * Retrieve a language string based on index. Arrays are imploded by
-	 * '.' and fed to fierce kittens.
+	 * Retrieve a language string based on index.
 	 *
-	 * @param string|array $key The language string to look for.
-	 * @param array $replacements Array of replacements to sprintf into the string if found.
+	 * @param string $key          The language string to look for.
+	 * @param array  $replacements Array of replacements to sprintf into the string if found.
+	 *
 	 * @return string
-	 *
-	 * @access public
 	 */
 	public function get($key, $replacements = array())
 	{
-		if (empty($key))
+		if (empty($key) || !is_string($key))
 		{
 			throw new Exception('exceptions.lang.empty_index');
-		}
-
-		if (is_array($key))
-		{
-			$key = implode('.', $key);
 		}
 
 		if ($this->keyExists($key))
@@ -206,22 +198,6 @@ class Language
  		// Return the key, so we at least know what's not there
 		return $key;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	/**
@@ -315,8 +291,8 @@ class Language
 	 * This helps with retrieval for humans, who would rather not type out arrays, and machines
 	 * which may or may not like to be speedier in their lookups.
 	 *
-	 * @param array $base The base of the key for this level, to be imploded by $separator
-	 * @param array $strings A key=>value array of strings to compile
+	 * @param array $base     The base of the key for this level, to be imploded by $separator
+	 * @param array $strings  A key=>value array of strings to compile
 	 * @param array $compiled The array in which to store compiled values, passed by reference
 	 */
 	protected function _compileStrings($base, $strings, &$compiled)
@@ -326,9 +302,13 @@ class Language
 			$current_key = array_merge($base, array($key));
 
 			if (is_array($val))
+			{
 				$this->_compileStrings($current_key, $val, $compiled);
+			}
 			else
+			{
 				$compiled[implode('.', $current_key)] = $val;
+			}
 		}
 	}
 }
