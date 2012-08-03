@@ -57,9 +57,17 @@ class Module
 			$this->_config['settings'] = array();
 		}
 
-		$this->_config['cache_ns'] = str_replace('.', '_', $this->_config['identifier']);
+		$this->_config['cache_namespace'] = str_replace('.', '_', $this->_config['identifier']);
 
-		Application::get('twig')->getLoader()->addPath($this->_template_dir);
+		if (!empty($this->_config['lang_namespace']))
+		{
+			$this->_lang_prefix = $this->_config['lang_namespace'] . '.';
+		}
+
+		if (is_dir($this->_template_dir))
+		{
+			Application::get('twig')->getLoader()->addPath($this->_template_dir);
+		}
 	}
 
 	/**
@@ -81,16 +89,16 @@ class Module
 		}
 
 		$controllerClass = $this->_config['namespace'] . '\\Controllers\\' . $controller;
-		$controller = new $controllerClass($this);
+		$controllerObject = new $controllerClass($this);
 
-		if (!is_callable(array($controller, $method)))
+		if (!is_callable(array($controllerObject, $method)))
 		{
-			throw new Exception('exceptions.modules.method_not_callable');
+			throw new Exception(array('exceptions.modules.method_not_callable', $controller, $method));
 		}
 
-		$controller->preDispatch();
-		$output = $controller->$method();
-		$controller->postDispatch();
+		$controllerObject->preDispatch();
+		$output = $controllerObject->$method();
+		$controllerObject->postDispatch();
 
 		$this->_has_dispatched = true;
 
@@ -290,7 +298,7 @@ class Module
 
 		$tags = array_merge(array($this->_config['identifier']), $tags);
 
-		Application::get('cache')->save($this->_config['cache_ns'] . '_' . $key, $data, $tags, $lifetime);
+		Application::get('cache')->save($this->_config['cache_namespace'] . '_' . $key, $data, $tags, $lifetime);
 	}
 
 	/**
@@ -305,7 +313,7 @@ class Module
 			throw new Exception('exceptions.modules.invalid_cache_key');
 		}
 
-		return Application::get('cache')->load($this->_config['cache_ns'] . '_' . $key);
+		return Application::get('cache')->load($this->_config['cache_namespace'] . '_' . $key);
 	}
 
 	/**
@@ -320,7 +328,7 @@ class Module
 			throw new Exception('exceptions.modules.invalid_cache_key');
 		}
 
-		return Application::get('cache')->test($this->_config['cache_ns'] . '_' . $key);
+		return Application::get('cache')->test($this->_config['cache_namespace'] . '_' . $key);
 	}
 
 	/**
