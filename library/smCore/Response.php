@@ -98,7 +98,6 @@ class Response
 			$this->_headers[] = $header;
 		}
 
-		// Allow header chaining
 		return $this;
 	}
 
@@ -141,6 +140,20 @@ class Response
 		echo $this->_body;
 
 		die();
+	}
+
+	public function redirect($url, $permanent = false)
+	{
+		if (!preg_match('/^https?:\/\//', $url))
+		{
+			$url = Settings::URL . '/' . ltrim($url, '/');
+		}
+
+		$this
+			->addHeader($permanent ? 301 : 307)
+			->addHeader('Location: ' . $url)
+			->sendOutput()
+		;
 	}
 
 	/**
