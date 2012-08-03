@@ -28,8 +28,8 @@ class Module
 {
 	protected $_application;
 
-	protected $_template_dir = null;
-	protected $_language_dir = null;
+	protected $_template_dir;
+	protected $_lang_prefix = '';
 
 	protected $_directory;
 	protected $_config;
@@ -50,7 +50,6 @@ class Module
 		$this->_config = $config;
 		$this->_directory = $directory;
 
-		$this->_language_dir = $this->_directory . '/Languages/';
 		$this->_template_dir = $this->_directory . '/Views/';
 
 		if (empty($this->_config['settings']))
@@ -190,12 +189,12 @@ class Module
 	 */
 	public function lang($key, array $replacements = array())
 	{
-		if (Application::get('lang')->keyExists($key))
+		if (Application::get('lang')->keyExists($this->_lang_prefix . $key))
 		{
-			return Application::get('lang')->get(array($key), $replacements);
+			return Application::get('lang')->get($this->_lang_prefix . $key, $replacements);
 		}
 
-		return is_array($key) ? implode('.', $key) : $key;
+		return $key;
 	}
 
 	/**
@@ -208,7 +207,7 @@ class Module
 	 */
 	public function throwLangException($key, array $replacements = array())
 	{
-		throw new Exception($this->lang($key, $replacements));
+		throw new Exception($this->lang($this->_lang_prefix . $key, $replacements));
 	}
 
 	/**
