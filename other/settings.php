@@ -36,6 +36,7 @@ class Settings
 		'adapter' => 'file',
 		// other options can be added here dependant upon the adapter type
 		/*
+		 * these are the key options
 		file
 			string dir
 		memcached
