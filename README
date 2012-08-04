@@ -1,16 +1,8 @@
 This is smCore, the basis of SMF 3
 Currently this is pre-alpha so don't expect anything to stay as it is.
+Also, don't expect it to work very well either... you are warned.
 
 Before using you need to configure your settings in /path/to/smCore/other/settings.php
 A database dump will also be needed.
 
 Currently only MySQL is supported.
-
-----
-Frustrate's comments:
-
-A few things about this repo:
-
-1. It's not set up very well. Sorry about that, I'll clean it up as soon as I remember that I wrote this.
-
-2. I tend to break things. I also change my mind a few times a week and make stupid coding decisions just as often. I usually notice my mistakes sooner or later, though.
