@@ -7,7 +7,6 @@ class Settings
 	const PATH = '/home/my_site/public_html';
 	const MODULE_DIR = '/home/my_site/public_html/modules';
 	const THEME_DIR = '/home/my_site/public_html/themes';
-	const CACHE_DIR = '/home/my_site/public_html/cache';
 
 	const URL = 'http://www.youdidntchangeyoursettingsfile.lol';
 
@@ -23,7 +22,7 @@ class Settings
 	const MAIL_FROM_NAME = '';
 
 	const UNIQUE_8 = '07h8fAN4';
-
+	
 	public static $database = array(
 		'driver' => 'PDOMySql',
 		'host' => 'localhost',
@@ -31,5 +30,20 @@ class Settings
 		'password' => '',
 		'dbname' => '',
 		'prefix' => 'smcore_',
+	);
+	
+	public static $cache = array(
+		'adapter' => 'file',
+		// other options can be added here dependant upon the adapter type
+		/*
+		file
+			string dir
+		memcached
+			array_string servers
+			bool persistent
+			int connect_timeout
+			int retry_timeout
+		*/
+		'dir' => '/home/my_site/public_html/cache',
 	);
 }
