@@ -40,8 +40,8 @@ class Roles
 		}
 
 		$cache = Application::get('cache');
-
-		if (false === $this->_loaded_roles = $cache->load('core_roles'))
+		$this->_loaded_roles = $cache->load('core_roles');
+		if (!is_array($this->_loaded_roles))
 		{
 			$db = Application::get('db');
 
