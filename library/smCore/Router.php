@@ -97,7 +97,8 @@ class Router
 	 */
 	protected function _loadRoutes()
 	{
-		if (false !== $this->_routes = Application::get('cache')->load('core_routes'))
+		$this->_routes = Application::get('cache')->load('core_routes');
+		if (is_array($this->_routes))
 		{
 			return;
 		}
