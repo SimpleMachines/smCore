@@ -32,9 +32,10 @@ class Languages
 	public function __construct()
 	{
 		$cache = Application::get('cache');
+		$this->_languages = $cache->load('core_languagestorage');
 
 		// Load the configs
-		if (false === $this->_languages = $cache->load('core_languagestorage'))
+		if (!is_array($this->_languages))
 		{
 			$db = Application::get('db');
 
@@ -78,7 +79,7 @@ class Languages
 			return $this->getByCode(Settings::DEFAULT_LANG);
 		}
 
-		throw new Exception('There\'s been a bit of a problem loading the language strings.');
+		throw new Exception('There\'s been a bit of a problem loading the language strings. ('.$code.')');
 	}
 
 	public function getAll()
