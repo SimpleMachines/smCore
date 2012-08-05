@@ -1,3 +1,4 @@
 # the following two protect our settings files
 RedirectMatch 403 ^.*/settings.php
 RedirectMatch 403 ^.*/other/*
+RedirectMatch 403 ^.*/cache/*
