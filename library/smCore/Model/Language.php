@@ -47,8 +47,8 @@ class Language
 		if (null === $this->_packageData)
 		{
 			$cache = Application::get('cache');
-
-//			if (false === $this->_packageData = $cache->load('smcore_language_packages'))
+			$this->_packageData = $cache->load('smcore_language_packages');
+			if (false === $this->_packageData)
 			{
 				$db = Application::get('db');
 
@@ -122,7 +122,7 @@ class Language
 			$result = $db->query("
 				SELECT string_key, string_value
 				FROM {db_prefix}lang_strings
-				WHERE string_package = {int:id}",
+				WHERE id_package = {int:id}",
 				array(
 					'id' => $id_package,
 				)
