@@ -27,9 +27,10 @@ use smCore\Settings;
 class File extends AbstractDriver
 {
 	
-	public function __construct( $opts )
+    public function __construct( $opts )
 	{
 		$this->DIR = Settings::$cache['dir'];
+		$this->DEFAULT_TTL = parent::DEFAULT_TTL;
 	}
 	
 	public function load($key)
@@ -43,7 +44,7 @@ class File extends AbstractDriver
 			@include($this->DIR . '/data_' . $key . '.php');
 			if (!empty($expired) && isset($value))
 			{
-				@unlink($cachedir . '/data_' . $key . '.php');
+				@unlink($this->DIR . '/data_' . $key . '.php');
 				unset($value);
 			}
 		}
@@ -55,7 +56,7 @@ class File extends AbstractDriver
 		// set our time to live
 		$ttl = $ttl ? $ttl : $this->DEFAULT_TTL;
 		// work out our data
-		$value = $value === null ? null : serialize($value);
+		$value = $data === null ? null : serialize($data);
 		// if it's null then lets just remove the file
 		if ($value === null)
 			$this->remove($key);
@@ -64,7 +65,7 @@ class File extends AbstractDriver
 			// define our key
 			$key = $this->makeKey($key);
 			// build our file
-			$cache_data = '<' . '?' . 'php if (!defined(\'SMF\')) die; if (' . (time() + $ttl) . ' < time()) $expired = true; else{$expired = false; $value = \'' . addcslashes($value, '\\\'') . '\';}' . '?' . '>';
+			$cache_data = '<' . '?' . 'php if (' . (time() + $ttl) . ' < time()) $expired = true; else{$expired = false; $value = \'' . addcslashes($value, '\\\'') . '\';}' . '?' . '>';
 			$fh = @fopen($this->DIR . '/data_' . $key . '.php', 'w');
 			if ($fh)
 			{
@@ -96,7 +97,7 @@ class File extends AbstractDriver
 
 	public function clean($mode, array $tags = array())
 	{
-		// !!! would probably be better to empty the data_* files
+		// !!! would probably be better to empty the data_*.php files
 		// remove the directory and it's content
 		@rmdir($this->DIR);
 		// now rebuild the directory
@@ -113,6 +114,6 @@ class File extends AbstractDriver
 
 	// this function makes calculating the key easier
 	protected function makeKey($key) {
-		return md5(Settings::UNIQUE_8 . '-SMC-' . strtr($key, ':/', '-_'));
+		return md5(Settings::UNIQUE_8 . '-SMC-' . strtr($this->_normalize($key), ':/', '-_'));
 	}
 }
