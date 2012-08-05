@@ -44,11 +44,12 @@ class Language
 
 	protected function _getPackageData()
 	{
-		if (null === $this->_packageData)
+		if (!is_array($this->_packageData))
 		{
 			$cache = Application::get('cache');
 			$this->_packageData = $cache->load('smcore_language_packages');
-			if (false === $this->_packageData)
+			// if it's not an array from the cache then we need to load it
+			if (!is_array($this->_packageData))
 			{
 				$db = Application::get('db');
 
@@ -114,8 +115,8 @@ class Language
 		$cache = Application::get('cache');
 
 		$cache_key = 'lang_package_' . (int) $id_package;
-
-		if ($force_recompile || false === $data = $cache->load($cache_key))
+		$data = $cache->load($cache_key);
+		if ($force_recompile || !is_array($data) )
 		{
 			$db = Application::get('db');
 
