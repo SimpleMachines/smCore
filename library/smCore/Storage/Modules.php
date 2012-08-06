@@ -39,10 +39,56 @@ class Modules
 		// Load the configs
 		if (false === $this->_moduleData = $cache->load('core_module_registry_data'))
 		{
-			$iterator = new DirectoryIterator(Settings::MODULE_DIR);
 			$this->_moduleData = array();
 
 			$reader = IOFactory::getReader('yaml');
+
+			// Load internal modules first
+			$iterator = new DirectoryIterator(dirname(__DIR__) . '/Modules');
+
+			foreach ($iterator as $module)
+			{
+				if ($module->isDot() || !$module->isDir() || !file_exists($module->getPathname() . '/config.yml'))
+				{
+					continue;
+				}
+
+				try
+				{
+					$config = $reader::read($module->getPathname() . '/config.yml');
+
+					if (empty($config))
+					{
+						continue;
+					}
+				}
+				catch (\Exception $e)
+				{
+					// @todo: error
+					continue;
+				}
+
+				if (empty($config['identifier']))
+				{
+					throw new Exception(array('exceptions.modules.no_identifier', basename($module->getPathname())));
+				}
+
+				if (array_key_exists($config['identifier'], $this->_moduleData))
+				{
+					throw new Exception(array(
+						'exceptions.modules.identifier_taken',
+						basename($module->getPathname()),
+						basename($this->_moduleData[$config['identifier']]['directory'])
+					));
+				}
+
+				$this->_moduleData[$config['identifier']] = array(
+					'config' => $config,
+					'directory' => $module->getPathname(),
+				);
+			}
+
+			$iterator = new DirectoryIterator(Settings::MODULE_DIR);
 
 			foreach ($iterator as $module)
 			{
