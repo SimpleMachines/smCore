@@ -22,93 +22,144 @@
 
 namespace smCore\Model;
 
-use smCore\Application, smCore\Settings, smCore\Storage\Factory as StorageFactory;
+use smCore\Application, smCore\Event, smCore\Exception, smCore\Settings, smCore\Storage;
 use ArrayAccess;
 
 class User implements ArrayAccess
 {
 	// Data for this user
-	protected $_primary_role;
-	protected $_additional_roles;
 	protected $_data = array();
 
-	public function __construct($id)
+	public function __construct(array $data = null)
 	{
-		if (!is_int($id))
+		$roles = Storage\Factory::factory('Roles');
+
+		// Set some defaults to begin with
+		$this->_data = array(
+			'id' => 0,
+			'ip' => Application::get('input')->server->getRaw('REMOTE_ADDR'),
+			'display_name' => 'Guest', // @todo lang string
+			'language' => Settings::DEFAULT_LANG,
+			'theme' => (int) Settings::DEFAULT_THEME,
+			'user_token' => false, // @todo
+			'roles' => array(
+				'primary' => $roles->getRoleById($roles::ROLE_GUEST),
+				'additional' => array(),
+			),
+		);
+
+		if (null !== $data)
 		{
-			throw new Exception('Invalid user ID.');
-		}
-
-		$roles = StorageFactory::getStorage('Roles');
-
-		if ($id > 0)
-		{
-			$cache = Application::get('cache');
-
-			//if (null === $data = $cache->load('core_user_' . $id))
-			{
-				$db = Application::get('db');
-
-				$result = $db->query("
-					SELECT *
-					FROM {db_prefix}users
-					WHERE id_user = {int:id}",
-					array(
-						'id' => $id,
-					)
-				);
-
-				if ($result->rowCount() < 1)
-				{
-					throw new Exception('Tried to load a user with an invalid ID.');
-				}
-
-				$data = $result->fetch();
-
-				$cache->save($data, 'core_user_' . $id);
-			}
-
-			$this->_primary_role = $roles->getRoleById($data['user_primary_role']);
-
-			$this->_data = $data;
-
-			// Some shortcuts. We should just make a new array, probably.
-			$this->_data['id'] = (int) $data['id_user'];
-			$this->_data['ip'] = Application::get('input')->server->getRaw('REMOTE_ADDR');
-			$this->_data['theme'] = (int) $data['user_theme'];
-			$this->_data['language'] = $data['user_language'] ?: Settings::DEFAULT_LANG;
-			$this->_data['display_name'] = $data['user_display_name'];
-
-			if (!empty($data['user_additional_roles']))
-			{
-			}
-		}
-		else
-		{
-			$this->_data = array(
-				'id' => 0,
-				'ip' => Application::get('input')->server->getRaw('REMOTE_ADDR'),
-				'display_name' => 'Guest',
-				'language' => Settings::DEFAULT_LANG,
-				'theme' => (int) Settings::DEFAULT_THEME,
-				'user_token' => false,
-			);
-
-			$this->_primary_role = $roles->getRoleById($roles::ROLE_GUEST);
+			$this->setData($data);
 		}
 	}
 
+	public function setData(array $data)
+	{
+		if (!empty($data['id_user']) && empty($this->_data['id_user']))
+		{
+			if (!ctype_digit($data['id_user']) || 0 > (int) $data['id_user'])
+			{
+				throw new Exception('User ID must be a positive integer.');
+			}
+
+			$this->_data['id'] = (int) $data['id_user'];
+		}
+
+		if (!empty($data['user_primary_role']))
+		{
+			$roles = Storage\Factory::factory('Roles');
+
+			$this->_data['roles']['primary'] = $roles->getRoleById($data['user_primary_role']);
+		}
+
+		if (!empty($data['user_additional_roles']))
+		{
+			$roles = Storage\Factory::factory('Roles');
+
+			// @todo should this be in a separate table? I think so.
+			$temp = explode(',', $data['user_additional_roles']);
+
+			foreach ($temp as $role)
+			{
+				$this->_data['roles']['additional'][] = $roles->getRoleById($role);
+			}
+		}
+
+		if (!empty($data['user_theme']))
+		{
+			$this->_data['theme'] = (int) $data['user_theme'];
+		}
+
+		if (!empty($data['user_language']))
+		{
+			$this->_data['language'] = $data['user_language'];
+		}
+
+		if (!empty($data['user_login']))
+		{
+			$this->_data['login'] = $data['user_login'];
+		}
+
+		if (!empty($data['user_display_name']))
+		{
+			$this->_data['display_name'] = $data['user_display_name'];
+		}
+
+		if (!empty($data['user_email']))
+		{
+			$this->_data['email'] = $data['user_email'];
+		}
+
+		$event = new Event($this, 'org.smcore.user_data_set', array(
+			'data' => $data,
+		));
+
+		Application::get('events')->fire($event);
+
+		return $this;
+	}
+
+	public function setPassword($password)
+	{
+		return $this;
+	}
+
+	/**
+	 * Save this user's information to the database.
+	 *
+	 * @return boolean
+	 */
+	public function save()
+	{
+		return Storage\Factory::factory('Users')->save($this);
+	}
+
+	/**
+	 * Check to see if the user has a certain permission.
+	 *
+	 * @param string $name The full name of the permission to check (i.e. 'org.simplemachines.forum.can_edit_posts')
+	 *
+	 * @return boolean
+	 */
 	public function hasPermission($name)
 	{
 		// Try the primary role first
-		$primary = $this->_primary_role->hasPermission($name);
-
-		if (null !== $primary)
+		if (null !== $result = $this->_data['roles']['primary']->hasPermission($name))
 		{
-			return $primary;
+			return $result;
 		}
 
-		// @todo: Try additional roles too
+		if (!empty($this->_data['roles']['additional']))
+		{
+			foreach ($this->_data['roles']['additional'] as $role)
+			{
+				if (null !== $result = $role->hasPermission($name))
+				{
+					return $result;
+				}
+			}
+		}
 
 		return false;
 	}
@@ -139,4 +190,5 @@ class User implements ArrayAccess
 	{
 		unset($this->_data[$offset]);
 	}
+
 }
