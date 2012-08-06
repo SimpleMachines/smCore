@@ -26,7 +26,7 @@
 
 namespace smCore;
 
-use smCore\Event, smCore\Storage, smCore\Handlers, smCore\Cache, smCore\Db;
+use smCore\Storage, smCore\Handlers, smCore\Cache, smCore\Db;
 use Twig_Autoloader, Twig_Environment, Twig_Loader_Filesystem;
 use Inspekt, Inspekt_Cage;
 
@@ -76,8 +76,9 @@ class Application
 		$request = self::set('request', new Request);
 		$response = self::set('response', new Response);
 
+		$dispatcher = self::set('events', new EventDispatcher());
+		$dispatcher->setListeners(Storage\Factory::factory('Events')->getActiveListeners());
 
-		self::set('event_dispatcher', new Event\Dispatcher());
 		$user = self::set('user', Storage\Factory::factory('Users')->getCurrentUser());
 
 		self::set('modules', Storage\Factory::factory('Modules'));
@@ -88,6 +89,8 @@ class Application
 
 		// @todo don't just call this here
 		self::get('theme');
+
+		$dispatcher->fire(new Event(null, 'org.smcore.core.pre_router'));
 
 		$router = new Router();
 		$route = $router->match(self::get('request')->getPath());
@@ -110,10 +113,9 @@ class Application
 
 			$returned = $module->runControllerMethod($route['controller'], $route['method']);
 			$response->setBody($returned);
-
-			$post_router_event = new Event(null, 'org.smcore.core.post_router');
-			$post_router_event->fire();
 		}
+
+		$dispatcher->fire(new Event(null, 'org.smcore.core.post_router'));
 
 		$response->sendOutput();
 	}
