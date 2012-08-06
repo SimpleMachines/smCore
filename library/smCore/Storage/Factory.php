@@ -26,70 +26,22 @@ class Factory
 {
 	protected static $_storages = array();
 
-	public static function getStorage($name)
+	public static function factory($name)
 	{
-		$name = strtolower($name);
+		$name = ucfirst($name);
 
-		if ('themes' === $name)
+		if (!empty(self::$_storages[$name]))
 		{
-			if (empty(self::$_storages['themes']))
-			{
-				self::$_storages['themes'] = new Themes();
-			}
-
-			return self::$_storages['themes'];
+			return self::$_storages[$name];
 		}
 
-		if ('roles' === $name)
+		if (file_exists(__DIR__ . '/' . $name . '.php'))
 		{
-			if (empty(self::$_storages['roles']))
-			{
-				self::$_storages['roles'] = new Roles();
-			}
-
-			return self::$_storages['roles'];
+			$class = 'smCore\\Storage\\' . $name;
+			return self::$_storages[$name] = new $class();
 		}
 
-		if ('users' === $name)
-		{
-			if (empty(self::$_storages['users']))
-			{
-				self::$_storages['users'] = new Users();
-			}
-
-			return self::$_storages['users'];
-		}
-
-		if ('modules' === $name)
-		{
-			if (empty(self::$_storages['modules']))
-			{
-				self::$_storages['modules'] = new Modules();
-			}
-
-			return self::$_storages['modules'];
-		}
-
-		if ('sessions' === $name)
-		{
-			if (empty(self::$_storages['sessions']))
-			{
-				self::$_storages['sessions'] = new Sessions();
-			}
-
-			return self::$_storages['sessions'];
-		}
-
-		if ('languages' === $name)
-		{
-			if (empty(self::$_storages['languages']))
-			{
-				self::$_storages['languages'] = new Languages();
-			}
-
-			return self::$_storages['languages'];
-		}
-
+		// @todo: throw exception?
 		return null;
 	}
 }

@@ -76,12 +76,12 @@ class Application
 		$request = self::set('request', new Request);
 		$response = self::set('response', new Response);
 
-		$user = self::set('user', Storage\Factory::getStorage('Users')->getCurrentUser());
 
-		self::set('modules', Storage\Factory::getStorage('Modules'));
 		self::set('event_dispatcher', new Event\Dispatcher());
+		$user = self::set('user', Storage\Factory::factory('Users')->getCurrentUser());
 
-		$lang = self::set('lang', Storage\Factory::getStorage('Languages')->getByCode($user['language']));
+		self::set('modules', Storage\Factory::factory('Modules'));
+		$lang = self::set('lang', Storage\Factory::factory('Languages')->getByCode($user['language']));
 		$lang->loadPackageByName('org.smcore.common');
 
 		self::set('menu', new Menu());
@@ -234,7 +234,7 @@ class Application
 	{
 		$user = self::get('user');
 		$id = $user['theme'];
-		$themes = Storage\Factory::getStorage('Themes');
+		$themes = Storage\Factory::factory('Themes');
 
 		try
 		{
