@@ -22,7 +22,7 @@
 
 namespace smCore\Storage;
 
-use smCore\Application, smCore\Settings, smCore\Model\User, smCore\Exception, smCore\Security\Session;
+use smCore\Application, smCore\Exception, smCore\Model\User, smCore\Security\Session, smCore\Settings;
 
 class Users
 {
@@ -53,14 +53,76 @@ class Users
 		return $this->_current_user;
 	}
 
-	public function getUserById($id)
+	public function getUserByName($name)
 	{
-		if (!is_int($id))
+		$db = Application::get('db');
+
+		$result = $db->query("
+			SELECT *
+			FROM {db_prefix}users
+			WHERE user_login = {string:name}
+				OR user_display_name = {string:name}",
+			array(
+				'name' => $name,
+			)
+		);
+
+		if ($result->rowCount() < 1)
 		{
-			throw new Exception('Invalid user ID');
+			return false;
 		}
 
-		// @todo: load user from database info
-		return new User($id);
+		$row = $result->fetch();
+		$user = new User((int) $row['id_user']);
+		$user->setData($row);
+
+		return $user;
+	}
+
+	public function getUserById($id)
+	{
+		// The User class will check if this is a good ID.
+		$user = new User(array(
+			'id_user' => $id
+		));
+
+		if ($id < 1)
+		{
+			return $user;
+		}
+
+		$cache = Application::get('cache');
+
+		// If we've already fetched the data, there's no reason to grab it again
+		if (null === $data = $cache->load('user_data_' . $id))
+		{
+			$db = Application::get('db');
+
+			$result = $db->query("
+				SELECT *
+				FROM {db_prefix}users
+				WHERE id_user = {int:id}",
+				array(
+					'id' => $id,
+				)
+			);
+
+			if ($result->rowCount() < 1)
+			{
+				throw new Exception('Tried to load a user with an invalid ID.');
+			}
+
+			$data = $result->fetch();
+
+			$cache->save($data, 'user_data_' . $id);
+		}
+
+		$this->setData($data);
+
+		return $user;
+	}
+
+	public function save(User $user)
+	{
 	}
 }

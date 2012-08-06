@@ -62,7 +62,7 @@ class Role
 
 		if ($this->_inherits !== null)
 		{
-			$inherits = StorageFactory::getStorage('roles')->getRoleById($this->_inherits)->hasPermission($name, $recursion + 1);
+			$inherits = StorageFactory::factory('Roles')->getRoleById($this->_inherits)->hasPermission($name, $recursion + 1);
 
 			if ($inherits !== null)
 			{

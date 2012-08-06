@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore 
+ * smCore Filesystem File Class
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,28 +20,11 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Storage;
+namespace smCore\Filesystem;
 
-class Factory
+class File
 {
-	protected static $_storages = array();
-
-	public static function factory($name)
+	public function __construct($path)
 	{
-		$name = ucfirst($name);
-
-		if (!empty(self::$_storages[$name]))
-		{
-			return self::$_storages[$name];
-		}
-
-		if (file_exists(__DIR__ . '/' . $name . '.php'))
-		{
-			$class = 'smCore\\Storage\\' . $name;
-			return self::$_storages[$name] = new $class();
-		}
-
-		// @todo: throw exception?
-		return null;
 	}
 }

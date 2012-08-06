@@ -1,4 +1,8 @@
-A few things about this repo:
+# smCore
+
+
+
+# Miscellaneous
 
 1. It's not set up very well. Sorry about that, I'll clean it up as soon as I remember that I wrote this.
 

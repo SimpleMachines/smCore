@@ -28,8 +28,8 @@ class Module
 {
 	protected $_application;
 
-	protected $_template_dir = null;
-	protected $_language_dir = null;
+	protected $_template_dir;
+	protected $_lang_prefix = '';
 
 	protected $_directory;
 	protected $_config;
@@ -50,7 +50,6 @@ class Module
 		$this->_config = $config;
 		$this->_directory = $directory;
 
-		$this->_language_dir = $this->_directory . '/Languages/';
 		$this->_template_dir = $this->_directory . '/Views/';
 
 		if (empty($this->_config['settings']))
@@ -58,9 +57,17 @@ class Module
 			$this->_config['settings'] = array();
 		}
 
-		$this->_config['cache_ns'] = str_replace('.', '_', $this->_config['identifier']);
+		$this->_config['cache_namespace'] = str_replace('.', '_', $this->_config['identifier']);
 
-		Application::get('twig')->getLoader()->addPath($this->_template_dir);
+		if (!empty($this->_config['lang_namespace']))
+		{
+			$this->_lang_prefix = $this->_config['lang_namespace'] . '.';
+		}
+
+		if (is_dir($this->_template_dir))
+		{
+			Application::get('twig')->getLoader()->addPath($this->_template_dir);
+		}
 	}
 
 	/**
@@ -82,16 +89,16 @@ class Module
 		}
 
 		$controllerClass = $this->_config['namespace'] . '\\Controllers\\' . $controller;
-		$controller = new $controllerClass($this);
+		$controllerObject = new $controllerClass($this);
 
-		if (!is_callable(array($controller, $method)))
+		if (!is_callable(array($controllerObject, $method)))
 		{
-			throw new Exception('exceptions.modules.method_not_callable');
+			throw new Exception(array('exceptions.modules.method_not_callable', $controller, $method));
 		}
 
-		$controller->preDispatch();
-		$output = $controller->$method();
-		$controller->postDispatch();
+		$controllerObject->preDispatch();
+		$output = $controllerObject->$method();
+		$controllerObject->postDispatch();
 
 		$this->_has_dispatched = true;
 
@@ -190,12 +197,12 @@ class Module
 	 */
 	public function lang($key, array $replacements = array())
 	{
-		if (Application::get('lang')->keyExists($key))
+		if (Application::get('lang')->keyExists($this->_lang_prefix . $key))
 		{
-			return Application::get('lang')->get(array($key), $replacements);
+			return Application::get('lang')->get($this->_lang_prefix . $key, $replacements);
 		}
 
-		return is_array($key) ? implode('.', $key) : $key;
+		return $key;
 	}
 
 	/**
@@ -208,7 +215,7 @@ class Module
 	 */
 	public function throwLangException($key, array $replacements = array())
 	{
-		throw new Exception($this->lang($key, $replacements));
+		throw new Exception($this->lang($this->_lang_prefix . $key, $replacements));
 	}
 
 	/**
@@ -291,7 +298,7 @@ class Module
 
 		$tags = array_merge(array($this->_config['identifier']), $tags);
 
-		Application::get('cache')->save($this->_config['cache_ns'] . '_' . $key, $data, $tags, $lifetime);
+		Application::get('cache')->save($this->_config['cache_namespace'] . '_' . $key, $data, $tags, $lifetime);
 	}
 
 	/**
@@ -306,7 +313,7 @@ class Module
 			throw new Exception('exceptions.modules.invalid_cache_key');
 		}
 
-		return Application::get('cache')->load($this->_config['cache_ns'] . '_' . $key);
+		return Application::get('cache')->load($this->_config['cache_namespace'] . '_' . $key);
 	}
 
 	/**
@@ -321,7 +328,7 @@ class Module
 			throw new Exception('exceptions.modules.invalid_cache_key');
 		}
 
-		return Application::get('cache')->test($this->_config['cache_ns'] . '_' . $key);
+		return Application::get('cache')->test($this->_config['cache_namespace'] . '_' . $key);
 	}
 
 	/**

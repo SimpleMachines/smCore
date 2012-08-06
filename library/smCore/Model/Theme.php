@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore 
+ * smCore Theme Class
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,28 +20,23 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Storage;
+namespace smCore\Model;
 
-class Factory
+class Theme
 {
-	protected static $_storages = array();
+	protected $_id;
+	protected $_directory;
+	protected $_name;
 
-	public static function factory($name)
+	function __construct($id, $directory, $name = '')
 	{
-		$name = ucfirst($name);
+		$this->_id = $id;
+		$this->_directory = $directory;
+		$this->_name = $name;
+	}
 
-		if (!empty(self::$_storages[$name]))
-		{
-			return self::$_storages[$name];
-		}
-
-		if (file_exists(__DIR__ . '/' . $name . '.php'))
-		{
-			$class = 'smCore\\Storage\\' . $name;
-			return self::$_storages[$name] = new $class();
-		}
-
-		// @todo: throw exception?
-		return null;
+	public function getDirectory()
+	{
+		return $this->_directory;
 	}
 }

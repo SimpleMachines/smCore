@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore 
+ * smCore Storage - Events
  *
  * @package smCore
  * @author smCore Dev Team
@@ -22,26 +22,33 @@
 
 namespace smCore\Storage;
 
-class Factory
+use smCore\Application;
+
+class Events
 {
-	protected static $_storages = array();
-
-	public static function factory($name)
+	public function getActiveListeners()
 	{
-		$name = ucfirst($name);
+		$cache = Application::get('cache');
 
-		if (!empty(self::$_storages[$name]))
+		if (false === $events = $cache->load('smcore_active_listeners'))
 		{
-			return self::$_storages[$name];
+			$db = Application::get('db');
+			$events = array();
+
+			$result = $db->query("
+				SELECT *
+				FROM {db_prefix}event_listeners
+				WHERE listener_enabled = 1"
+			);
+
+			if ($result->rowCount() > 0)
+			{
+				$events = $result->fetchAll();
+			}
+
+			$cache->save('smcore_active_listeners', $events);
 		}
 
-		if (file_exists(__DIR__ . '/' . $name . '.php'))
-		{
-			$class = 'smCore\\Storage\\' . $name;
-			return self::$_storages[$name] = new $class();
-		}
-
-		// @todo: throw exception?
-		return null;
+		return $events;
 	}
 }

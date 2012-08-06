@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore 
+ * smCore Filesystem Directory Class
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,28 +20,37 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Storage;
+namespace smCore\Filesystem;
 
-class Factory
+use IteratorAggregate, ArrayIterator;
+
+class Directory implements IteratorAggregate
 {
-	protected static $_storages = array();
+	protected $_path;
+	protected $_files = array();
 
-	public static function factory($name)
+	public function __construct($path, $resolve = true)
 	{
-		$name = ucfirst($name);
-
-		if (!empty(self::$_storages[$name]))
+		if ($resolve)
 		{
-			return self::$_storages[$name];
+			$this->_path = $path;
 		}
-
-		if (file_exists(__DIR__ . '/' . $name . '.php'))
+		else
 		{
-			$class = 'smCore\\Storage\\' . $name;
-			return self::$_storages[$name] = new $class();
+			$this->_path = $path;
 		}
-
-		// @todo: throw exception?
-		return null;
 	}
+
+	public function getIterator()
+	{
+		return new ArrayIterator($this->_files);
+	}
+
+	public function exists()
+	{
+		return file_exists($this->_path);
+	}
+
+
+
 }

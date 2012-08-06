@@ -22,8 +22,6 @@
 
 namespace smCore;
 
-use smCore\Event\Dispatcher;
-
 class Event
 {
 	protected $_owner;
@@ -32,17 +30,18 @@ class Event
 	protected $_value = null;
 	protected $_fired = false;
 
-	public function __construct($owner, $name, $arguments = array())
+	protected $_dispatcher;
+
+	public function __construct($owner, $name, $arguments = null)
 	{
 		$this->_owner = $owner;
 		$this->_name = $name;
-
-		if (!is_array($arguments))
-		{
-			$arguments = array($arguments);
-		}
-
 		$this->_arguments = $arguments;
+	}
+
+	public function setDispatcher(EventDispatcher $dispatcher)
+	{
+		$this->_dispatcher = $dispatcher;
 	}
 
 	public function getOwner()
@@ -68,6 +67,8 @@ class Event
 	public function setValue($value)
 	{
 		$this->_value = $value;
+
+		return $this;
 	}
 
 	public function fired()
@@ -78,7 +79,9 @@ class Event
 	// Just a shortcut to let the dispatcher know to wake up and do something
 	public function fire()
 	{
-		Dispatcher::fire($this);
+		EventDispatcher::fire($this);
 		$this->_fired = true;
+
+		return $this;
 	}
 }

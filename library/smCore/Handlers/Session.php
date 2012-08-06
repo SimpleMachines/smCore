@@ -78,7 +78,7 @@ class Session
 	 */
 	public function read($id)
 	{
-		return StorageFactory::getStorage('sessions')->read($id);
+		return StorageFactory::factory('Sessions')->read($id);
 	}
 
 	/**
@@ -97,7 +97,7 @@ class Session
 			return false;
 		}
 
-		return StorageFactory::getStorage('sessions')->write($id, $data);
+		return StorageFactory::factory('Sessions')->write($id, $data);
 	}
 
 	/**
@@ -110,7 +110,7 @@ class Session
 	public function destroy($id)
 	{
 		// Just delete the row...
-		return StorageFactory::getStorage('sessions')->destroy($id);
+		return StorageFactory::factory('Sessions')->destroy($id);
 	}
 
 	/**
@@ -123,6 +123,6 @@ class Session
 	public function gc($max_lifetime)
 	{
 		// We're going to ignore the max session lifetime
-		StorageFactory::getStorage('sessions')->deleteExpired();
+		StorageFactory::factory('Sessions')->deleteExpired();
 	}
 }

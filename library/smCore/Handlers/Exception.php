@@ -60,7 +60,7 @@ class Exception
 
 		if ($exception->getCode() !== 0)
 		{
-			$response->addHeader($this->getCode());
+			$response->addHeader($exception->getCode());
 		}
 
 		$response->sendOutput();
