@@ -26,8 +26,12 @@ use smCore\Settings;
 
 class File extends AbstractDriver
 {
-	
-    public function __construct( $opts )
+	/**
+	 * Sets some local cache settings
+	 * 
+	 * @param array $opts An array of cache options
+	 */
+	public function __construct( $opts )
 	{
 		$this->DIR = Settings::$cache['dir'];
 		$this->DEFAULT_TTL = parent::DEFAULT_TTL;
@@ -51,6 +55,14 @@ class File extends AbstractDriver
 		return empty($value) ? null : @unserialize($value);
 	}
 
+	/**
+	 * Saves data into the cache
+	 * 
+	 * @param string $key A string which the data is to be stored under.
+	 * @param mixed $data The data to be stored (null will remove the entry)
+	 * @param array $tags The tags this should be stored under (when resetting data in the cache)
+	 * @param int $ttl How long should it be before we remove this piece of data from the cache?
+	 */
 	public function save($key, $data, array $tags = array(), $ttl = null)
 	{
 		// set our time to live
@@ -84,17 +96,29 @@ class File extends AbstractDriver
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public function test($key)
 	{
 		// !!! what should this return?
 		return;
 	}
 
+	/**
+	 * 
+	 * @param type $key
+	 */
 	public function remove($key)
 	{
 		@unlink($this->DIR . '/data_' . $this->makeKey($key) . '.php');
 	}
 
+	/**
+	 * 
+	 * @param type $mode
+	 * @param array $tags
+	 */
 	public function clean($mode, array $tags = array())
 	{
 		// !!! would probably be better to empty the data_*.php files
@@ -106,13 +130,23 @@ class File extends AbstractDriver
 		@file_put_contents($this->DIR . '', '<?php' . "\n" . 'die(\'Hacking attempt...\');' . "\n" . '?>php');
 	}
 
+	/**
+	 * 
+	 * @param type $key
+	 * @return type
+	 */
 	public function getMetadata($key)
 	{
 		// not sure on this either
 		return;
 	}
 
-	// this function makes calculating the key easier
+	/**
+	 * this function makes calculating the key hash easier
+	 * 
+	 * @param string $key
+	 * @return string-32
+	 */
 	protected function makeKey($key) {
 		return md5(Settings::UNIQUE_8 . '-SMC-' . strtr($this->_normalize($key), ':/', '-_'));
 	}
