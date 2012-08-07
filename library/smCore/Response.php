@@ -53,7 +53,6 @@ class Response
 	{
 		// Security.
 		$this
-			->addHeader(200)
 			->addHeader(self::SAMEORIGIN)
 			->addHeader(self::XCONTENTPOLICY)
 		;
@@ -150,16 +149,13 @@ class Response
 			}
 		}
 
-		if (empty($this->_body) && empty($this->_headers['http_response_code']))
+		if (empty($this->_headers['http_response_code']))
 		{
-			// Send a 204 No Content header, because we're nice.
-			header(self::HTTP_204);
+			header(empty($this->_body) ? self::HTTP_204 : self::HTTP_200);
 		}
-		else
-		{
-			// @todo output stuff
-			echo $this->_body;
-		}
+
+		// @todo output stuff
+		echo $this->_body;
 
 		die();
 	}
