@@ -8,7 +8,6 @@
 -- PHP Version: 5.4.0RC4
 -- 
 -- SQL Dump
--- Based off of Sorck's local database
 -- needs tweaking still
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
@@ -144,18 +143,20 @@ INSERT INTO `lang_packages` (`id_package`, `package_name`, `package_type`) VALUE
 --
 
 CREATE TABLE IF NOT EXISTS `lang_strings` (
-  `string_key` varchar(32) NOT NULL,
-  `string_value` varchar(512) NOT NULL,
-  `id_package` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
+  `id_string` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `string_language` smallint(4) unsigned NOT NULL,
+  `string_package` smallint(4) unsigned NOT NULL,
+  `string_key` varchar(255) CHARACTER SET ascii NOT NULL DEFAULT '',
+  `string_value` text NOT NULL,
+  PRIMARY KEY (`id_string`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 --
 -- Dumping data for table `lang_strings`
 --
 
-INSERT INTO `lang_strings` (`string_key`, `string_value`, `id_package`) VALUES
-('exceptions.error_code_404', 'HTTP 404 - Page Not Found', 1),
-('exceptions.error_code_403', 'HTTP 403 - Forbidden', 1);
+INSERT INTO `lang_strings` (`string_key`, `string_value`, `string_package`, `string_lamguage`) VALUES
+('exceptions.error_code_404', 'HTTP 404 - Page Not Found', 1, 1),
+('exceptions.error_code_403', 'HTTP 403 - Forbidden', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -199,9 +200,9 @@ CREATE TABLE IF NOT EXISTS `routes` (
 --
 
 CREATE TABLE IF NOT EXISTS `sessions` (
-  `session_id` char(32) NOT NULL,
-  `last_update` int(10) unsigned NOT NULL,
-  `data` text NOT NULL,
+  `id_session` char(32) NOT NULL,
+  `session_expires` int(10) unsigned NOT NULL,
+  `session_data` text NOT NULL,
   PRIMARY KEY (`session_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
