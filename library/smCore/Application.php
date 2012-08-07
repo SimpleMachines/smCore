@@ -224,7 +224,12 @@ class Application
 	 */
 	protected function _loadCache()
 	{
-		return Cache\Factory::factory(Settings::$cache['adapter'], Settings::$cache);
+		if (!array_key_exists('prefix', Settings::$cache))
+		{
+			Settings::$cache['prefix'] = Settings::UNIQUE_8;
+		}
+
+		return Cache\Factory::factory(Settings::$cache['driver'], Settings::$cache);
 	}
 
 	/**
