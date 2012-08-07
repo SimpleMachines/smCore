@@ -27,32 +27,36 @@ use smCore\Settings;
 class File extends AbstractDriver
 {
 	/**
-	 * Sets some local cache settings
+	 * This is here to satisfy AbstractDriver's conditions
 	 * 
 	 * @param array $opts An array of cache options
 	 */
 	public function __construct( $opts )
 	{
-		$this->DIR = Settings::$cache['dir'];
-		$this->DEFAULT_TTL = parent::DEFAULT_TTL;
 	}
 	
+	/**
+	 * Loads data from yhe file cache
+	 * 
+	 * @param string $key The get that the data is stored under.
+	 * @return mixed The data from the cache or boolean false
+	 */
 	public function load($key)
 	{
 		// this is a revised version of of that from SMF 2.0
-		$key = $this->makeKey($key);
+		$key = $this->_makeKey($key);
 		$value = null;
-		if (file_exists($this->DIR . '/data_' . $key . '.php') && filesize($this->DIR . '/data_' . $key . '.php') > 10)
+		if (file_exists(Settings::CACHE_DIR . '/data_' . $key . '.php') && filesize(Settings::CACHE_DIR . '/data_' . $key . '.php') > 10)
 		{
 			// php will cache file_exists et all, we can't 100% depend on its results so proceed with caution
-			@include($this->DIR . '/data_' . $key . '.php');
+			@include(Settings::CACHE_DIR . '/data_' . $key . '.php');
 			if (!empty($expired) && isset($value))
 			{
-				@unlink($this->DIR . '/data_' . $key . '.php');
+				@unlink(Settings::CACHE_DIR . '/data_' . $key . '.php');
 				unset($value);
 			}
 		}
-		return empty($value) ? null : @unserialize($value);
+		return empty($value) ? false : @unserialize($value);
 	}
 
 	/**
@@ -66,7 +70,7 @@ class File extends AbstractDriver
 	public function save($key, $data, array $tags = array(), $ttl = null)
 	{
 		// set our time to live
-		$ttl = $ttl ? $ttl : $this->DEFAULT_TTL;
+		$ttl = $ttl ? $ttl : parent::DEFAULT_TTL;
 		// work out our data
 		$value = $data === null ? null : serialize($data);
 		// if it's null then lets just remove the file
@@ -75,10 +79,10 @@ class File extends AbstractDriver
 		else
 		{
 			// define our key
-			$key = $this->makeKey($key);
+			$key = $this->_makeKey($key);
 			// build our file
 			$cache_data = '<' . '?' . 'php if (' . (time() + $ttl) . ' < time()) $expired = true; else{$expired = false; $value = \'' . addcslashes($value, '\\\'') . '\';}' . '?' . '>';
-			$fh = @fopen($this->DIR . '/data_' . $key . '.php', 'w');
+			$fh = @fopen(Settings::CACHE_DIR . '/.data_' . $key . '.php', 'w');
 			if ($fh)
 			{
 				// Write the file.
@@ -91,13 +95,15 @@ class File extends AbstractDriver
 				// Check that the cache write was successful; all the data should be written
 				// If it fails due to low diskspace, remove the cache file
 				if ($cache_bytes != strlen($cache_data))
-					@unlink($this->DIR . '/data_' . $key . '.php');
+					@unlink(Settings::CACHE_DIR . '/data_' . $key . '.php');
 			}
 		}
 	}
 
 	/**
 	 * 
+	 * @param type $key
+	 * @return type
 	 */
 	public function test($key)
 	{
@@ -106,12 +112,13 @@ class File extends AbstractDriver
 	}
 
 	/**
+	 * Removes a cache item with key $key from the file cache.
 	 * 
-	 * @param type $key
+	 * @param type $key The key of the item to remove.
 	 */
 	public function remove($key)
 	{
-		@unlink($this->DIR . '/data_' . $this->makeKey($key) . '.php');
+		@unlink(Settings::CACHE_DIR . '/data_' . $this->_makeKey($key) . '.php');
 	}
 
 	/**
@@ -123,11 +130,11 @@ class File extends AbstractDriver
 	{
 		// !!! would probably be better to empty the data_*.php files
 		// remove the directory and it's content
-		@rmdir($this->DIR);
+		@rmdir(Settings::CACHE_DIR);
 		// now rebuild the directory
-		mkdir($this->DIR);
-		@file_put_contents($this->DIR . '/.htaccess', 'deny from all');
-		@file_put_contents($this->DIR . '', '<?php' . "\n" . 'die(\'Hacking attempt...\');' . "\n" . '?>php');
+		mkdir(Settings::CACHE_DIR);
+		@file_put_contents(Settings::CACHE_DIR . '/.htaccess', 'deny from all');
+		@file_put_contents(Settings::CACHE_DIR . '', '<?php' . "\n" . 'die(\'Hacking attempt...\');' . "\n" . '?>php');
 	}
 
 	/**
@@ -142,12 +149,19 @@ class File extends AbstractDriver
 	}
 
 	/**
-	 * this function makes calculating the key hash easier
+	 * This calculates the internal cache key hash.
 	 * 
-	 * @param string $key
-	 * @return string-32
+	 * This makes the hash of the provided key. You do NOT need
+	 * to touch this function before requesting/saving cache
+	 * data. It is a purely internal method for the file cache
+	 * driver.
+	 * 
+	 * @param string $key The key which requires a hash to be generated.
+	 * @return string-32 A 32 char hash based upon the provided key.
 	 */
-	protected function makeKey($key) {
-		return md5(Settings::UNIQUE_8 . '-SMC-' . strtr($this->_normalize($key), ':/', '-_'));
+	protected function _makeKey($key)
+	{
+		// I'm not even sure if there's a reason to use the unique string
+		return md5(Settings::UNIQUE_8 . strtr($this->_normalize($key), ':/', '-_'));
 	}
 }
