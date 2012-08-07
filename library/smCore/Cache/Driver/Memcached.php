@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore 
+ * smCore Cache Driver - Memcached
  *
  * @package smCore
  * @author smCore Dev Team
@@ -22,7 +22,7 @@
 
 namespace smCore\Cache\Driver;
 
-use smCore\Exception, smCore\Settings;
+use smCore\Exception;
 
 class Memcached extends AbstractDriver
 {
@@ -33,30 +33,32 @@ class Memcached extends AbstractDriver
 			throw new Exception('The memcached extension is not loaded.');
 		}
 
-		$options = array_merge(array(
+		$this->_options = array_merge(array(
 			'servers' => array(),
 			'persistent' => false,
 			'connect_timeout' => 1,
 			'retry_timeout' => 15,
+			'prefix' => '',
+			'default_ttl' => self::DEFAULT_TTL,
 		), $options);
 
 		$this->_memcached = new \Memcached();
-		$this->_memcached->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $options['connect_timeout']);
-		$this->_memcached->setOption(\Memcached::OPT_RETRY_TIMEOUT, $options['retry_timeout']);
+		$this->_memcached->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $this->_options['connect_timeout']);
+		$this->_memcached->setOption(\Memcached::OPT_RETRY_TIMEOUT, $this->_options['retry_timeout']);
 
-		if (empty($options['servers']))
+		if (empty($this->_options['servers']))
 		{
 			// Try the default server
 			$this->_memcached->addServer('127.0.0.1', 11211, 1);
 		}
 		else
 		{
-			if (isset($options['servers']['host']))
+			if (isset($this->_options['servers']['host']))
 			{
-				$options['servers'] = array($options['servers']);
+				$this->_options['servers'] = array($this->_options['servers']);
 			}
 
-			foreach ($options['servers'] as $server)
+			foreach ($this->_options['servers'] as $server)
 			{
 				// @todo: make sure the info is valid. Maybe use ->addServers()?
 
@@ -67,7 +69,7 @@ class Memcached extends AbstractDriver
 
 	public function load($key)
 	{
-		$value = $this->_memcached->get(Settings::UNIQUE_8 . $key);
+		$value = $this->_memcached->get($this->_options['prefix'] . $key);
 
 		if (is_array($value) && isset($value[0]))
 		{
@@ -79,14 +81,14 @@ class Memcached extends AbstractDriver
 
 	public function save($key, $data, array $tags = array(), $ttl = null)
 	{
-		$lifetime = time() + ($ttl ?: self::DEFAULT_TTL);
+		$lifetime = time() + ($ttl ?: $this->_options['default_ttl']);
 
-		$this->_memcached->set(Settings::UNIQUE_8 . $key, array($data, time(), $lifetime), $lifetime);
+		$this->_memcached->set($this->_options['prefix'] . $key, array($data, time(), $lifetime), $lifetime);
 	}
 
 	public function test($key)
 	{
-		$value = $this->_memcached->get(Settings::UNIQUE_8 . $key);
+		$value = $this->_memcached->get($this->_options['prefix'] . $key);
 
 		if (is_array($value) && isset($value[1]))
 		{
@@ -98,7 +100,7 @@ class Memcached extends AbstractDriver
 
 	public function remove($key)
 	{
-		$this->_memcached->delete(Settings::UNIQUE_8 . $key);
+		$this->_memcached->delete($this->_options['prefix'] . $key);
 	}
 
 	public function clean($mode, array $tags = array())

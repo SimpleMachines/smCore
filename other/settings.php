@@ -32,4 +32,13 @@ class Settings
 		'dbname' => '',
 		'prefix' => 'smcore_',
 	);
+
+	/**
+	 * Available drivers: Memcached, Blackhole, APC, File
+	 *
+	 * @todo update this block to be more informative
+	 */
+	public static $cache = array(
+		'driver' => 'Blackhole',
+	);
 }

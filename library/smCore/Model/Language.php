@@ -48,7 +48,7 @@ class Language
 		{
 			$cache = Application::get('cache');
 
-//			if (false === $this->_packageData = $cache->load('smcore_language_packages'))
+			if (false === $this->_packageData = $cache->load('smcore_language_packages'))
 			{
 				$db = Application::get('db');
 

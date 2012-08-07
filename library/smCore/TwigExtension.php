@@ -12,6 +12,7 @@ class TwigExtension extends Twig_Extension
 			'lang' => new Twig_Function_Function(__CLASS__ . '::function_lang', array(
 				'is_safe' => array('html'),
 			)),
+			'menu' => new Twig_Function_Function(__CLASS__ . '::function_menu'),
 		);
 	}
 
@@ -42,6 +43,11 @@ class TwigExtension extends Twig_Extension
 		}
 
 		return Application::get('lang')->get($args[0], array_slice($args, 1));
+	}
+
+	public static function function_menu()
+	{
+		return Application::get('menu')->getMenu();
 	}
 
 	/**

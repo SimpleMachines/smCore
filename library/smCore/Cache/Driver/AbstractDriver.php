@@ -26,6 +26,8 @@ abstract class AbstractDriver
 {
 	const DEFAULT_TTL = 3600;
 
+	protected $_options;
+
 	public abstract function load($key);
 
 	public abstract function save($key, $data, array $tags = array(), $lifetime = null);

@@ -59,7 +59,7 @@ class Roles
 					$this->_loaded_roles[$role['id_role']] = array(
 						'id' => $role['id_role'],
 						'title' => $role['role_title'],
-						'permissions' => !empty($role['role_permission']) ? array('org.smcore.core.' . $role['role_permission'] => true) : array(),
+						'permissions' => !empty($role['role_permission']) ? array('org.smcore.auth.' . $role['role_permission'] => true) : array(),
 						'inherits' => $role['role_inherits'],
 					);
 				}
