@@ -12,7 +12,6 @@
 {% endblock %}
 </head>
 <body>
-
 	<div class="navbar navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container">
@@ -22,9 +21,12 @@
 					<span class="icon-bar"></span>
 				</a>
 				<a class="brand" href="{{ scripturl }}">smCore</a>
+{% set menu = menu() %}
 				<div class="nav-collapse">
 					<ul class="nav">
-						<li class="active"><a href="{{ scripturl }}/">Home</a></li>
+{% for item in menu %}
+						<li class="active"><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
 					</ul>
 				</div>
 			</div>

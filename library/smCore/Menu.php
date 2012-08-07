@@ -104,16 +104,16 @@ class Menu
 		{
 			foreach ($this->_parents[$id] as $item)
 			{
-				if ($item->menu_visible && (empty($item->menu_permission) || Application::get('user')->hasPermission($item->menu_permission)))
+				if ($item['menu_visible'] && (empty($item['menu_permission']) || Application::get('user')->hasPermission($item['menu_permission'])))
 				{
-					$parent[$item->menu_name] = array(
-						'url' => Settings::URL . $item->menu_url,
-						'title' => Application::get('lang')->get($item->menu_title),
+					$parent[$item['menu_name']] = array(
+						'url' => Settings::URL . $item['menu_url'],
+						'title' => Application::get('lang')->get($item['menu_title']),
 						'submenu' => array(),
 						'active' => false,
 					);
 
-					$this->_buildMenu($parent[$item->menu_name]['submenu'], $item->id_menu);
+					$this->_buildMenu($parent[$item['menu_name']]['submenu'], $item['id_menu']);
 				}
 			}
 		}
