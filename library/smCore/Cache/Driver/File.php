@@ -52,7 +52,7 @@ class File extends AbstractDriver
 	public function load($key)
 	{
 		// this is a revised version of of that from SMF 2.0
-		$key = $this->_makeKey($key);
+		$key = $this->_normalize($key);
 		$value = null;
 		$expired = null;
 		if (file_exists(Settings::CACHE_DIR . '/.' . $key . '.php') && filesize(Settings::CACHE_DIR . '/.' . $key . '.php') > 10)
@@ -88,7 +88,7 @@ class File extends AbstractDriver
 		else
 		{
 			// define our key
-			$key = $this->_makeKey($key);
+			$key = $this->_normalize($key);
 			// build our file
 			$cache_data = '<' . '?' . 'php if (' . (time() + $ttl) . ' < time()) $expired = true; else{$expired = false; $value = \'' . addcslashes($value, '\\\'') . '\';}' . '?' . '>';
 			$fh = @fopen(Settings::CACHE_DIR . '/.' . $key . '.php', 'w');
@@ -128,7 +128,7 @@ class File extends AbstractDriver
 	
 	public function remove($key)
 	{
-		@unlink(Settings::CACHE_DIR . '/.' . $this->_makeKey($key) . '.php');
+		@unlink(Settings::CACHE_DIR . '/.' . $this->_normalize($key) . '.php');
 	}
 
 	/**
@@ -169,10 +169,10 @@ class File extends AbstractDriver
 	 * @param string $key The key which requires a hash to be generated.
 	 * @return string A 32 char hash based upon the provided key.
 	 */
-	protected function _makeKey($key)
+	protected function _normalize($key)
 	{
 		// I'm not even sure if there's a reason to use the unique string
-		return $this->_options['prefix'] . '_' . $key . md5(strtr($this->_normalize($key), ':/', '-_'));
+		return $this->_options['prefix'] . '_' . $key . md5(strtr(parent::_normalize($key), ':/', '-_'));
 	}
 
 }
