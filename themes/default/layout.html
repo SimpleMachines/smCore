@@ -21,11 +21,11 @@
 					<span class="icon-bar"></span>
 				</a>
 				<a class="brand" href="{{ scripturl }}">smCore</a>
-{% set menu = menu() %}
 				<div class="nav-collapse">
 					<ul class="nav">
+{% set menu = smcMenu(menu_active) %}
 {% for item in menu %}
-						<li class="active"><a href="{{ item.url }}">{{ item.title }}</a></li>
+						<li{{ item.active ? ' class="active"' : '' }}><a href="{{ item.url }}">{{ item.title }}</a></li>
 {% endfor %}
 					</ul>
 				</div>

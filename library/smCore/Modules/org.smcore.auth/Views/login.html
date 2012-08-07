@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
 {% set page_title = lang('auth.login.log_in') %}
+{% set menu_active = 'login' %}
 
 {% block body %}
 		<form action="{{ scripturl }}/login/" method="POST" accept-charset="UTF-8" class="well">
