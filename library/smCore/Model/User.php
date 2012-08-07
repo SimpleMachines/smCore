@@ -22,7 +22,7 @@
 
 namespace smCore\Model;
 
-use smCore\Application, smCore\Event, smCore\Exception, smCore\Settings, smCore\Storage;
+use smCore\Application, smCore\Event, smCore\Exception, smCore\Security\Crypt\Bcrypt, smCore\Settings, smCore\Storage;
 use ArrayAccess;
 
 class User implements ArrayAccess
@@ -122,6 +122,11 @@ class User implements ArrayAccess
 
 	public function setPassword($password)
 	{
+		$bcrypt = new Bcrypt();
+		$encrypted = $bcrypt->encrypt($password);
+
+		// @todo
+
 		return $this;
 	}
 

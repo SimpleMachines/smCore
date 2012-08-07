@@ -22,7 +22,7 @@
 
 namespace smCore\Modules\Auth\Controllers;
 
-use smCore\Application, smCore\Module\Controller, smCore\Security\Crypt\Bcrypt, smCore\Storage;
+use smCore\Application, smCore\Module\Controller, smCore\Storage;
 
 class Register extends Controller
 {
@@ -103,7 +103,7 @@ class Register extends Controller
 		// @todo Better email validation, not using a regex.
 		if (empty($email) || 0 === preg_match('~^[0-9A-Za-z=_+\-/][0-9A-Za-z=_\'+\-/\.]*@[\w\-]+(\.[\w\-]+)*(\.[\w]{2,6})$~', $email) || mb_strlen($email) > 255)
 		{
-			$reg_errors[] = array('done', sprintf($txt['valid_email_needed'], $smcFunc['htmlspecialchars']($username)));
+			$module->throwLangException('register.invalid_email');
 		}
 
 		$storage = Storage\Factory::factory('Users');
@@ -120,26 +120,11 @@ class Register extends Controller
 				'user_login' => $username,
 				'user_display_name' => $username,
 				'user_email' => $email,
-				'user_test' => 'yo',
 			))
 			->setPassword($pass1)
 		;
 
-
-
-
-return var_export($user);
-		
-
-
-
-
-
-		//$crypt = new Bcrypt();
-		//return var_export($crypt->match('test', $crypt->encrypt('test')), true) . ' ' . var_export($crypt->match('test', $crypt->encrypt('tes2t')), true);
-
-
-
+		// @todo save the user and show a success screen
 	}
 
 	public function activate()
