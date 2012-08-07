@@ -124,8 +124,8 @@ class Application
 		$user = self::get('user');
 
 		$id = $user['theme'];
-		$theme = $cache->load('theme_' . $id);
-		if (!is_array($theme))
+
+		if (false === $theme = $cache->load('theme_' . $id))
 		{
 			$db = self::get('db');
 

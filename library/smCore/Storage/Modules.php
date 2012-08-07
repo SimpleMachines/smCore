@@ -35,10 +35,9 @@ class Modules
 	public function __construct()
 	{
 		$cache = Application::get('cache');
-		$this->_moduleData = $cache->load('core_module_registry_data');
 		
 		// Load the configs
-		if (!is_array($this->_moduleData))
+		if (false === $this->_moduleData = $cache->load('core_module_registry_data'))
 		{
 			$iterator = new DirectoryIterator(Settings::MODULE_DIR);
 			$this->_moduleData = array();

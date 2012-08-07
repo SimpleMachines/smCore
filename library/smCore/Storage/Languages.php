@@ -32,10 +32,9 @@ class Languages
 	public function __construct()
 	{
 		$cache = Application::get('cache');
-		$this->_languages = $cache->load('core_languagestorage');
 
 		// Load the configs
-		if (!is_array($this->_languages))
+		if (false === $this->_languages = $cache->load('core_languagestorage'))
 		{
 			$db = Application::get('db');
 
