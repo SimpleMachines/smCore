@@ -26,6 +26,9 @@ use smCore\Settings;
 
 class File extends AbstractDriver
 {
+	
+	protected $_options = array();
+	
 	/**
 	 * This is here to satisfy AbstractDriver's conditions
 	 * 
@@ -33,10 +36,15 @@ class File extends AbstractDriver
 	 */
 	public function __construct( $opts )
 	{
+		$this->_options = array_merge(array(
+				'prefix' => 'data',
+				'default_ttl' => self::DEFAULT_TTL,
+			),
+			$opts);
 	}
 	
 	/**
-	 * Loads data from yhe file cache
+	 * Loads data from the file cache
 	 * 
 	 * @param string $key The get that the data is stored under.
 	 * @return mixed The data from the cache or boolean false
@@ -46,13 +54,14 @@ class File extends AbstractDriver
 		// this is a revised version of of that from SMF 2.0
 		$key = $this->_makeKey($key);
 		$value = null;
-		if (file_exists(Settings::CACHE_DIR . '/data_' . $key . '.php') && filesize(Settings::CACHE_DIR . '/data_' . $key . '.php') > 10)
+		$expired = null;
+		if (file_exists(Settings::CACHE_DIR . '/.' . $key . '.php') && filesize(Settings::CACHE_DIR . '/.' . $key . '.php') > 10)
 		{
 			// php will cache file_exists et all, we can't 100% depend on its results so proceed with caution
-			@include(Settings::CACHE_DIR . '/data_' . $key . '.php');
+			@include(Settings::CACHE_DIR . '/.data_' . $key . '.php');
 			if (!empty($expired) && isset($value))
 			{
-				@unlink(Settings::CACHE_DIR . '/data_' . $key . '.php');
+				@unlink(Settings::CACHE_DIR . '/.data_' . $key . '.php');
 				unset($value);
 			}
 		}
@@ -70,7 +79,7 @@ class File extends AbstractDriver
 	public function save($key, $data, array $tags = array(), $ttl = null)
 	{
 		// set our time to live
-		$ttl = $ttl ? $ttl : parent::DEFAULT_TTL;
+		$ttl = $ttl ? $ttl : $this->_options['default_ttl'];
 		// work out our data
 		$value = $data === null ? null : serialize($data);
 		// if it's null then lets just remove the file
@@ -82,7 +91,7 @@ class File extends AbstractDriver
 			$key = $this->_makeKey($key);
 			// build our file
 			$cache_data = '<' . '?' . 'php if (' . (time() + $ttl) . ' < time()) $expired = true; else{$expired = false; $value = \'' . addcslashes($value, '\\\'') . '\';}' . '?' . '>';
-			$fh = @fopen(Settings::CACHE_DIR . '/.data_' . $key . '.php', 'w');
+			$fh = @fopen(Settings::CACHE_DIR . '/.' . $key . '.php', 'w');
 			if ($fh)
 			{
 				// Write the file.
@@ -95,7 +104,7 @@ class File extends AbstractDriver
 				// Check that the cache write was successful; all the data should be written
 				// If it fails due to low diskspace, remove the cache file
 				if ($cache_bytes != strlen($cache_data))
-					@unlink(Settings::CACHE_DIR . '/data_' . $key . '.php');
+					@unlink(Settings::CACHE_DIR . '/.' . $key . '.php');
 			}
 		}
 	}
@@ -116,9 +125,10 @@ class File extends AbstractDriver
 	 * 
 	 * @param type $key The key of the item to remove.
 	 */
+	
 	public function remove($key)
 	{
-		@unlink(Settings::CACHE_DIR . '/data_' . $this->_makeKey($key) . '.php');
+		@unlink(Settings::CACHE_DIR . '/.' . $this->_makeKey($key) . '.php');
 	}
 
 	/**
@@ -132,7 +142,7 @@ class File extends AbstractDriver
 		// remove the directory and it's content
 		@rmdir(Settings::CACHE_DIR);
 		// now rebuild the directory
-		mkdir(Settings::CACHE_DIR);
+		@mkdir(Settings::CACHE_DIR);
 		@file_put_contents(Settings::CACHE_DIR . '/.htaccess', 'deny from all');
 		@file_put_contents(Settings::CACHE_DIR . '', '<?php' . "\n" . 'die(\'Hacking attempt...\');' . "\n" . '?>php');
 	}
@@ -157,11 +167,12 @@ class File extends AbstractDriver
 	 * driver.
 	 * 
 	 * @param string $key The key which requires a hash to be generated.
-	 * @return string-32 A 32 char hash based upon the provided key.
+	 * @return string A 32 char hash based upon the provided key.
 	 */
 	protected function _makeKey($key)
 	{
 		// I'm not even sure if there's a reason to use the unique string
-		return md5(Settings::UNIQUE_8 . strtr($this->_normalize($key), ':/', '-_'));
+		return $this->_options['prefix'] . '_' . $key . md5(strtr($this->_normalize($key), ':/', '-_'));
 	}
+
 }
