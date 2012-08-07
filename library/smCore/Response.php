@@ -34,6 +34,7 @@ class Response
 
 	// Some common response codes
 	const HTTP_200 = 'HTTP/1.1 200 OK';
+	const HTTP_204 = 'HTTP/1.1 204 No Content';
 	const HTTP_301 = 'HTTP/1.1 301 Moved Permanently';
 	const HTTP_302 = 'HTTP/1.1 302 Found';
 	const HTTP_307 = 'HTTP/1.1 307 Temporary Redirect';
@@ -51,8 +52,11 @@ class Response
 	public function __construct()
 	{
 		// Security.
-		$this->addHeader(self::SAMEORIGIN);
-		$this->addHeader(self::XCONTENTPOLICY);
+		$this
+			->addHeader(200)
+			->addHeader(self::SAMEORIGIN)
+			->addHeader(self::XCONTENTPOLICY)
+		;
 
 		// Search engines leak prevention
 		// Do not let search engines index anything if there is something in $_GET.
@@ -102,6 +106,16 @@ class Response
 	}
 
 	/**
+	 * Clear all stored headers.
+	 */
+	public function clearHeaders()
+	{
+		$this->_headers = array();
+
+		return $this;
+	}
+
+	/**
 	 * Body of the response.
 	 *
 	 * @return string
@@ -136,12 +150,26 @@ class Response
 			}
 		}
 
-		// @todo output stuff
-		echo $this->_body;
+		if (empty($this->_body) && empty($this->_headers['http_response_code']))
+		{
+			// Send a 204 No Content header, because we're nice.
+			header(self::HTTP_204);
+		}
+		else
+		{
+			// @todo output stuff
+			echo $this->_body;
+		}
 
 		die();
 	}
 
+	/**
+	 * 
+	 *
+	 * @param string  $url       URL to redirect to
+	 * @param boolean $permanent Redirect permanently (301) or temporarily (307)
+	 */
 	public function redirect($url, $permanent = false)
 	{
 		if (!preg_match('/^https?:\/\//', $url))
