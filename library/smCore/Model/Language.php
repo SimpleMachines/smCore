@@ -42,14 +42,17 @@ class Language
 		$this->_id = (int) $id;
 	}
 
+	/**
+	 * 
+	 * @return array
+	 */
 	protected function _getPackageData()
 	{
 		if (!is_array($this->_packageData))
 		{
 			$cache = Application::get('cache');
-			$this->_packageData = $cache->load('smcore_language_packages');
 			// if it's not an array from the cache then we need to load it
-			if (!is_array($this->_packageData))
+			if (false === $this->_packageData = $cache->load('smcore_language_packages'))
 			{
 				$db = Application::get('db');
 
@@ -79,6 +82,12 @@ class Language
 		return $this->_packageData;
 	}
 
+	/**
+	 * 
+	 * @param type $type
+	 * @param type $force_recompile
+	 * @return \smCore\Model\Language
+	 */
 	public function loadPackagesByType($type, $force_recompile = false)
 	{
 		$packages = $this->_getPackageData();
@@ -96,6 +105,12 @@ class Language
 		return $this;
 	}
 
+	/**
+	 * 
+	 * @param type $name
+	 * @param type $force_recompile
+	 * @return \smCore\Model\Language
+	 */
 	public function loadPackageByName($name, $force_recompile = false)
 	{
 		$packages = $this->_getPackageData();
@@ -110,20 +125,27 @@ class Language
 		return $this;
 	}
 
-	protected function _loadPackageById($id_package, $force_recompile)
+	/**
+	 * 
+	 * @param int $id_package
+	 * @param bool $force_recompile
+	 */
+	protected function _loadPackageById($id_package, $force_recompile = false)
 	{
 		$cache = Application::get('cache');
 
+		// @todo given that this is an internal function, do we need to type cast?
 		$cache_key = 'lang_package_' . (int) $id_package;
-		$data = $cache->load($cache_key);
-		if ($force_recompile || !is_array($data) )
+		if ($force_recompile || false === $data = $cache->load($cache_key) )
 		{
 			$db = Application::get('db');
-
+			
+			// !!! should the strings also be searched by id_language
+			// or should language packages be sorted by id_language?
 			$result = $db->query("
 				SELECT string_key, string_value
 				FROM {db_prefix}lang_strings
-				WHERE id_package = {int:id}",
+				WHERE string_package = {int:id}",
 				array(
 					'id' => $id_package,
 				)
