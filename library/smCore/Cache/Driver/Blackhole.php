@@ -35,7 +35,7 @@ class Blackhole extends AbstractDriver
 		return false;
 	}
 
-	public function save($key, $data, array $tags = array(), $ttl = null)
+	public function save($key, $data, $ttl = null)
 	{
 	}
 

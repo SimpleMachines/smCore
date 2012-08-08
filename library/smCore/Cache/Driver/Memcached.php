@@ -26,7 +26,7 @@ use smCore\Exception;
 
 class Memcached extends AbstractDriver
 {
-	public function __construct($options)
+	public function __construct(array $options)
 	{
 		if (!extension_loaded('memcached'))
 		{
@@ -79,7 +79,7 @@ class Memcached extends AbstractDriver
 		return false;
 	}
 
-	public function save($key, $data, array $tags = array(), $ttl = null)
+	public function save($key, $data, $ttl = null)
 	{
 		$lifetime = time() + ($ttl ?: $this->_options['default_ttl']);
 
@@ -103,7 +103,7 @@ class Memcached extends AbstractDriver
 		$this->_memcached->delete($this->_options['prefix'] . $key);
 	}
 
-	public function clean($mode, array $tags = array())
+	public function clean($mode)
 	{
 	}
 

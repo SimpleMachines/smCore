@@ -30,13 +30,13 @@ abstract class AbstractDriver
 
 	public abstract function load($key);
 
-	public abstract function save($key, $data, array $tags = array(), $lifetime = null);
+	public abstract function save($key, $data, $lifetime = null);
 
 	public abstract function test($key);
 
 	public abstract function remove($key);
 
-	public abstract function clean($mode, array $tags = array());
+	public abstract function clean($mode);
 
 	public abstract function getMetadata($key);
 
