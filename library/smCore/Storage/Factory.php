@@ -22,12 +22,19 @@
 
 namespace smCore\Storage;
 
+use smCore\Application, smCore\Exception;
+
 class Factory
 {
 	protected static $_storages = array();
 
 	public static function factory($name)
 	{
+		if (Application::get('sending_output', false) === true)
+		{
+			throw new Exception('Cannot load storages after output has been started.');
+		}
+
 		$name = ucfirst($name);
 
 		if (!empty(self::$_storages[$name]))

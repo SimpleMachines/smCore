@@ -157,13 +157,23 @@ class Module
 		return $this->_directory;
 	}
 
-	public function render($name, array $context = array())
+	public function render($name, array $context = array(), $sending_output = true)
 	{
+		if ($sending_output)
+		{
+			Application::set('sending_output', true);
+		}
+
 		return Application::get('twig')->render($name . '.html', $context);
 	}
 
-	public function display($name, array $context = array())
+	public function display($name, array $context = array(), $sending_output = true)
 	{
+		if ($sending_output)
+		{
+			Application::set('sending_output', true);
+		}
+
 		Application::get('twig')->display($name . '.html', $context);
 
 		return $this;
