@@ -151,10 +151,9 @@ class Response
 
 		if (empty($this->_headers['http_response_code']))
 		{
-			header(empty($this->_body) ? self::HTTP_204 : self::HTTP_200);
+			header(self::HTTP_200);
 		}
 
-		// @todo output stuff
 		echo $this->_body;
 
 		die();
