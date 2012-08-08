@@ -24,8 +24,6 @@
 
 namespace smCore\Db;
 
-use Closure;
-
 abstract class AbstractDriver
 {
 	protected $_connection;
