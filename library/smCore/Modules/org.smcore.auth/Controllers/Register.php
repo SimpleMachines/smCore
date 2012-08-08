@@ -122,9 +122,10 @@ class Register extends Controller
 				'user_email' => $email,
 			))
 			->setPassword($pass1)
+			->save()
 		;
 
-		// @todo save the user and show a success screen
+		return $module->render('register/finish');
 	}
 
 	public function activate()

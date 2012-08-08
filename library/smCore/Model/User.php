@@ -41,7 +41,8 @@ class User implements ArrayAccess
 			'display_name' => 'Guest', // @todo lang string
 			'language' => Settings::DEFAULT_LANG,
 			'theme' => (int) Settings::DEFAULT_THEME,
-			'user_token' => false, // @todo
+			'token' => '', // @todo
+			'email' => '',
 			'roles' => array(
 				'primary' => $roles->getRoleById($roles::ROLE_GUEST),
 				'additional' => array(),
@@ -86,7 +87,7 @@ class User implements ArrayAccess
 			}
 		}
 
-		if (!empty($data['user_theme']))
+		if (!empty($data['user_theme']) && ctype_digit($data['user_theme']))
 		{
 			$this->_data['theme'] = (int) $data['user_theme'];
 		}
@@ -120,12 +121,18 @@ class User implements ArrayAccess
 		return $this;
 	}
 
+	/**
+	 * 
+	 *
+	 * @param string $password 
+	 *
+	 * @return 
+	 */
 	public function setPassword($password)
 	{
 		$bcrypt = new Bcrypt();
-		$encrypted = $bcrypt->encrypt($password);
 
-		// @todo
+		$this->_data['password'] = $bcrypt->encrypt($password);
 
 		return $this;
 	}
@@ -169,13 +176,25 @@ class User implements ArrayAccess
 		return false;
 	}
 
-	// ArrayAccess methods allow access via array indexes, such as $user['id']
-
+	/**
+	 * ArrayAccess - implementation for empty/isset/array_key_exists/etc.
+	 *
+	 * @param mixed $offset
+	 *
+	 * @return boolean
+	 */
 	public function offsetExists($offset)
 	{
 		return isset($this->_data[$offset]);
 	}
 
+	/**
+	 * ArrayAccess - implementation for getting data via array syntax
+	 *
+	 * @param mixed $offset Name of the key, usually a string
+	 *
+	 * @return boolean
+	 */
 	public function offsetGet($offset)
 	{
 		if (array_key_exists($offset, $this->_data))
@@ -186,11 +205,27 @@ class User implements ArrayAccess
 		return false;
 	}
 
+	/**
+	 * ArrayAccess - implementation for setting data via array syntax
+	 *
+	 * @param mixed $offset Name of the key, usually a string
+	 * @param mixed $value  
+	 */
 	public function offsetSet($offset, $value)
 	{
+		if ('password' === $offset)
+		{
+			throw new Exception('User passwords cannot be set via array access.');
+		}
+
 		$this->_data[$offset] = $value;
 	}
 
+	/**
+	 * ArrayAccess - implementation for unsetting data via array syntax
+	 *
+	 * @param mixed $offset Name of the key, usually a string
+	 */
 	public function offsetUnset($offset)
 	{
 		unset($this->_data[$offset]);

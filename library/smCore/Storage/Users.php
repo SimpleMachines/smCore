@@ -22,7 +22,7 @@
 
 namespace smCore\Storage;
 
-use smCore\Application, smCore\Exception, smCore\Model\User, smCore\Security\Session, smCore\Settings;
+use smCore\Application, smCore\Event, smCore\Exception, smCore\Model\User, smCore\Security\Session, smCore\Settings;
 
 class Users
 {
@@ -73,7 +73,7 @@ class Users
 		}
 
 		$row = $result->fetch();
-		$user = new User((int) $row['id_user']);
+		$user = new User($row);
 		$user->setData($row);
 
 		return $user;
@@ -124,5 +124,32 @@ class Users
 
 	public function save(User $user)
 	{
+		$db = Application::get('db');
+
+		if ($user['id'] < 1)
+		{
+			$id = $db->insert('users', array(
+				'user_login' => $user['login'],
+				'user_display_name' => $user['display_name'],
+				'user_email' => $user['email'],
+				'user_pass' => $user['password'],
+				'user_primary_role' => $user['roles']['primary']->getId(),
+				'user_additional_roles' => '',
+				'user_registered' => time(),
+				'user_language' => $user['language'],
+				'user_theme' => $user['theme'],
+			));
+		}
+		else
+		{
+			
+		}
+
+		$event = new Event($this, 'org.smcore.user_data_save', array(
+			'user' => $user,
+		));
+
+		Application::get('events')->fire($event);
+
 	}
 }
