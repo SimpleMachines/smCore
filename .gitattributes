@@ -1,0 +1,8 @@
+# By default, all files should use LF
+* text eol=lf
+
+# Non-text files shouldn't be touched
+*.png binary
+*.gif binary
+*.zip binary
+*.jpg binary
