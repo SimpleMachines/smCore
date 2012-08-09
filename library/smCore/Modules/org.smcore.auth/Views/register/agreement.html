@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% set page_title = lang('auth.register.agreement') %}
+{% set menu_active = 'register' %}
+
+{% block body %}
+<h1>{{ lang('auth.register.agreement') }}</h1>
+<br />
+<form action="{{ scripturl }}/register/" method="post">
+	<div class="well">
+		{{ lang('auth.register.agreement_text') |nl2br }}
+	</div>
+
+	<div style="text-align: center;">
+		<input type="submit" name="register_agree" value="{{ lang('auth.register.agree') }}" class="btn" /><br />
+		<br />
+		<input type="submit" name="register_agree_young" value="{{ lang('auth.register.agree_young') }}" class="btn" />
+	</div>
+</form>
+{% endblock %}

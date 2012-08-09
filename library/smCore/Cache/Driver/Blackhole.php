@@ -1,7 +1,9 @@
 <?php
 
 /**
- * smCore Cache Abstract Driver
+ * smCore Cache Driver - Black Hole
+ *
+ * The black hole driver does not save anything - it should be used only for development, never in production.
  *
  * @package smCore
  * @author smCore Dev Team
@@ -22,33 +24,36 @@
 
 namespace smCore\Cache\Driver;
 
-abstract class AbstractDriver
+class Blackhole extends AbstractDriver
 {
-	const DEFAULT_TTL = 3600;
-
-	protected $_options;
-
-	public abstract function load($key);
-
-	public abstract function save($key, $data, $lifetime = null);
-
-	public abstract function test($key);
-
-	public abstract function remove($key);
-
-	public abstract function clean($mode);
-
-	public abstract function getMetadata($key);
-
-	/**
-	 * Normalize a cache key
-	 *
-	 * @param string $key
-	 *
-	 * @return string
-	 */
-	protected function _normalize($key)
+	public function __construct($options)
 	{
-		return preg_replace('/[^a-z0-9_\.\-]/i', '_', $key);
+	}
+
+	public function load($key)
+	{
+		return false;
+	}
+
+	public function save($key, $data, $ttl = null)
+	{
+	}
+
+	public function test($key)
+	{
+		return false;
+	}
+
+	public function remove($key)
+	{
+		return true;
+	}
+
+	public function clean($mode, array $tags = array())
+	{
+	}
+
+	public function getMetadata($key)
+	{
 	}
 }

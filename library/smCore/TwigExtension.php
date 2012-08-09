@@ -12,6 +12,7 @@ class TwigExtension extends Twig_Extension
 			'lang' => new Twig_Function_Function(__CLASS__ . '::function_lang', array(
 				'is_safe' => array('html'),
 			)),
+			'smcMenu' => new Twig_Function_Function(__CLASS__ . '::function_smcMenu'),
 		);
 	}
 
@@ -42,6 +43,24 @@ class TwigExtension extends Twig_Extension
 		}
 
 		return Application::get('lang')->get($args[0], array_slice($args, 1));
+	}
+
+	public static function function_smcMenu()
+	{
+		$menu = Application::get('menu');
+		$args = func_get_args();
+
+		if (!empty($args))
+		{
+			if (is_array($args[0]))
+			{
+				$args = $args[0];
+			}
+
+			call_user_func_array(array($menu, 'setActive'), $args);
+		}
+
+		return $menu->getMenu();
 	}
 
 	/**

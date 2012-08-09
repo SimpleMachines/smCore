@@ -45,20 +45,13 @@ class Settings
 		// all smCore database tables will be prefixed with the following
 		'prefix' => 'smcore_',
 	);
-	
+
+	/**
+	 * Available drivers: Memcached, Blackhole, APC, File
+	 *
+	 * @todo update this block to be more informative
+	 */
 	public static $cache = array(
-		'adapter' => 'file',
-		// other options can be added here dependant upon the adapter type
-		/*
-		 * these are the key options
-		file
-			string dir
-		memcached
-			array_string servers
-			bool persistent
-			int connect_timeout
-			int retry_timeout
-		*/
-		'dir' => Settings::CACHE_DIR,
+		'driver' => 'Blackhole',
 	);
 }

@@ -36,7 +36,7 @@ class Role
 
 	public function __construct($id, $name, $inherits = 0, array $permissions = array())
 	{
-		$this->_id = $id;
+		$this->_id = (int) $id;
 		$this->_name = $name;
 
 		if ($inherits > 0)
@@ -45,6 +45,11 @@ class Role
 		}
 
 		$this->_permissions = $permissions;
+	}
+
+	public function getId()
+	{
+		return $this->_id;
 	}
 
 	public function hasPermission($name, $recursion = 0)
@@ -62,7 +67,7 @@ class Role
 
 		if ($this->_inherits !== null)
 		{
-			$inherits = StorageFactory::getStorage('roles')->getRoleById($this->_inherits)->hasPermission($name, $recursion + 1);
+			$inherits = StorageFactory::factory('Roles')->getRoleById($this->_inherits)->hasPermission($name, $recursion + 1);
 
 			if ($inherits !== null)
 			{

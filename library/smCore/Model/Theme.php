@@ -1,9 +1,7 @@
 <?php
 
 /**
- * smCore Database Driver - Abstract
- *
- * Provides some pass-through functions to make things easy on developers
+ * smCore Theme Class
  *
  * @package smCore
  * @author smCore Dev Team
@@ -22,15 +20,23 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Db;
+namespace smCore\Model;
 
-abstract class AbstractDriver
+class Theme
 {
-	protected $_connection;
-	protected $_options = array();
+	protected $_id;
+	protected $_directory;
+	protected $_name;
 
-	public function getConnection()
+	function __construct($id, $directory, $name = '')
 	{
-		return $this->_connection;
+		$this->_id = $id;
+		$this->_directory = $directory;
+		$this->_name = $name;
+	}
+
+	public function getDirectory()
+	{
+		return $this->_directory;
 	}
 }

@@ -1,9 +1,7 @@
 <?php
 
 /**
- * smCore Database Driver - Abstract
- *
- * Provides some pass-through functions to make things easy on developers
+ * smCore Filesystem File Class
  *
  * @package smCore
  * @author smCore Dev Team
@@ -22,15 +20,11 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Db;
+namespace smCore\Filesystem;
 
-abstract class AbstractDriver
+class File
 {
-	protected $_connection;
-	protected $_options = array();
-
-	public function getConnection()
+	public function __construct($path)
 	{
-		return $this->_connection;
 	}
 }

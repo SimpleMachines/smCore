@@ -1,9 +1,7 @@
 <?php
 
 /**
- * smCore Database Driver - Abstract
- *
- * Provides some pass-through functions to make things easy on developers
+ * smCore Filesystem Directory Class
  *
  * @package smCore
  * @author smCore Dev Team
@@ -22,15 +20,37 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Db;
+namespace smCore\Filesystem;
 
-abstract class AbstractDriver
+use IteratorAggregate, ArrayIterator;
+
+class Directory implements IteratorAggregate
 {
-	protected $_connection;
-	protected $_options = array();
+	protected $_path;
+	protected $_files = array();
 
-	public function getConnection()
+	public function __construct($path, $resolve = true)
 	{
-		return $this->_connection;
+		if ($resolve)
+		{
+			$this->_path = $path;
+		}
+		else
+		{
+			$this->_path = $path;
+		}
 	}
+
+	public function getIterator()
+	{
+		return new ArrayIterator($this->_files);
+	}
+
+	public function exists()
+	{
+		return file_exists($this->_path);
+	}
+
+
+
 }

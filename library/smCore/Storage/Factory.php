@@ -22,74 +22,33 @@
 
 namespace smCore\Storage;
 
+use smCore\Application, smCore\Exception;
+
 class Factory
 {
 	protected static $_storages = array();
 
-	public static function getStorage($name)
+	public static function factory($name)
 	{
-		$name = strtolower($name);
-
-		if ('themes' === $name)
+		if (Application::get('sending_output', false) === true)
 		{
-			if (empty(self::$_storages['themes']))
-			{
-				self::$_storages['themes'] = new Themes();
-			}
-
-			return self::$_storages['themes'];
+			throw new Exception('Cannot load storages after output has been started.');
 		}
 
-		if ('roles' === $name)
-		{
-			if (empty(self::$_storages['roles']))
-			{
-				self::$_storages['roles'] = new Roles();
-			}
+		$name = ucfirst($name);
 
-			return self::$_storages['roles'];
+		if (!empty(self::$_storages[$name]))
+		{
+			return self::$_storages[$name];
 		}
 
-		if ('users' === $name)
+		if (file_exists(__DIR__ . '/' . $name . '.php'))
 		{
-			if (empty(self::$_storages['users']))
-			{
-				self::$_storages['users'] = new Users();
-			}
-
-			return self::$_storages['users'];
+			$class = 'smCore\\Storage\\' . $name;
+			return self::$_storages[$name] = new $class();
 		}
 
-		if ('modules' === $name)
-		{
-			if (empty(self::$_storages['modules']))
-			{
-				self::$_storages['modules'] = new Modules();
-			}
-
-			return self::$_storages['modules'];
-		}
-
-		if ('sessions' === $name)
-		{
-			if (empty(self::$_storages['sessions']))
-			{
-				self::$_storages['sessions'] = new Sessions();
-			}
-
-			return self::$_storages['sessions'];
-		}
-
-		if ('languages' === $name)
-		{
-			if (empty(self::$_storages['languages']))
-			{
-				self::$_storages['languages'] = new Languages();
-			}
-
-			return self::$_storages['languages'];
-		}
-
+		// @todo: throw exception?
 		return null;
 	}
 }

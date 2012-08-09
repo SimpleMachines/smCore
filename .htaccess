@@ -1,4 +1,8 @@
-# the following protects our settings file
-RedirectMatch 403 ^.*/settings.php
-# and now lets keep our cache directory private
-RedirectMatch 403 ^.*/cache/*
+Options -Indexes 
+
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule ^.*$ index.php [L]

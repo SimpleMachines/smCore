@@ -24,9 +24,9 @@ namespace smCore\Cache;
 
 class Factory
 {
-	public static function factory($name, $options = array())
+	public static function factory($driver, array $options = array())
 	{
-		$class = "\\smCore\\Cache\\Driver\\" . $name;
+		$class = "\\smCore\\Cache\\Driver\\" . $driver;
 		return new $class($options);
 	}
 }

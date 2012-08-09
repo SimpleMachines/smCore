@@ -1,9 +1,7 @@
 <?php
 
 /**
- * smCore Database Driver - Abstract
- *
- * Provides some pass-through functions to make things easy on developers
+ * 
  *
  * @package smCore
  * @author smCore Dev Team
@@ -22,15 +20,34 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Db;
+namespace smCore\Modules\Auth\Controllers;
 
-abstract class AbstractDriver
+use smCore\Application, smCore\Module\Controller;
+
+class LogInOut extends Controller
 {
-	protected $_connection;
-	protected $_options = array();
-
-	public function getConnection()
+	public function preDispatch()
 	{
-		return $this->_connection;
+		$this->_getParentModule()->loadLangPackage();
+	}
+
+	public function login()
+	{
+		$module = $this->_getParentModule();
+		$input = Application::get('input');
+
+		// I'd actually like to use the router to route to a different method depending on whether this was a GET or a POST
+		if ($input->post->keyExists('submit'))
+		{
+			// @todo
+		}
+		else
+		{
+			return $module->render('login');
+		}
+	}
+
+	public function logout()
+	{
 	}
 }

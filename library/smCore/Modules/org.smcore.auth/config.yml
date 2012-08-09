@@ -1,0 +1,29 @@
+name: Internal smCore User Authentication Module
+description: |
+    Includes login, logout, and register.
+identifier: org.smcore.auth
+version: 1.0
+author:
+    name: smCore Dev Team
+    website: http://smcore.org
+
+namespace: smCore\Modules\Auth
+lang_namespace: auth
+
+routes:
+    login:
+        match: login
+        controller: LogInOut
+    logout:
+        match: logout
+        controller: LogInOut
+    register:
+        match: register
+        controller: Register
+    finish:
+        match: register/finish
+        controller: Register
+        method: finish
+    activate:
+        match: register/activate
+        controller: Register

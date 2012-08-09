@@ -42,11 +42,20 @@ class Connection implements ConnectionInterface
 	public function __construct($dsn, $user = null, $password = null, array $options = null)
 	{
 		$this->_connection = new PDO($dsn, $user, $password, $options);
+
 		$this->_connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		$this->_connection->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('\smCore\Db\PDO\Statement', array()));
 		$this->_connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+		$this->_connection->setAttribute(PDO::ATTR_AUTOCOMMIT, true);
 
-		$this->_options = $options;
+		$this->_options = array_merge(array(
+			'prefix' => '',
+		), $options);
+	}
+
+	public function getConnection()
+	{
+		return $this->_connection;
 	}
 
 	public function query($sql, array $parameters = array(), array $options = array())

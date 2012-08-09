@@ -51,7 +51,7 @@ class Language
 		if (!is_array($this->_packageData))
 		{
 			$cache = Application::get('cache');
-			// if it's not an array from the cache then we need to load it
+
 			if (false === $this->_packageData = $cache->load('smcore_language_packages'))
 			{
 				$db = Application::get('db');

@@ -1,9 +1,7 @@
 <?php
 
 /**
- * smCore Database Driver - Abstract
- *
- * Provides some pass-through functions to make things easy on developers
+ * smCore Storage - Events
  *
  * @package smCore
  * @author smCore Dev Team
@@ -22,15 +20,35 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Db;
+namespace smCore\Storage;
 
-abstract class AbstractDriver
+use smCore\Application;
+
+class Events
 {
-	protected $_connection;
-	protected $_options = array();
-
-	public function getConnection()
+	public function getActiveListeners()
 	{
-		return $this->_connection;
+		$cache = Application::get('cache');
+
+		if (false === $events = $cache->load('smcore_active_listeners'))
+		{
+			$db = Application::get('db');
+			$events = array();
+
+			$result = $db->query("
+				SELECT *
+				FROM {db_prefix}event_listeners
+				WHERE listener_enabled = 1"
+			);
+
+			if ($result->rowCount() > 0)
+			{
+				$events = $result->fetchAll();
+			}
+
+			$cache->save('smcore_active_listeners', $events);
+		}
+
+		return $events;
 	}
 }

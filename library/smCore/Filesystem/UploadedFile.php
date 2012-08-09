@@ -1,7 +1,11 @@
 <?php
 
 /**
- * smCore Cache Abstract Driver
+ * smCore Filesystem Uploaded File Class
+ *
+ * This class differs from the main File class in that it provides special methods
+ * that only really apply to file that are currently in a temp directory waiting
+ * to be moved to their final location.
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,35 +24,28 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Cache\Driver;
+namespace smCore\Filesystem;
 
-abstract class AbstractDriver
+use smCore\Exception;
+
+class UploadedFile extends File
 {
-	const DEFAULT_TTL = 3600;
-
-	protected $_options;
-
-	public abstract function load($key);
-
-	public abstract function save($key, $data, $lifetime = null);
-
-	public abstract function test($key);
-
-	public abstract function remove($key);
-
-	public abstract function clean($mode);
-
-	public abstract function getMetadata($key);
+	public function __construct($post_data)
+	{
+	}
 
 	/**
-	 * Normalize a cache key
+	 * 
 	 *
-	 * @param string $key
+	 * @param 
 	 *
-	 * @return string
+	 * @return \smCore\Filesystem\File
 	 */
-	protected function _normalize($key)
+	public function save($location = null)
 	{
-		return preg_replace('/[^a-z0-9_\.\-]/i', '_', $key);
+		if (null === $location)
+		{
+			throw new Exception('UploadedFile::save() needs a location to save the file to.');
+		}
 	}
 }
