@@ -42,6 +42,7 @@ class Modules
 			$this->_moduleData = array();
 
 			// Load internal modules first, then any user-added modules
+			// @todo won't this try /path/to/smcore/library/smCore/Storage/Modules ?
 			$this->_readModulesFromDirectory(dirname(__DIR__) . '/Modules');
 			$this->_readModulesFromDirectory(Settings::MODULE_DIR);
 
