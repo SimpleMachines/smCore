@@ -1,3 +1,4 @@
+
 <?php
 
 /**
@@ -34,7 +35,13 @@ class Language
 	protected $_code;
 	protected $_id;
  
-	// Loads the basic language file and sets up stuff
+	/**
+	 * Loads the basic language file and sets up stuff
+	 * 
+	 * @param type $name
+	 * @param type $code
+	 * @param type $id
+	 */
 	public function __construct($name, $code, $id = 0)
 	{
 		$this->_name = $name;
@@ -44,11 +51,11 @@ class Language
 
 	/**
 	 * 
-	 * @return array
+	 * @return type
 	 */
 	protected function _getPackageData()
 	{
-		if (!is_array($this->_packageData))
+		if (null === $this->_packageData)
 		{
 			$cache = Application::get('cache');
 
@@ -127,22 +134,19 @@ class Language
 
 	/**
 	 * 
-	 * @param int $id_package
-	 * @param bool $force_recompile
+	 * @param type $id_package
+	 * @param type $force_recompile
 	 */
-	protected function _loadPackageById($id_package, $force_recompile = false)
+	protected function _loadPackageById($id_package, $force_recompile)
 	{
 		$cache = Application::get('cache');
 
-		// @todo given that this is an internal function, do we need to type cast?
-		// nothing but an integer should be being supplied anyhow
 		$cache_key = 'lang_package_' . (int) $id_package;
-		if ($force_recompile || false === $data = $cache->load($cache_key) )
+
+		if ($force_recompile || false === $data = $cache->load($cache_key))
 		{
 			$db = Application::get('db');
-			
-			// @todo should the strings also be searched by id_language
-			// or should language packages be sorted by id_language?
+
 			$result = $db->query("
 				SELECT string_key, string_value
 				FROM {db_prefix}lang_strings
