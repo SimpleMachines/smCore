@@ -60,8 +60,8 @@ class Users
 		$result = $db->query("
 			SELECT *
 			FROM {db_prefix}users
-			WHERE user_login = {string:name}
-				OR user_display_name = {string:name}",
+			WHERE LOWER(user_login) = {string:name}
+				OR LOWER(user_display_name) = {string:name}",
 			array(
 				'name' => $name,
 			)

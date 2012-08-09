@@ -225,7 +225,7 @@ class Module
 	 */
 	public function throwLangException($key, array $replacements = array())
 	{
-		throw new Exception($this->lang($this->_lang_prefix . $key, $replacements));
+		throw new Exception($this->lang($this->_lang_prefix . 'exceptions.' . $key, $replacements));
 	}
 
 	/**

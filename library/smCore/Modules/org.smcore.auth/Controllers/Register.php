@@ -109,9 +109,17 @@ class Register extends Controller
 		$storage = Storage\Factory::factory('Users');
 
 		// Check to see if this username is taken
-		if (false !== $username_taken = $storage->getUserByName($username))
+		if (false !== $storage->getUserByName($username))
 		{
 			$module->throwLangException('register.username_taken');
+		}
+
+		// @todo add a findUserByData-ish method to storage, this query shouldn't be here
+		$db = Application::get('db');
+
+		if ($db->query("SELECT * FROM {db_prefix}users WHERE LOWER(user_email) = {string:email}", array('email' => mb_strtolower($email)))->rowCount() > 0)
+		{
+			$module->throwLangException('register.email_already_used');
 		}
 
 		$user = $storage

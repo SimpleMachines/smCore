@@ -8,7 +8,7 @@ author:
     website: http://smcore.org
 
 namespace: smCore\Modules\Auth
-lang_namespace: users
+lang_namespace: auth
 
 routes:
     login:

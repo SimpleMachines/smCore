@@ -59,25 +59,25 @@
 	{
 		if ($("#username").val().length < 1)
 		{
-			alert("{{ lang('users.exceptions.register.username_too_short') }}");
+			alert("{{ lang('auth.exceptions.register.username_too_short') }}");
 			return false;
 		}
 
 		if ($("#password").val().length < 1)
 		{
-			alert("{{ lang('users.exceptions.register.no_password') }}");
+			alert("{{ lang('auth.exceptions.register.no_password') }}");
 			return false;
 		}
 
 		if ($("#password").val() != $("#password2").val())
 		{
-			alert("{{ lang('users.exceptions.register.password_mismatch') }}");
+			alert("{{ lang('auth.exceptions.register.password_mismatch') }}");
 			return false;
 		}
 
 		if ($("#email").val().length < 5)
 		{
-			alert("{{ lang('users.exceptions.register.invalid_email') }}");
+			alert("{{ lang('auth.exceptions.register.invalid_email') }}");
 			return false;
 		}
 	});
