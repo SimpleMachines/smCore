@@ -49,7 +49,17 @@ class Settings
 	/**
 	 * Available drivers: Memcached, Blackhole, APC, File
 	 *
-	 * @todo update this block to be more informative
+	 * APC
+	 * 	@todo APC cache opts
+	 * Blackhole
+	 * 	n/a
+	 * File
+	 * 	string dir
+	 * Memcached
+	 * 	array_string servers
+	 * 	bool persistent
+	 * 	int connect_timeout
+	 * 	int retry_timeout
 	 */
 	public static $cache = array(
 		'driver' => 'Blackhole',
