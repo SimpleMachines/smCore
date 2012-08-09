@@ -79,9 +79,9 @@ class Memcached extends AbstractDriver
 		return false;
 	}
 
-	public function save($key, $data, $ttl = null)
+	public function save($key, $data, $lifetime = null)
 	{
-		$lifetime = time() + ($ttl ?: $this->_options['default_ttl']);
+		$lifetime = time() + ($lifetime ?: $this->_options['default_ttl']);
 
 		$this->_memcached->set($this->_options['prefix'] . $key, array($data, time(), $lifetime), $lifetime);
 	}
