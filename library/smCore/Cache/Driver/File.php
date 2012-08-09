@@ -22,28 +22,23 @@
 
 namespace smCore\Cache\Driver;
 
-use smCore\Settings;
-
 class File extends AbstractDriver
 {
-	
 	protected $_options = array();
-	
+
 	/**
 	 * This is here to satisfy AbstractDriver's conditions
 	 * 
 	 * @param array $opts An array of cache options
 	 */
-	public function __construct( $opts )
+	public function __construct($options)
 	{
 		$this->_options = array_merge(array(
-				'prefix' => 'data',
-				'default_ttl' => self::DEFAULT_TTL,
-				'dir' => Settings::CACHE_DIR,
-			),
-			$opts);
+			'prefix' => 'data',
+			'default_ttl' => self::DEFAULT_TTL,
+		), $options);
 	}
-	
+
 	/**
 	 * Loads data from the file cache
 	 * 
@@ -56,16 +51,19 @@ class File extends AbstractDriver
 		$key = $this->_normalize($key);
 		$value = null;
 		$expired = null;
+
 		if (file_exists($this->_options['dir'] . '/.' . $key . '.php') && filesize($this->_options['dir'] . '/.' . $key . '.php') > 10)
 		{
 			// php will cache file_exists et all, we can't 100% depend on its results so proceed with caution
-			@include($this->_options['dir'] . '/.data_' . $key . '.php');
+			include $this->_options['dir'] . '/.data_' . $key . '.php';
+
 			if (!empty($expired) && isset($value))
 			{
 				@unlink($this->_options['dir'] . '/.data_' . $key . '.php');
 				unset($value);
 			}
 		}
+
 		return empty($value) ? false : @unserialize($value);
 	}
 
@@ -83,17 +81,20 @@ class File extends AbstractDriver
 		$ttl = $ttl ? $ttl : $this->_options['default_ttl'];
 		// work out our data
 		$value = $data === null ? null : serialize($data);
+
 		// if it's null then lets just remove the file
 		if ($value === null)
+		{
 			$this->remove($key);
+		}
 		else
 		{
 			// define our key
 			$key = $this->_normalize($key);
 			// build our file
 			$cache_data = '<' . '?' . 'php if (' . (time() + $ttl) . ' < time()) $expired = true; else{$expired = false; $value = \'' . addcslashes($value, '\\\'') . '\';}' . '?' . '>';
-			$fh = @fopen($this->_options['dir'] . '/.' . $key . '.php', 'w');
-			if ($fh)
+
+			if ($fh = @fopen($this->_options['dir'] . '/.' . $key . '.php', 'w'))
 			{
 				// Write the file.
 				set_file_buffer($fh, 0);
@@ -104,8 +105,10 @@ class File extends AbstractDriver
 
 				// Check that the cache write was successful; all the data should be written
 				// If it fails due to low diskspace, remove the cache file
-				if ($cache_bytes != strlen($cache_data))
+				if ($cache_bytes !== mb_strlen($cache_data))
+				{
 					@unlink($this->_options['dir'] . '/.' . $key . '.php');
+				}
 			}
 		}
 	}
@@ -175,5 +178,4 @@ class File extends AbstractDriver
 		// I'm not even sure if there's a reason to use the unique string
 		return $this->_options['prefix'] . '_' . $key . md5(strtr(parent::_normalize($key), ':/', '-_'));
 	}
-
 }

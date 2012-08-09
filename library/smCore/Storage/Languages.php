@@ -49,10 +49,6 @@ class Languages
 			}
 
 			$cache->save('core_languagestorage', $this->_languages);
-
-			// @todo: cache tags
-			// Anything that depends on this should be refreshed
-			// $cache->clean('core_language');
 		}
 	}
 
@@ -78,7 +74,7 @@ class Languages
 			return $this->getByCode(Settings::DEFAULT_LANG);
 		}
 
-		throw new Exception('There\'s been a bit of a problem loading the language strings. ('.$code.')');
+		throw new Exception(sprintf('There\'s been a bit of a problem loading the language "%s".', $code));
 	}
 
 	public function getAll()

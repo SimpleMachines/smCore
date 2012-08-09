@@ -224,9 +224,14 @@ class Application
 	 */
 	protected function _loadCache()
 	{
-		if (!array_key_exists('prefix', Settings::$cache))
+		if (!isset(Settings::$cache['prefix']))
 		{
 			Settings::$cache['prefix'] = Settings::UNIQUE_8;
+		}
+
+		if (!isset(Settings::$cache['directory']))
+		{
+			Settings::$cache['directory'] = Settings::CACHE_DIR;
 		}
 
 		return Cache\Factory::factory(Settings::$cache['driver'], Settings::$cache);
