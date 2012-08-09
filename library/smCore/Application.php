@@ -69,7 +69,7 @@ class Application
 		self::addLazyLoader('db', array($this, '_loadDatabase'));
 		self::addLazyLoader('cache', array($this, '_loadCache'));
 		self::addLazyLoader('mail', array($this, '_loadMail'));
-		self::addLazyLoader('theme', array($this, '_loadTheme'));
+		self::addLazyLoader('twig', array($this, '_loadTheme'));
 
 		self::set('input', Inspekt::makeSuperCage(null, false));
 
@@ -264,11 +264,11 @@ class Application
 
 		$twig_loader = new Twig_Loader_Filesystem(Settings::THEME_DIR . '/' . $theme->getDirectory());
 
-		$twig = self::set('twig', new Twig_Environment($twig_loader, array(
+		$twig = new Twig_Environment($twig_loader, array(
 			'cache' => Settings::CACHE_DIR,
 			'recompile' => true,
 			'auto_reload' => true,
-		)));
+		));
 
 		$twig->addExtension(new TwigExtension());
 		$twig->addGlobal('scripturl', Settings::URL);
@@ -276,7 +276,7 @@ class Application
 		$twig->addGlobal('default_theme_url', trim(Settings::URL, '/?') . '/themes/default');
 		$twig->addGlobal('reload_counter', 0); // @todo
 
-		return $theme;
+		return $twig;
 	}
 
 	/**
