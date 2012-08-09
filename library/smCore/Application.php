@@ -81,7 +81,7 @@ class Application
 
 		$user = self::set('user', Storage\Factory::factory('Users')->getCurrentUser());
 
-		self::set('modules', Storage\Factory::factory('Modules'));
+		$modules = self::set('modules', Storage\Factory::factory('Modules'));
 		$lang = self::set('lang', Storage\Factory::factory('Languages')->getByCode($user['language']));
 		$lang->loadPackageByName('org.smcore.common');
 
@@ -92,18 +92,31 @@ class Application
 
 		$dispatcher->fire(new Event(null, 'org.smcore.core.pre_router'));
 
-		$router = new Router();
-		$route = $router->match(self::get('request')->getPath());
-		self::set('router', $router);
+		$router = self::set('router', new Router);
+		$router->addRoutes(array(
+			'themes(.*)' => 404,
+			'resources(.*)' => 404,
+			'cache(.*)' => 403,
+			'library(.*)' => 403,
+		), 'smCore');
 
-		if (is_int($route))
+		foreach ($modules as $identifier => $module)
 		{
+			$router->addRoutes($module->getRoutes(), $identifier);
+		}
+
+		$route = $router->match(self::get('request')->getPath());
+
+		if (is_int($route) || is_int($route['method']))
+		{
+			$code = is_int($route) ? $route : $route['method'];
+
 			// @todo: show the correct error screen
 			$response
-				->addHeader($route)
+				->addHeader($code)
 				->setBody(self::get('twig')->render('error.html', array(
-					'code' => $route,
-					'error_message' => $lang->get('exceptions.error_code_' . $route) ?: $lang->get('exceptions.error_code_unknown'),
+					'code' => $code,
+					'error_message' => $lang->get('exceptions.error_code_' . $code) ?: $lang->get('exceptions.error_code_unknown'),
 				)))
 			;
 		}

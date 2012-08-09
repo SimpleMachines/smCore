@@ -27,9 +27,10 @@ class Router
 	protected $_routes = null;
 	protected $_matches = array();
 
+	protected $_disallowed_methods = array();
+
 	public function __construct()
 	{
-		$this->_loadRoutes();
 	}
 
 	/**
@@ -45,21 +46,11 @@ class Router
 		// Normalize the path - we don't want to miss a match because of a stray slash.
 		$path = trim($path, '/?');
 
-		// These aren't real routes - cut them off early.
-		if (0 === strpos($path, 'themes') || 0 === strpos($path, 'resources'))
-		{
-			return 404;
-		}
-		else if (0 === strpos($path, 'cache') || 0 === strpos($path, 'library') || 0 === strpos($path, 'languages'))
-		{
-			return 403;
-		}
-
 		if (empty($path))
 		{
 			if (!empty($this->_routes['default']))
 			{
-				return $this->_routes['default'];
+				return end($this->_routes['default']);
 			}
 		}
 		else if (array_key_exists($path, $this->_routes['literal']))
@@ -68,9 +59,9 @@ class Router
 		}
 		else if (!empty($this->_routes['regex']))
 		{
-			foreach ($this->_routes['regex'] as $route)
+			foreach ($this->_routes['regex'] as $regex => $route)
 			{
-				if (preg_match('~^' . $route['match'] . '$~i', $path, $matches))
+				if (preg_match('/^' . $regex . '$/i', $path, $matches))
 				{
 					$this->_matches = $matches;
 
@@ -93,6 +84,8 @@ class Router
 	}
 
 	/**
+<<<<<<< HEAD
+=======
 	 * Load the routes from the cache, or load each module's config data and feed the routes to _addRoutes().
 	 */
 	protected function _loadRoutes()
@@ -131,24 +124,23 @@ class Router
 	}
 
 	/**
+>>>>>>> 5f3db7b2e03a35927aa2969a3296a479a4b9a2af
 	 * Test each route's "match" value to see if it's a literal or a regex, and put them in
-	 * the appropriate category. Route method names cannot match any of the method names
-	 * defined in smCore\Module\Controller, or we'd get unexpected results.
+	 * the appropriate category.
 	 *
 	 * @param array  $routes     An array of config route data
-	 * @param string $identifier The module identifier for these routes
+	 * @param string $identifier The unique identifier for these routes
 	 */
-	protected function _addRoutes(array $routes, $identifier)
+	public function addRoutes(array $routes, $identifier)
 	{
-		// You're not allowed to give your methods the names of generic Controller class methods.
-		static $disallowedMethodNames = null;
+		/* @todo: use these?
 
-		if ($disallowedMethodNames === null)
+		// You're not allowed to give your methods the names of generic Controller class methods.
+		if ($this->_disallowed_methods === null)
 		{
-			$disallowedMethodNames = get_class_methods('\smCore\Module\Controller');
+			$this->_disallowed_methods = get_class_methods('\smCore\Module\Controller');
 		}
 
-		/* @todo: use these?
 		array(
 			// Reserved words, PHP will choke on them anyways
 			'__CLASS__',
@@ -240,12 +232,32 @@ class Router
 
 		foreach ($routes as $name => $route)
 		{
-			$method = !empty($route['method']) ? $route['method'] : $name;
-
-			// @todo: throw an Exception
-			if (in_array($method, $disallowedMethodNames))
+			// You can add quick return codes via ->addRoutes(array('match/this(.*)' => 403))
+			if (is_int($route))
 			{
-				continue;
+				$route = array(
+					'match' => $name,
+					'controller' => null,
+					'method' => (int) $route,
+				);
+			}
+			else
+			{
+				if (empty($route['controller']))
+				{
+					continue;
+				}
+
+				if (empty($route['method']))
+				{
+					$route['method'] = $name;
+				}
+
+				// @todo: throw an Exception
+				if (in_array($route['method'], $this->_disallowed_methods))
+				{
+					continue;
+				}
 			}
 
 			if (!is_array($route['match']))
@@ -256,7 +268,7 @@ class Router
 			// @todo: clean the regexes?
 			foreach ($route['match'] as $match)
 			{
-				$type = 'strict';
+				$type = 'literal';
 				$match = trim($match, '/ ');
 
 				// If either of these characters is in the route, it has to be a regex
@@ -270,43 +282,23 @@ class Router
 					{
 						continue;
 					}
-
-					$this->_routes['regex'][] = array(
-						'match' => $match,
-						'module' => $identifier,
-						'controller' => $route['controller'],
-						'method' => $method,
-					);
 				}
 				else if (false !== strpos($match, ':'))
 				{
 					$type = 'regex';
 					$match = preg_replace('/:([^\/]+)/', '(?<$1>[^/]+)', $match);
-
-					$this->_routes['regex'][] = array(
-						'match' => $match,
-						'module' => $identifier,
-						'controller' => $route['controller'],
-						'method' => $method,
-					);
+					$match = str_replace('/', '\\/', $match);
 				}
 				else if (empty($match) && 0 === strlen($match))
 				{
-					$this->_routes['default'] = array(
-						'module' => $identifier,
-						'controller' => $route['controller'],
-						'method' => $method,
-					);
+					$type = 'default';
 				}
-				else
-				{
-					// Storing the route as the key enables us to use array_key_exists
-					$this->_routes['literal'][$match] = array(
-						'module' => $identifier,
-						'controller' => $route['controller'],
-						'method' => $method,
-					);
-				}
+
+				$this->_routes[$type][$match] = array(
+					'module' => $identifier,
+					'controller' => $route['controller'],
+					'method' => $route['method'],
+				);
 			}
 		}
 	}

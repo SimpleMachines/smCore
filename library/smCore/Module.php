@@ -291,6 +291,11 @@ class Module
 		return null;
 	}
 
+	public function getRoutes()
+	{
+		return $this->_config['routes'];
+	}
+
 	/**
 	 *
 	 *
