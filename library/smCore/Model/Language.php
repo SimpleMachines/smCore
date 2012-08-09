@@ -140,7 +140,7 @@ class Language
 		{
 			$db = Application::get('db');
 			
-			// !!! should the strings also be searched by id_language
+			// @todo should the strings also be searched by id_language
 			// or should language packages be sorted by id_language?
 			$result = $db->query("
 				SELECT string_key, string_value
