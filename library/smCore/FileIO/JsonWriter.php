@@ -36,6 +36,6 @@ class JsonWriter extends Writer
 	{
 		$data = json_encode($data);
 
-		return $this->_writeToFile($data, $filename);
+		return parent::write($data, $filename);
 	}
 }

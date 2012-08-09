@@ -26,7 +26,7 @@ namespace smCore\FileIO;
 
 /**
  */
-abstract class Reader
+class Reader
 {
 	/**
 	 * Read the contents of a file from the filesystem, and return the corresponding PHP values.
@@ -36,5 +36,8 @@ abstract class Reader
 	 *
 	 * @return mixed
 	 */
-	abstract public function read($filename);
+	public function read($filename)
+	{
+		return file_get_contents($filename);
+	}
 }

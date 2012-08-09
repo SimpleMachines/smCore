@@ -38,6 +38,6 @@ class YamlWriter extends Writer
 	{
 		$data = Yaml::dump($data);
 
-		return $this->_writeToFile($data, $filename);
+		return parent::write($data, $filename);
 	}
 }
