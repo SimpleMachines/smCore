@@ -35,13 +35,14 @@ class Modules
 	public function __construct()
 	{
 		$cache = Application::get('cache');
-
+		
 		// Load the configs
 		if (false === $this->_moduleData = $cache->load('core_module_registry_data'))
 		{
 			$this->_moduleData = array();
 
 			// Load internal modules first, then any user-added modules
+			// @todo won't this try /path/to/smcore/library/smCore/Storage/Modules ?
 			$this->_readModulesFromDirectory(dirname(__DIR__) . '/Modules');
 			$this->_readModulesFromDirectory(Settings::MODULE_DIR);
 

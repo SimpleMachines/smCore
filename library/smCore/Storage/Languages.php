@@ -78,7 +78,7 @@ class Languages
 			return $this->getByCode(Settings::DEFAULT_LANG);
 		}
 
-		throw new Exception('There\'s been a bit of a problem loading the language strings.');
+		throw new Exception('There\'s been a bit of a problem loading the language strings. ('.$code.')');
 	}
 
 	public function getAll()

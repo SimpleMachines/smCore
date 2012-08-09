@@ -34,7 +34,13 @@ class Language
 	protected $_code;
 	protected $_id;
  
-	// Loads the basic language file and sets up stuff
+	/**
+	 * Loads the basic language file and sets up stuff
+	 * 
+	 * @param type $name
+	 * @param type $code
+	 * @param type $id
+	 */
 	public function __construct($name, $code, $id = 0)
 	{
 		$this->_name = $name;
@@ -42,6 +48,10 @@ class Language
 		$this->_id = (int) $id;
 	}
 
+	/**
+	 * 
+	 * @return type
+	 */
 	protected function _getPackageData()
 	{
 		if (null === $this->_packageData)
@@ -78,6 +88,12 @@ class Language
 		return $this->_packageData;
 	}
 
+	/**
+	 * 
+	 * @param type $type
+	 * @param type $force_recompile
+	 * @return \smCore\Model\Language
+	 */
 	public function loadPackagesByType($type, $force_recompile = false)
 	{
 		$packages = $this->_getPackageData();
@@ -95,6 +111,12 @@ class Language
 		return $this;
 	}
 
+	/**
+	 * 
+	 * @param type $name
+	 * @param type $force_recompile
+	 * @return \smCore\Model\Language
+	 */
 	public function loadPackageByName($name, $force_recompile = false)
 	{
 		$packages = $this->_getPackageData();
@@ -109,6 +131,11 @@ class Language
 		return $this;
 	}
 
+	/**
+	 * 
+	 * @param type $id_package
+	 * @param type $force_recompile
+	 */
 	protected function _loadPackageById($id_package, $force_recompile)
 	{
 		$cache = Application::get('cache');
