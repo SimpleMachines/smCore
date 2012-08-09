@@ -135,6 +135,7 @@ class Language
 		$cache = Application::get('cache');
 
 		// @todo given that this is an internal function, do we need to type cast?
+		// nothing but an integer should be being supplied anyhow
 		$cache_key = 'lang_package_' . (int) $id_package;
 		if ($force_recompile || false === $data = $cache->load($cache_key) )
 		{
