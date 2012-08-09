@@ -36,7 +36,7 @@ class Apc extends AbstractDriver
 		$this->_options = array_merge(array(
 			'prefix' => '',
 			'default_ttl' => self::DEFAULT_TTL,
-		), $options)
+		), $options);
 	}
 
 	public function load($key)
