@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="tests/bootstrap.php" colors="true" syntaxCheck="false" stopOnFailure="false" backupGlobals="false" backupStaticAttributes="false" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false">
+	<testsuites>
+		<testsuite name="smCore Test Suite">
+			<directory>./tests/smCore/</directory>
+		</testsuite>
+	</testsuites>
+
+	<filter>
+		<whitelist>
+			<directory suffix=".php">./library/smCore/</directory>
+		</whitelist>
+	</filter>
+</phpunit>
