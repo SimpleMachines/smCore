@@ -80,10 +80,11 @@ class InputTest extends PHPUnit_Framework_TestCase
 		$this->assertTrue($this->_input->testTelephone('(123) 456-7890'));
 		$this->assertTrue($this->_input->testTelephone('123-456-7890'));
 		$this->assertTrue($this->_input->testTelephone('123 456 7890'));
-		$this->assertTrue($this->_input->testTelephone('1 222 333'));
 		$this->assertTrue($this->_input->testTelephone('1 222 333 4444'));
 		$this->assertTrue($this->_input->testTelephone('1 (234) 567-8900'));
 		$this->assertTrue($this->_input->testTelephone('1-234-567-8900'));
+
+		$this->assertFalse($this->_input->testTelephone('1 222 333'));
 	}
 
 	public function testZipCodes()
