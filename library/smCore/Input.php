@@ -30,7 +30,7 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 	protected $_data;
 	protected $_regexes;
 
-	public function __construct(array $data)
+	public function __construct(array $data = array())
 	{
 		$this->_data = $data;
 
@@ -40,6 +40,7 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 			'zip_uk'   => '',
 			'float'    => '/^[+-]?(?:[0-9]{1,3})(?:,?[0-9]{3})*(?:\.[0-9]+)?(?:[eE]-?[0-9]+)?$/',
 			'hostname' => '/^(?:[^\W_](?:[^\W_]|-){0,61}[^\W_]\.|[^\W_]\.)*(?:[^\W_](?:[^\W_]|-){0,61}[^\W_])\.?$/u',
+			'phone'    => '/(?:\(\d{3}\) ?|\d{3} ?)?\d{3}[ -]?\d{4}/',
 		);
 	}
 
