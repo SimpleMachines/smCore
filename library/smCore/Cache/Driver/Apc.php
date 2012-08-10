@@ -39,7 +39,10 @@ class Apc extends AbstractDriver
 		), $options);
 	}
 
-	public function load($key)
+	/**
+	 * {@inheritdoc}
+	 */
+	public function load($key, $failure_return = false)
 	{
 		$value = apc_fetch($this->_options['prefix'] . $key);
 
@@ -51,6 +54,9 @@ class Apc extends AbstractDriver
 		return false;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function save($key, $data, $ttl = null)
 	{
 		$lifetime = time() + ($ttl ?: $this->_options['default_ttl']);
@@ -58,20 +64,32 @@ class Apc extends AbstractDriver
 		apc_store($this->_options['prefix'] . $key, array($data, time(), $lifetime), $lifetime);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function test($key)
 	{
 		return apc_exists($this->_options['prefix'] . $key);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function remove($key)
 	{
 		return apc_delete($this->_options['prefix'] . $key);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function clean($mode)
 	{
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function getMetadata($key)
 	{
 	}

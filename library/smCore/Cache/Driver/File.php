@@ -22,6 +22,8 @@
 
 namespace smCore\Cache\Driver;
 
+use smCore\Exception;
+
 class File extends AbstractDriver
 {
 	protected $_options = array();
@@ -29,7 +31,7 @@ class File extends AbstractDriver
 	/**
 	 * This is here to satisfy AbstractDriver's conditions
 	 * 
-	 * @param array $opts An array of cache options
+	 * @param array $options An array of cache options
 	 */
 	public function __construct($options)
 	{
@@ -37,124 +39,131 @@ class File extends AbstractDriver
 			'prefix' => 'data',
 			'default_ttl' => self::DEFAULT_TTL,
 		), $options);
+
+		if (!isset($this->_options['directory']))
+		{
+			throw new Exception('Missing required File cache option: directory.');
+		}
+
+		// Try to create the cache directory if it doesn't exist
+		if (!is_dir($this->_options['directory']) && false === mkdir($this->_options['directory'], 0777, true))
+		{
+			throw new Exception('File cache directory not found, unable to automatically create it.');
+		}
+
+		// It's not writable - this is bad!
+		if (!is_writable($this->_options['directory']))
+		{
+			throw new Exception('The file cache directory was found, but is not writable.');
+		}
 	}
 
 	/**
-	 * Loads data from the file cache
-	 * 
-	 * @param string $key The get that the data is stored under.
-	 * @return mixed The data from the cache or boolean false
+	 * {@inheritdoc}
 	 */
-	public function load($key)
+	public function load($key, $failure_return = false)
 	{
-		// this is a revised version of of that from SMF 2.0
-		$key = $this->_normalize($key);
-		$value = null;
+		// this is a revised version of that from SMF 2.0
 		$expired = null;
 
-		if (file_exists($this->_options['dir'] . '/.' . $key . '.php') && filesize($this->_options['dir'] . '/.' . $key . '.php') > 10)
-		{
-			// php will cache file_exists et all, we can't 100% depend on its results so proceed with caution
-			include $this->_options['dir'] . '/.data_' . $key . '.php';
+		$filename = $this->_getFilename($key);
 
-			if (!empty($expired) && isset($value))
+		clearstatcache(true, $filename);
+
+		if (file_exists($filename) && filesize($filename) > 10)
+		{
+			include $filename;
+
+			if (empty($expired) && isset($value))
 			{
-				@unlink($this->_options['dir'] . '/.data_' . $key . '.php');
-				unset($value);
+				return @unserialize($value);
+			}
+
+			if ($expired)
+			{
+				$this->remove($key);
 			}
 		}
 
-		return empty($value) ? false : @unserialize($value);
+		return $failure_return;
 	}
 
 	/**
-	 * Saves data into the cache
-	 * 
-	 * @param string $key A string which the data is to be stored under.
-	 * @param mixed $data The data to be stored (null will remove the entry)
-	 * @param array $tags The tags this should be stored under (when resetting data in the cache)
-	 * @param int $ttl How long should it be before we remove this piece of data from the cache?
+	 * {@inheritdoc}
 	 */
 	public function save($key, $data, $lifetime = null)
 	{
-		// set our time to live
-		$ttl = $ttl ? $ttl : $this->_options['default_ttl'];
-		// work out our data
-		$value = $data === null ? null : serialize($data);
-
 		// if it's null then lets just remove the file
-		if ($value === null)
+		if ($data === null || $lifetime < 0)
 		{
 			$this->remove($key);
+			return;
 		}
-		else
+
+		// set our time to live
+		$lifetime = time() + ($lifetime ?: $this->_options['default_ttl']);
+		$filename = $this->_getFilename($key);
+
+		if ($fh = @fopen($filename, 'w'))
 		{
-			// define our key
-			$key = $this->_normalize($key);
-			// build our file
-			$cache_data = '<' . '?' . 'php if (' . (time() + $ttl) . ' < time()) $expired = true; else{$expired = false; $value = \'' . addcslashes($value, '\\\'') . '\';}' . '?' . '>';
+			// Write the file.
+			set_file_buffer($fh, 0);
 
-			if ($fh = @fopen($this->_options['dir'] . '/.' . $key . '.php', 'w'))
+			// Only write if we can obtain a lock
+			if (flock($fh, LOCK_EX))
 			{
-				// Write the file.
-				set_file_buffer($fh, 0);
-				flock($fh, LOCK_EX);
-				$cache_bytes = fwrite($fh, $cache_data);
-				flock($fh, LOCK_UN);
-				fclose($fh);
+				$cache_bytes = fwrite($fh, '<' . '?php if (time() > ' . $lifetime . ') { $expired = true; } else { $expired = false; $value = \'' . addcslashes(serialize($data), '\\\'') . '\';}' . '?' . '>');
+			}
 
-				// Check that the cache write was successful; all the data should be written
-				// If it fails due to low diskspace, remove the cache file
-				if ($cache_bytes !== mb_strlen($cache_data))
-				{
-					@unlink($this->_options['dir'] . '/.' . $key . '.php');
-				}
+			flock($fh, LOCK_UN);
+			fclose($fh);
+
+			// Check that the cache write was successful; all the data should be written
+			// If it fails due to low diskspace, remove the cache file
+			if ($cache_bytes !== mb_strlen($cache_data))
+			{
+				@unlink($filename);
+			}
+			else
+			{
+				@chmod($filename, 0666 & ~umask());
 			}
 		}
 	}
 
 	/**
-	 * 
-	 * @param type $key
-	 * @return type
+	 * {@inheritdoc}
 	 */
 	public function test($key)
 	{
-		// !!! what should this return?
-		return;
+		$filename = $this->_getFilename($key);
+		clearstatcache(true, $filename);
+		return file_exists($filename);
 	}
 
 	/**
-	 * Removes a cache item with key $key from the file cache.
-	 * 
-	 * @param type $key The key of the item to remove.
+	 * {@inheritdoc}
 	 */
-	
 	public function remove($key)
 	{
-		@unlink($this->_options['dir'] . '/.' . $this->_normalize($key) . '.php');
+		@unlink($this->_getFilename($key));
 	}
 
 	/**
-	 * 
-	 * @param type $mode
-	 * @param array $tags
+	 * {@inheritdoc}
 	 */
-	public function clean($mode)
+	public function flush()
 	{
-		// !!! would probably be better to empty the data_*.php files
-		// remove the directory and it's content
-		@rmdir($this->_options['dir']);
-		// now rebuild the directory
-		@mkdir($this->_options['dir']);
-		@file_put_contents($this->_options['dir'] . '/.htaccess', 'deny from all');
-		@file_put_contents($this->_options['dir'] . '', '<?php' . "\n" . 'die(\'Hacking attempt...\');' . "\n" . '?>php');
+		$files = glob($this->_options['directory'] . '/.smcore_data_*.php');
+
+		foreach ($files as $file)
+		{
+			@unlink($file);
+		}
 	}
 
 	/**
-	 * 
-	 * @param type $key
-	 * @return type
+	 * {@inheritdoc}
 	 */
 	public function getMetadata($key)
 	{
@@ -163,19 +172,14 @@ class File extends AbstractDriver
 	}
 
 	/**
-	 * This calculates the internal cache key hash.
-	 * 
-	 * This makes the hash of the provided key. You do NOT need
-	 * to touch this function before requesting/saving cache
-	 * data. It is a purely internal method for the file cache
-	 * driver.
-	 * 
-	 * @param string $key The key which requires a hash to be generated.
-	 * @return string A 32 char hash based upon the provided key.
+	 * Internal method to create a normalized cache filename
+	 *
+	 * @param string $key 
+	 *
+	 * @return string 
 	 */
-	protected function _normalize($key)
+	protected function _getFilename($key)
 	{
-		// I'm not even sure if there's a reason to use the unique string
-		return $this->_options['prefix'] . '_' . $key . md5(strtr(parent::_normalize($key), ':/', '-_'));
+		return $this->_options['directory'] . '/.smcore_data_' . $this->_normalize($key) . '.php';
 	}
 }

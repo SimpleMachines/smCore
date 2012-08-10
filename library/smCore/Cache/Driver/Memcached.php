@@ -67,7 +67,10 @@ class Memcached extends AbstractDriver
 		}
 	}
 
-	public function load($key)
+	/**
+	 * {@inheritdoc}
+	 */
+	public function load($key, $failure_return = false)
 	{
 		$value = $this->_memcached->get($this->_options['prefix'] . $key);
 
@@ -76,9 +79,12 @@ class Memcached extends AbstractDriver
 			return $value[0];
 		}
 
-		return false;
+		return $failure_return;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function save($key, $data, $lifetime = null)
 	{
 		$lifetime = time() + ($lifetime ?: $this->_options['default_ttl']);
@@ -86,6 +92,9 @@ class Memcached extends AbstractDriver
 		$this->_memcached->set($this->_options['prefix'] . $key, array($data, time(), $lifetime), $lifetime);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function test($key)
 	{
 		$value = $this->_memcached->get($this->_options['prefix'] . $key);
@@ -98,15 +107,24 @@ class Memcached extends AbstractDriver
 		return false;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function remove($key)
 	{
 		$this->_memcached->delete($this->_options['prefix'] . $key);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function clean($mode)
 	{
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function getMetadata($key)
 	{
 	}

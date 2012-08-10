@@ -28,16 +28,53 @@ abstract class AbstractDriver
 
 	protected $_options;
 
-	public abstract function load($key);
+	/**
+	 * Loads data from the cache.
+	 * 
+	 * @param string $key            The key that the data is stored under.
+	 * @param mixed  $failure_return Value to return on failure, default false
+	 *
+	 * @return mixed The data from the cache or $failure_return on failure
+	 */
+	public abstract function load($key, $failure_return = false);
 
+	/**
+	 * Saves data into the cache.
+	 * 
+	 * @param string $key      A string which the data is to be stored under.
+	 * @param mixed  $data     The data to be stored (null will remove the entry)
+	 * @param int    $lifetime How long should it be before we remove this piece of data from the cache?
+	 */
 	public abstract function save($key, $data, $lifetime = null);
 
+	/**
+	 * Check if data for a key has been stored in the cache.
+	 *
+	 * @param string $key The key to check
+	 *
+	 * @return boolean
+	 */
 	public abstract function test($key);
 
+	/**
+	 * Removes a cache item with key $key from the file cache.
+	 * 
+	 * @param string $key The key of the item to remove.
+	 */
 	public abstract function remove($key);
 
-	public abstract function clean($mode);
+	/**
+	 * Flush the entire cache
+	 */
+	public abstract function flush();
 
+	/**
+	 * Gets normalized information about a cached item
+	 *
+	 * @param string $key
+	 *
+	 * @return array
+	 */
 	public abstract function getMetadata($key);
 
 	/**

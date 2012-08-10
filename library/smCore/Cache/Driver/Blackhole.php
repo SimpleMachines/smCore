@@ -30,29 +30,47 @@ class Blackhole extends AbstractDriver
 	{
 	}
 
-	public function load($key)
+	/**
+	 * {@inheritdoc}
+	 */
+	public function load($key, $failure_return = false)
 	{
-		return false;
+		return $failure_return;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function save($key, $data, $ttl = null)
 	{
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function test($key)
 	{
 		return false;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function remove($key)
 	{
 		return true;
 	}
 
-	public function clean($mode, array $tags = array())
+	/**
+	 * {@inheritdoc}
+	 */
+	public function flush()
 	{
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function getMetadata($key)
 	{
 	}
