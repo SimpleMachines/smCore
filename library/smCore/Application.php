@@ -94,10 +94,8 @@ class Application
 
 		$router = self::set('router', new Router);
 		$router->addRoutes(array(
-			'themes(.*)' => 404,
-			'resources(.*)' => 404,
-			'cache(.*)' => 403,
-			'library(.*)' => 403,
+			'(?:themes|resources).*' => 404,
+			'(?:cache|library).*?' => 403,
 		), 'smCore');
 
 		foreach ($modules as $identifier => $module)
@@ -107,9 +105,9 @@ class Application
 
 		$route = $router->match(self::get('request')->getPath());
 
-		if (is_int($route) || is_int($route['method']))
+		if (is_int($route['method']))
 		{
-			$code = is_int($route) ? $route : $route['method'];
+			$code = $route['method'];
 
 			// @todo: show the correct error screen
 			$response

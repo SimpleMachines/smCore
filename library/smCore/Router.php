@@ -70,7 +70,7 @@ class Router
 			}
 		}
 
-		return 404;
+		return array('method' => 404);
 	}
 
 	public function getMatch($name)
@@ -84,47 +84,6 @@ class Router
 	}
 
 	/**
-<<<<<<< HEAD
-=======
-	 * Load the routes from the cache, or load each module's config data and feed the routes to _addRoutes().
-	 */
-	protected function _loadRoutes()
-	{
-		$this->_routes = Application::get('cache')->load('core_routes');
-		if (is_array($this->_routes))
-		{
-			return;
-		}
-
-		// We don't want to do a regex match if we don't have to
-		$this->_routes = array(
-			'default' => array(),
-			'literal' => array(),
-			'regex' => array(),
-		);
-
-		$modules = Application::get('modules');
-		$identifiers = $modules->getIdentifiers();
-
-		foreach ($identifiers as $id)
-		{
-			$config = $modules->getModuleConfig($id);
-
-			// Doesn't have any routes… which is weird, but okay.
-			if (empty($config['routes']))
-			{
-				continue;
-			}
-
-			self::_addRoutes($config['routes'], $id);
-		}
-
-		// @todo: Use app constants so we don't have to remember different tags. Application::DEPENDENCY_MODULE_REGISTRY = '...';
-		Application::get('cache')->save('core_routes', $this->_routes, array('dependency_module_registry'));
-	}
-
-	/**
->>>>>>> 5f3db7b2e03a35927aa2969a3296a479a4b9a2af
 	 * Test each route's "match" value to see if it's a literal or a regex, and put them in
 	 * the appropriate category.
 	 *
@@ -232,7 +191,7 @@ class Router
 
 		foreach ($routes as $name => $route)
 		{
-			// You can add quick return codes via ->addRoutes(array('match/this(.*)' => 403))
+			// You can add quick return codes via ->addRoutes(array('library.*' => 403))
 			if (is_int($route))
 			{
 				$route = array(
@@ -271,8 +230,8 @@ class Router
 				$type = 'literal';
 				$match = trim($match, '/ ');
 
-				// If either of these characters is in the route, it has to be a regex
-				if (false !== strpos($match, '(') || false !== strpos($match, '['))
+				// If any of these characters is in the route, it has to be a regex.
+				if (false !== strpbrk($match, '([{?*'))
 				{
 					$type = 'regex';
 					$match = str_replace('/', '\\/', $match);
