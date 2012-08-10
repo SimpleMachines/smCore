@@ -3,14 +3,26 @@
 body {
 	padding-top: 60px;
 	}
-
+.navbar .brand {
+	height: 20px;
+	}
+.navbar .brand:hover {
+	color: #8fbc90;
+	}
+.navbar .brand:before {
+	display: inline-block;
+	content: url("../img/smcore_logo_24.png");
+	left: -5px;
+	position: relative;
+	vertical-align: middle;
+	margin-left: 5px;
+	}
 #footer {
 	border-top: 1px solid #ddd;
 	color: #666;
 	font-size: .9em;
 	padding: 3px .8em;
 	}
-
 #footer a,
 #footer a:hover {
 	color: #666;
