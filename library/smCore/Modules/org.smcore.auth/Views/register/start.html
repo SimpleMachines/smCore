@@ -4,83 +4,103 @@
 {% set menu_active = 'register' %}
 
 {% block body %}
-<h1>{{ lang('auth.register.form_title') }}</h1>
-<br />
-<form class="form-horizontal" action="{{ scripturl }}/register/finish/" accept-charset="UTF-8" method="post" id="registration_form">
-	<div class="well">
-		<h3>{{ lang('auth.register.required_info') }}</h3>
-		<div class="control-group">
-			<label class="control-label">{{ lang('username') }}:</label>
-			<div class="controls">
-				<input type="text" name="register_username" class="span3" id="username" />
-			</div>
+		<div class="page-header">
+			<h1>{{ lang('auth.register.form_title') }}</h1>
 		</div>
 
-		<div class="control-group">
-			<label class="control-label">{{ lang('email') }}:</label>
-			<div class="controls">
-				<input type="email" name="register_email" class="span3" id="email" />
+		<form class="form-horizontal" action="{{ scripturl }}/register/finish/" accept-charset="UTF-8" method="post" id="registration_form">
+			<div class="well">
+				<h3>{{ lang('auth.register.required_info') }}</h3>
+				<div class="control-group">
+					<label class="control-label">{{ lang('username') }}:</label>
+					<div class="controls">
+						<div class="input-prepend">
+							<span class="add-on">
+								<i class="icon-user"></i>
+							</span><input type="text" name="register_username" class="span3" id="username" />
+						</div>
+					</div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label">{{ lang('email') }}:</label>
+					<div class="controls">
+						<div class="input-prepend">
+							<span class="add-on">
+								<i class="icon-envelope"></i>
+							</span><input type="email" name="register_email" class="span3" id="email" />
+						</div>
+					</div>
+				</div>
+
+
+				<div class="control-group">
+					<label class="control-label">{{ lang('password') }}:</label>
+					<div class="controls">
+						<div class="input-prepend">
+							<span class="add-on">
+								<i class="icon-lock"></i>
+							</span><input type="password" name="register_password" class="span3" id="password" />
+						</div>
+					</div>
+				</div>
+
+				<div class="control-group">
+					<label class="control-label">{{ lang('auth.register.verify_password') }}:</label>
+					<div class="controls">
+						<div class="input-prepend">
+							<span class="add-on">
+								<i class="icon-lock"></i>
+							</span><input type="password" name="register_password2" class="span3" id="password2" />
+						</div>
+					</div>
+				</div>
 			</div>
-		</div>
 
+			<div class="well">
+				<h3>{{ lang('auth.register.verification') }}</h3>
 
-		<div class="control-group">
-			<label class="control-label">{{ lang('password') }}:</label>
-			<div class="controls">
-				<input type="password" name="register_password" class="span3" id="password" />
+				<div class="control-group">
+					<label class="control-label">{{ lang('auth.register.captcha') }}:</label>
+					<div class="controls">
+						...
+					</div>
+				</div>
 			</div>
-		</div>
 
-		<div class="control-group">
-			<label class="control-label">{{ lang('auth.register.verify_password') }}:</label>
-			<div class="controls">
-				<input type="password" name="register_password2" class="span3" id="password2" />
+			<div style="text-align: center;">
+				<input type="submit" name="register" value="{{ lang('auth.register') }}" class="btn btn-primary" />
 			</div>
-		</div>
-
-		<h3>{{ lang('auth.register.verification') }}</h3>
-
-		<div class="control-group">
-			<label class="control-label">{{ lang('auth.register.captcha') }}:</label>
-			<div class="controls">
-				...
-			</div>
-		</div>
-	</div>
-
-	<div style="text-align: center;">
-		<input type="submit" name="register" value="{{ lang('auth.register') }}" class="btn btn-primary" />
-	</div>
-</form>
+		</form>
 
 {% autoescape 'js' -%}
-<script type="text/javascript">
-	$("#registration_form").bind("submit", function()
-	{
-		if ($("#username").val().length < 1)
-		{
-			alert("{{ lang('auth.exceptions.register.username_too_short') }}");
-			return false;
-		}
+		<script type="text/javascript">
+			$("#registration_form").bind("submit", function()
+			{
+				if ($("#username").val().length < 1)
+				{
+					alert("{{ lang('auth.exceptions.register.username_too_short') }}");
+					return false;
+				}
 
-		if ($("#password").val().length < 1)
-		{
-			alert("{{ lang('auth.exceptions.register.no_password') }}");
-			return false;
-		}
+				if ($("#password").val().length < 1)
+				{
+					alert("{{ lang('auth.exceptions.register.no_password') }}");
+					return false;
+				}
 
-		if ($("#password").val() != $("#password2").val())
-		{
-			alert("{{ lang('auth.exceptions.register.password_mismatch') }}");
-			return false;
-		}
+				if ($("#password").val() != $("#password2").val())
+				{
+					alert("{{ lang('auth.exceptions.register.password_mismatch') }}");
+					return false;
+				}
 
-		if ($("#email").val().length < 5)
-		{
-			alert("{{ lang('auth.exceptions.register.invalid_email') }}");
-			return false;
-		}
-	});
-</script>
+				if ($("#email").val().length < 5)
+				{
+					alert("{{ lang('auth.exceptions.register.invalid_email') }}");
+					return false;
+				}
+			});
+		</script>
 {% endautoescape -%}
 {% endblock %}
