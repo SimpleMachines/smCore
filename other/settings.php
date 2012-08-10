@@ -7,14 +7,13 @@ namespace smCore;
 
 class Settings
 {
-
 	/**
 	 * These values should not include trailing slashes.
 	 *
-	 * PATH			Path where index.php is located
-	 * MODULE_DIR	Path to the /modules/ directory
-	 * THEME_DIR	
-	 * CACHE_DIR	File cache directory, used for the Twig template cache and the File cache, in enabled
+	 * PATH       Path where index.php is located
+	 * MODULE_DIR Path to the /modules/ directory
+	 * THEME_DIR  Path to the /themes/ directory
+	 * CACHE_DIR  File cache directory, used by the Twig template cache and the File cache if enabled
 	 */
 	const PATH = '/home/my_site/public_html';
 	const MODULE_DIR = '/home/my_site/public_html/modules';
@@ -33,6 +32,9 @@ class Settings
 	const COOKIE_NAME = 'smcore_login';
 	const COOKIE_DOMAIN = '.mysite.com';
 
+	/**
+	 * @todo: Default time zone should be a database setting and only used to display times, not store them
+	 */
 	const TIMEZONE = 'America/Los_Angeles'; 
 	const DEFAULT_LANG = 'en_US'; 
 	const DEFAULT_THEME = 1;
@@ -60,12 +62,12 @@ class Settings
 	 *         prefix   string Prefix all table names with this string, to prevent clashes with other software or other smCore installations
 	 */
 	public static $database = array(
-		'driver' => 'PDOMySql',
-		'host' => 'localhost',
-		'user' => '',
+		'driver'   => 'PDOMySql',
+		'host'     => 'localhost',
+		'user'     => '',
 		'password' => '',
-		'dbname' => '',
-		'prefix' => 'smcore_',
+		'dbname'   => '',
+		'prefix'   => 'smcore_',
 	);
 
 	/**
