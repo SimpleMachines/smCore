@@ -7,19 +7,29 @@ namespace smCore;
 
 class Settings
 {
-	// please... no trailing slashes
+
+	/**
+	 * These values should not include trailing slashes.
+	 *
+	 * PATH			Path where index.php is located
+	 * MODULE_DIR	Path to the /modules/ directory
+	 * THEME_DIR	
+	 * CACHE_DIR	File cache directory, used for the Twig template cache and the File cache, in enabled
+	 */
 	const PATH = '/home/my_site/public_html';
 	const MODULE_DIR = '/home/my_site/public_html/modules';
 	const THEME_DIR = '/home/my_site/public_html/themes';
-	// this is used both for the file cache (if enabled) and the TWIG template cache
 	const CACHE_DIR = '/home/my_site/public_html/cache';
 
-	// again, no slashes at the end - www.example.com/smcore *not* www.example.com/smcore/
+	/**
+	 * Again, no slashes at the end - http://www.example.com/smcore *not* http://www.example.com/smcore/
+	 */
 	const URL = 'http://www.youdidntchangeyoursettingsfile.lol';
-	
-	// you'll probably only need to configure COOKIE_DOMAIN
+
+	/**
+	 * You'll probably only need to configure COOKIE_DOMAIN
+	 */
 	const COOKIE_PATH = '/';
-	// change this if running multiple installs
 	const COOKIE_NAME = 'smcore_login';
 	const COOKIE_DOMAIN = '.mysite.com';
 
@@ -30,36 +40,51 @@ class Settings
 	const MAIL_FROM = '';
 	const MAIL_FROM_NAME = '';
 
-	// this string is used so SMF cache's don't interfere with one another
+	/**
+	 * This string is used so multiple smCore installations don't interfere with each other
+	 */
 	const UNIQUE_8 = '07h8fAN4';
-	
+
+	/**
+	 * Database connection parameters
+	 *
+	 * Available drivers: PDOMySql
+	 *
+	 * Options:
+	 *     PDOMySQL:
+	 *         host     string Hostname of the MySQL server, usually localhost
+	 *         user     string Your MySQL username
+	 *         password string Your MySQL password
+	 *         dbname   string The name of the database to connect to
+	 *     All:
+	 *         prefix   string Prefix all table names with this string, to prevent clashes with other software or other smCore installations
+	 */
 	public static $database = array(
-		// you have to use PDOMySql at the moment
 		'driver' => 'PDOMySql',
-		// localhost will be right in 99% of cases
 		'host' => 'localhost',
-		// database username, often 'root' on local test machines
 		'user' => '',
 		'password' => '',
 		'dbname' => '',
-		// all smCore database tables will be prefixed with the following
 		'prefix' => 'smcore_',
 	);
 
 	/**
+	 * Caching mechanism parameters
+	 *
 	 * Available drivers: Memcached, Blackhole, APC, File
 	 *
-	 * APC
-	 * 	@todo APC cache opts
-	 * Blackhole
-	 * 	n/a
-	 * File
-	 * 	string dir
-	 * Memcached
-	 * 	array_string servers
-	 * 	bool persistent
-	 * 	int connect_timeout
-	 * 	int retry_timeout
+	 * Options:
+	 *     APC:
+	 *         (none)
+	 *     Blackhole:
+	 *         (none)
+	 *     File:
+	 *         directory       string  
+	 *     Memcached:
+	 *         servers         array   Array of servers, keys are "host", "port", "weight"
+	 *         persistent      boolean Utilize a persistent connection to the Memcached server
+	 *         connect_timeout int     Time to wait before considering a connection failed
+	 *         retry_timeout   int     Time to wait before attempting to retry an operation
 	 */
 	public static $cache = array(
 		'driver' => 'Blackhole',
