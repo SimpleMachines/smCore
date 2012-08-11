@@ -1,0 +1,17 @@
+name: Internal smCore Admin Module
+description: |
+    :)
+identifier: org.smcore.admin
+version: 1.0 Alpha 1
+author:
+    name: smCore Dev Team
+    website: http://smcore.org
+
+namespace: smCore\Modules\Admin
+lang_namespace: admin
+
+routes:
+    admin:
+        match: [admin, admin/main]
+        controller: Main
+        method: main
