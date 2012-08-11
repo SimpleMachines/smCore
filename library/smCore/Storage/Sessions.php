@@ -87,7 +87,7 @@ class Sessions
 		if ($result->rowCount() > 0)
 		{
 			$row = $result->fetch();
-			$expires = $row['session_expires'];
+			$expires = (int) $row['session_expires'];
 		}
 		else
 		{
@@ -98,7 +98,7 @@ class Sessions
 			REPLACE INTO {db_prefix}sessions
 				(id_session, session_data, session_expires)
 			VALUES
-				({int:id}, {string:data}, {int:expires})",
+				({string:id}, {string:data}, {int:expires})",
 			array(
 				'id' => $id,
 				'data' => $data,

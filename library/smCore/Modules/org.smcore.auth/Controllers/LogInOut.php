@@ -22,7 +22,7 @@
 
 namespace smCore\Modules\Auth\Controllers;
 
-use smCore\Application, smCore\Module\Controller, smCore\Security\Crypt\Bcrypt, smCore\Security\Session, smCore\Storage;
+use smCore\Application, smCore\Module\Controller, smCore\Security\Crypt\Bcrypt, smCore\Security\Session, smCore\Settings, smCore\Storage;
 
 class LogInOut extends Controller
 {
@@ -69,6 +69,11 @@ class LogInOut extends Controller
 
 				Session::start();
 				$_SESSION['id_user'] = $user['id'];
+
+				// @todo: $module->fire('post_successful_login');
+
+				// @todo: redirect to the page they were on if they were redirected to the login page
+				Application::get('response')->redirect(Settings::URL);
 			}
 
 			return $module->render('login', array(
@@ -84,5 +89,8 @@ class LogInOut extends Controller
 
 	public function logout()
 	{
+		Session::end();
+
+		Application::get('response')->redirect(Settings::URL);
 	}
 }

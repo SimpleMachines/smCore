@@ -108,7 +108,7 @@ class Users
 	{
 		// The User class will check if this is a good ID.
 		$user = new User(array(
-			'id_user' => $id
+			'id_user' => $id,
 		));
 
 		if ($id < 1)
@@ -119,7 +119,7 @@ class Users
 		$cache = Application::get('cache');
 
 		// If we've already fetched the data, there's no reason to grab it again
-		if (null === $data = $cache->load('user_data_' . $id))
+		if (false === $data = $cache->load('user_data_' . $id))
 		{
 			$db = Application::get('db');
 
@@ -142,7 +142,7 @@ class Users
 			$cache->save($data, 'user_data_' . $id);
 		}
 
-		$this->setData($data);
+		$user->setData($data);
 
 		return $user;
 	}

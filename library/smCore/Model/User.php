@@ -60,7 +60,7 @@ class User implements ArrayAccess
 	{
 		if (!empty($data['id_user']) && empty($this->_data['id_user']))
 		{
-			if (!ctype_digit($data['id_user']) || 0 > (int) $data['id_user'])
+			if (!ctype_digit((string) $data['id_user']) || 0 > (int) $data['id_user'])
 			{
 				throw new Exception('User ID must be a positive integer.');
 			}

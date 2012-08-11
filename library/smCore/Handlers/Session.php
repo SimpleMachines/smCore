@@ -78,7 +78,7 @@ class Session
 	 */
 	public function read($id)
 	{
-		return StorageFactory::factory('Sessions')->read($id);
+		return StorageFactory::factory('Sessions', false)->read($id);
 	}
 
 	/**
@@ -97,7 +97,7 @@ class Session
 			return false;
 		}
 
-		return StorageFactory::factory('Sessions')->write($id, $data);
+		return StorageFactory::factory('Sessions', false)->write($id, $data);
 	}
 
 	/**
@@ -110,7 +110,7 @@ class Session
 	public function destroy($id)
 	{
 		// Just delete the row...
-		return StorageFactory::factory('Sessions')->destroy($id);
+		return StorageFactory::factory('Sessions', false)->destroy($id);
 	}
 
 	/**

@@ -28,9 +28,9 @@ class Factory
 {
 	protected static $_storages = array();
 
-	public static function factory($name)
+	public static function factory($name, $safe_mode = true)
 	{
-		if (Application::get('sending_output', false) === true)
+		if ($safe_mode && Application::get('sending_output', false) === true)
 		{
 			throw new Exception('Cannot load storages after output has been started.');
 		}
