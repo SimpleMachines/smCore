@@ -8,13 +8,19 @@
 			<h1>{{ lang('auth.login.log_in') }}</h1>
 		</div>
 
+{% if failed is defined %}
+		<div class="alert alert-error">
+			{{ lang('auth.exceptions.login.incorrect_login') }}
+		</div>
+{% endif %}
+
 		<form action="{{ scripturl }}/login/" method="POST" accept-charset="UTF-8">
 			<div class="well">
 				<label for="login_user">{{ lang('username') }}:</label>
 				<div class="input-prepend">
 					<span class="add-on">
 						<i class="icon-user"></i>
-					</span><input type="text" name="login_user" id="login_user" class="span4" />
+					</span><input type="text" name="login_user" id="login_user" class="span4" value="{{ username |escape('html_attr') |raw }}" />
 				</div>
 
 				<label for="login_pass">{{ lang('password') }}:</label>

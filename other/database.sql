@@ -64,6 +64,7 @@ VALUES
 	(1,2,'auth.exceptions.register.username_taken','The username you entered is already taken.'),
 	(1,2,'auth.exceptions.register.username_too_long','The username you entered is too long.'),
 	(1,2,'auth.exceptions.register.username_too_short','The username you entered is too short.'),
+	(1,2,'auth.exceptions.login.incorrect_login','Error! Incorrect username or password.'),
 	(1,2,'auth.login.log_in','Log In'),
 	(1,3,'auth.menu.login','Log In'),
 	(1,3,'auth.menu.register','Register'),

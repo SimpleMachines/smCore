@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 
+ * smCore Authentication Module - Log In/Out Controller
  *
  * @package smCore
  * @author smCore Dev Team
@@ -22,7 +22,7 @@
 
 namespace smCore\Modules\Auth\Controllers;
 
-use smCore\Application, smCore\Module\Controller;
+use smCore\Application, smCore\Module\Controller, smCore\Security\Crypt\Bcrypt, smCore\Security\Session, smCore\Storage;
 
 class LogInOut extends Controller
 {
@@ -39,12 +39,47 @@ class LogInOut extends Controller
 		// I'd actually like to use the router to route to a different method depending on whether this was a GET or a POST
 		if ($input->post->keyExists('submit'))
 		{
-			// @todo
+			$username = $input->post->getRaw('login_user');
+			$password = $input->post->getRaw('login_pass');
+
+			$storage = Storage\Factory::factory('Users');
+
+			if (false === $user = $storage->getUserByName($username))
+			{
+				if (false !== strpos($username, '@', 1))
+				{
+					$user = $storage->getUserByEmail($username);
+				}
+
+				if (false === $user)
+				{
+					return $module->render('login', array(
+						'failed' => true,
+						'username' => $username,
+					));
+				}
+			}
+
+			$bcrypt = new Bcrypt();
+
+			if ($bcrypt->match($password, $user['password']))
+			{
+				// @todo
+				Session::setLifetime(3600);
+
+				Session::start();
+				$_SESSION['id_user'] = $user['id'];
+			}
+
+			return $module->render('login', array(
+				'failed' => true,
+				'username' => $username,
+			));
 		}
-		else
-		{
-			return $module->render('login');
-		}
+
+		return $module->render('login', array(
+			'username' => '',
+		));
 	}
 
 	public function logout()

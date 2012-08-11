@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 
+ * smCore Authentication Module - Register Controller
  *
  * @package smCore
  * @author smCore Dev Team
@@ -34,6 +34,10 @@ class Register extends Controller
 	public function register()
 	{
 		$module = $this->_getParentModule();
+
+		// We're going to skip the agreement part for now. That might be SMF-only, or a plugin.
+		return $module->render('register/start');
+
 		$input = Application::get('input');
 
 		if ($input->post->keyExists('register_agree'))

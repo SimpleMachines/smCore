@@ -79,6 +79,31 @@ class Users
 		return $user;
 	}
 
+	public function getUserByEmail($email)
+	{
+		$db = Application::get('db');
+
+		$result = $db->query("
+			SELECT *
+			FROM {db_prefix}users
+			WHERE LOWER(user_email) = {string:email}",
+			array(
+				'email' => $email,
+			)
+		);
+
+		if ($result->rowCount() < 1)
+		{
+			return false;
+		}
+
+		$row = $result->fetch();
+		$user = new User($row);
+		$user->setData($row);
+
+		return $user;
+	}
+
 	public function getUserById($id)
 	{
 		// The User class will check if this is a good ID.
