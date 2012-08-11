@@ -52,6 +52,11 @@ class Role
 		return $this->_id;
 	}
 
+	public function getName()
+	{
+		return $this->_name;
+	}
+
 	public function hasPermission($name, $recursion = 0)
 	{
 		// Recursive permissions? Not on my watch.

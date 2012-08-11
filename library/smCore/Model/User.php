@@ -47,6 +47,7 @@ class User implements ArrayAccess
 				'primary' => $roles->getRoleById($roles::ROLE_GUEST),
 				'additional' => array(),
 			),
+			'password' => null,
 		);
 
 		if (null !== $data)
@@ -112,6 +113,11 @@ class User implements ArrayAccess
 			$this->_data['email'] = $data['user_email'];
 		}
 
+		if (!empty($data['user_pass']))
+		{
+			$this->_data['password'] = $data['user_pass'];
+		}
+
 		$event = new Event($this, 'org.smcore.user_data_set', array(
 			'data' => $data,
 		));
@@ -119,6 +125,19 @@ class User implements ArrayAccess
 		Application::get('events')->fire($event);
 
 		return $this;
+	}
+
+	public function setRawData(array $data)
+	{
+		foreach ($data as $key => $value)
+		{
+			if ('password' === $key)
+			{
+				throw new Exception('User passwords must be set via the setPassword method.');
+			}
+
+			$this->_data[$key] = $value;
+		}
 	}
 
 	/**
@@ -231,4 +250,8 @@ class User implements ArrayAccess
 		unset($this->_data[$offset]);
 	}
 
+	public function __toString()
+	{
+		return $this->_data['display_name'] . ' (' . $this->_data['roles']['primary']->getName() . ')';
+	}
 }
