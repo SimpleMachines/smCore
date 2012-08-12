@@ -64,7 +64,8 @@ class Module
 
 		if (is_dir($this->_template_dir))
 		{
-			Application::get('twig')->getLoader()->addPath($this->_template_dir);
+			Application::get('twig')->getLoader()->addPath($this->_template_dir, $this->_config['namespaces']['template']);
+			Application::get('twig')->getLoader()->addPath($this->_template_dir, $this->_config['identifier']);
 		}
 	}
 
@@ -162,7 +163,7 @@ class Module
 			Application::set('sending_output', true);
 		}
 
-		return Application::get('twig')->render($name . '.html', $context);
+		return Application::get('twig')->render('@' . $this->_config['namespaces']['template'] . '/' . $name . '.html', $context);
 	}
 
 	public function display($name, array $context = array(), $sending_output = true)
@@ -172,7 +173,7 @@ class Module
 			Application::set('sending_output', true);
 		}
 
-		Application::get('twig')->display($name . '.html', $context);
+		Application::get('twig')->display('@' . $this->_config['namespaces']['template'] . '/' . $name . '.html', $context);
 
 		return $this;
 	}

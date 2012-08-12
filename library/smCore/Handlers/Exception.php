@@ -39,6 +39,7 @@ class Exception
 	 */
 	public function handle($exception)
 	{
+		Application::set('sending_output', null);
 		$show_trace = Application::get('user', false) !== null && Application::get('user')->hasPermission('org.smcore.core.is_admin');
 
 		$response = Application::get('response');

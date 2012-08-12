@@ -274,6 +274,7 @@ class Application
 		Twig_Autoloader::register();
 
 		$twig_loader = new Twig_Loader_Filesystem(Settings::THEME_DIR . '/' . $theme->getDirectory());
+		$twig_loader->addPath(Settings::THEME_DIR . '/' . $theme->getDirectory(), 'theme');
 
 		$twig = new Twig_Environment($twig_loader, array(
 			'cache' => Settings::CACHE_DIR,
