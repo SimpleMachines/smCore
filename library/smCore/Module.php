@@ -95,9 +95,9 @@ class Module
 			throw new Exception(array('exceptions.modules.method_not_callable', $controller, $method));
 		}
 
-		$controllerObject->preDispatch();
+		$controllerObject->preDispatch($method);
 		$output = $controllerObject->$method();
-		$controllerObject->postDispatch();
+		$controllerObject->postDispatch($method);
 
 		$this->_has_dispatched = true;
 
@@ -194,6 +194,8 @@ class Module
 		{
 			Application::get('lang')->loadPackageByName($this->_config['identifier'] . '.' . $package_name);
 		}
+
+		return $this;
 	}
 
 	/**
