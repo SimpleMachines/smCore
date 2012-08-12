@@ -74,4 +74,20 @@ class Blackhole extends AbstractDriver
 	public function getMetadata($key)
 	{
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getStats()
+	{
+		return array(
+			'name' => 'Black Hole',
+			'version' => 'N/A',
+			'items' => 0,
+			'hits' => 0,
+			'misses' => 0,
+			'uptime' => 0,
+			'servers' => array('N/A'),
+		);
+	}
 }

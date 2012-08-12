@@ -78,6 +78,13 @@ abstract class AbstractDriver
 	abstract public function getMetadata($key);
 
 	/**
+	 * Get an array of data about this cache driver
+	 *
+	 * @return array
+	 */
+	abstract public function getStats();
+
+	/**
 	 * Normalize a cache key
 	 *
 	 * @param string $key

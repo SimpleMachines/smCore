@@ -172,6 +172,20 @@ class File extends AbstractDriver
 	}
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public function getStats()
+	{
+		return array(
+			'name' => 'File',
+			'items' => 0,
+			'hits' => 0,
+			'misses' => 0,
+			'servers' => array('N/A'),
+		);
+	}
+
+	/**
 	 * Internal method to create a normalized cache filename
 	 *
 	 * @param string $key 

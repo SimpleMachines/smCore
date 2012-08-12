@@ -93,4 +93,18 @@ class Apc extends AbstractDriver
 	public function getMetadata($key)
 	{
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getStats()
+	{
+		return array(
+			'name' => 'APC',
+			'items' => 0,
+			'hits' => 0,
+			'misses' => 0,
+			'servers' => array('N/A'),
+		);
+	}
 }

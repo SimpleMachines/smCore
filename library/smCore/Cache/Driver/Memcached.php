@@ -128,4 +128,35 @@ class Memcached extends AbstractDriver
 	public function getMetadata($key)
 	{
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getStats()
+	{
+		$stats = $this->_memcached->getStats();
+
+		$data = array(
+			'name' => 'Memcached',
+			'items' => 0,
+			'hits' => 0,
+			'misses' => 0,
+			'servers' => array(),
+		);
+
+		foreach ($stats as $ip => $server)
+		{
+			$data['items'] += $server['total_items'];
+			$data['hits'] += $server['get_hits'];
+			$data['misses'] += $server['get_misses'];
+
+			$data['servers'][] = array(
+				'uptime' => $server['uptime'],
+				'version' => $server['version'],
+				'ip' => $ip,
+			);
+		}
+
+		return $data;
+	}
 }
