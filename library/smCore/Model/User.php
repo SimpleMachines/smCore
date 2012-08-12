@@ -44,7 +44,7 @@ class User implements ArrayAccess
 			'token' => '', // @todo
 			'email' => '',
 			'roles' => array(
-				'primary' => $roles->getRoleById($roles::ROLE_GUEST),
+				'primary' => $roles->getRoleById(Storage\Roles::ROLE_GUEST),
 				'additional' => array(),
 			),
 			'password' => null,
@@ -193,6 +193,43 @@ class User implements ArrayAccess
 		}
 
 		return false;
+	}
+
+	public function hasRole($role)
+	{
+		if ($role instanceof Role)
+		{
+			$role = $role->getId();
+		}
+		else if (!is_int($role))
+		{
+			throw new Exception('hasRole() expected a Role or integer role ID.');
+		}
+
+		if ($this->_data['roles']['primary']->getId() === $role)
+		{
+			return true;
+		}
+
+		foreach ($this->_data['roles']['additional'] as $additional)
+		{
+			if ($additional->getId() === $role)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public function isAdmin()
+	{
+		return $this->hasRole(Storage\Roles::ROLE_ADMIN);
+	}
+
+	public function isLoggedIn()
+	{
+		return $this->hasRole(Storage\Roles::ROLE_MEMBER);
 	}
 
 	/**
