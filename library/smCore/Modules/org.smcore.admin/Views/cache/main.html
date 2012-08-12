@@ -1,0 +1,45 @@
+{% extends "@theme/layout.html" %}
+{% from "@theme/macros.html" import submenu %}
+
+{% set page_title = lang('admin.titles.cache') %}
+{% set menu_active = ["admin", "admin_cache"] %}
+
+{% block body %}
+		{{ submenu("admin") }}
+
+		<div class="page-header">
+			<h1>{{ lang('admin.titles.cache') }}</h1>
+		</div>
+
+		<table class="table table-striped">
+			<tr>
+				<td>Name:</td>
+				<td>{{ cache_stats.name }}</td>
+			</tr>
+			<tr>
+				<td>Items in cache:</td>
+				<td>{{ cache_stats.items }}</td>
+			</tr>
+			<tr>
+				<td>Cache Hits:</td>
+				<td>{{ cache_stats.hits }}</td>
+			</tr>
+			<tr>
+				<td>Cache Misses:</td>
+				<td>{{ cache_stats.misses }}</td>
+			</tr>
+			<tr>
+				<td>Servers:</td>
+				<td>
+{% for server in cache_stats.servers %}
+					IP: {{ server.ip }} / Version: {{ server.version }} / Uptime: {{ server.uptime |hms }}<br />
+{% endfor %}
+				</td>
+			</tr>
+		</table>
+
+		<div class="flip-text">
+			<a class="btn btn-danger" href="#">Clear Cache</a>
+		</div>
+
+{% endblock %}

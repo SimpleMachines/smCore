@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Admin Module - Main Controller
+ * smCore Admin Module - Cache Settings Controller
  *
  * @package smCore
  * @author smCore Dev Team
@@ -22,38 +22,25 @@
 
 namespace smCore\Modules\Admin\Controllers;
 
-use smCore\Application, smCore\Module\Controller;
+use smCore\Application, smCore\Module\Controller, smCore\Settings;
 
-class Main extends Controller
+class Cache extends Controller
 {
-	public function preDispatch($method)
+	public function preDispatch()
 	{
 		$this->_getParentModule()
+			->loadLangPackage()
 			->requireAdmin()
-			->loadLangPackage();
-
-		if ($method !== 'authenticate')
-		{
-			$this->_getParentModule()->validateSession('admin');
-		}
+			->validateSession('admin')
+		;
 	}
 
 	public function main()
 	{
-		$module = $this->_getParentModule();
+		$cache_info = Application::get('cache')->getStats();
 
-		return $module->render('main');
-	}
-
-	public function authenticate()
-	{
-		$module = $this->_getParentModule();
-
-		if (Application::get('input')->post->keyExists('authenticate_pass'))
-		{
-			$module->validateSession('admin');
-		}
-
-		return $module->render('admin_login');
+		return $this->_getParentModule()->render('cache/main', array(
+			'cache_stats' => $cache_info,
+		));
 	}
 }

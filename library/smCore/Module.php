@@ -242,6 +242,29 @@ class Module
 	}
 
 	/**
+	 * Fire and return an event
+	 *
+	 * @param string $name      Name of the event
+	 * @param mixed  $arguments 
+	 *
+	 * @return \smCore\Event
+	 */
+	public function fire($event, $arguments = null)
+	{
+		if (!$event instanceof Event)
+		{
+			if (!is_string($event) || empty($event))
+			{
+				throw new Exception('Event names must be ');
+			}
+
+			$event = new Event($this, $this->_config['identifier'] . '.' . $event);
+		}
+
+		return Application::get('events')->fire($event);		
+	}
+
+	/**
 	 * Check to see if the current user has a certain permission for this module.
 	 *
 	 * @param string $name The permission name to check under this module's identifier.
@@ -268,6 +291,81 @@ class Module
 		if (!Application::get('user')->hasPermission($name))
 		{
 			throw new Exception('exceptions.no_permission');
+		}
+
+		return $this;
+	}
+
+	public function requireAdmin()
+	{
+		$user = Application::get('user');
+
+		if (!$user->isAdmin())
+		{
+			if (!$user->isLoggedIn())
+			{
+				Application::get('response')->redirect('/login/');
+			}
+
+			throw new Exception('exceptions.admin_required');
+		}
+
+		return $this;
+	}
+
+	public function isNotGuest($message = null, $exception_on_failure = true)
+	{
+		$user = Application::get('user');
+
+		if ($user->hasRole(0))
+		{
+			if ($exception_on_failure)
+			{
+				throw new Exception($message ?: 'exceptions.no_guest_access');
+			}
+
+			return false;
+		}
+
+		return true;
+	}
+
+	public function validateSession($type, $lifetime = 3600)
+	{
+		// Security\Session::start();
+
+		if (!isset($_SESSION['session_' . $type]) || $_SESSION['session_' . $type] + $lifetime < time())
+		{
+			$input = Application::get('input');
+
+			if ($input->post->keyExists('authenticate_pass'))
+			{
+				$user = Application::get('user');
+
+				$bcrypt = new Security\Crypt\Bcrypt();
+
+				if ($bcrypt->match($input->post->getRaw('authenticate_pass'), $user['password']))
+				{
+					$_SESSION['session_' . $type] = time();
+
+					if (isset($_SESSION['redirect_url']))
+					{
+						$url = $_SESSION['redirect_url'];
+					}
+					else
+					{
+						$url = Settings::$url . '/admin/';
+					}
+
+					Application::get('response')->redirect($url);
+				}
+			}
+
+			if (trim(Application::get('request')->getPath(), '/') !== 'admin/authenticate')
+			{
+				$_SESSION['redirect_url'] = Application::get('request')->getPath();
+				Application::get('response')->redirect('/admin/authenticate/');
+			}
 		}
 
 		return $this;

@@ -1,6 +1,6 @@
 name: Internal smCore Admin Module
 description: |
-    :)
+    ...
 identifier: org.smcore.admin
 version: 1.0 Alpha 1
 author:
@@ -16,4 +16,13 @@ routes:
     admin:
         match: [admin, admin/main]
         controller: Main
+        method: main
+    authenticate:
+        match: admin/authenticate
+        controller: Main
+        method: authenticate
+
+    cache:
+        match: [admin/cache, admin/cache/main]
+        controller: Cache
         method: main
