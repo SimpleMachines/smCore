@@ -310,7 +310,7 @@ class Module
 			{
 				Session::start();
 				$_SESSION['redirect_url'] = Application::get('request')->getUrl();
-				Application::get('response')->redirect('/login/');
+				Application::get('response')->redirect('login');
 			}
 
 			throw new Exception('exceptions.admin_required');
@@ -319,7 +319,7 @@ class Module
 		return $this;
 	}
 
-	public function isNotGuest($message = null, $exception_on_failure = true)
+	public function noGuests($message = null, $exception_on_failure = true)
 	{
 		$user = Application::get('user');
 
@@ -358,14 +358,14 @@ class Module
 					}
 					else
 					{
-						$url = Settings::$url . '/admin/';
+						$url = 'admin';
 					}
 
 					Application::get('response')->redirect($url);
 				}
 			}
 
-			if (trim(Application::get('request')->getPath(), '/') !== 'admin/authenticate')
+			if (Application::get('request')->getPath() !== 'admin/authenticate')
 			{
 				$_SESSION['redirect_url'] = Application::get('request')->getPath();
 				Application::get('response')->redirect('/admin/authenticate/');
