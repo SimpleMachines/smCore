@@ -37,6 +37,7 @@ class Response
 	const HTTP_204 = 'HTTP/1.1 204 No Content';
 	const HTTP_301 = 'HTTP/1.1 301 Moved Permanently';
 	const HTTP_302 = 'HTTP/1.1 302 Found';
+	const HTTP_303 = 'HTTP/1.1 303 See Other';
 	const HTTP_307 = 'HTTP/1.1 307 Temporary Redirect';
 	const HTTP_403 = 'HTTP/1.1 403 Not Allowed';
 	const HTTP_404 = 'HTTP/1.1 404 Not Found';
@@ -176,10 +177,8 @@ class Response
 			$url = Settings::URL . '/' . ltrim($url, '/');
 		}
 
-		// HTTP response codes 301 and 307 cause trouble after form posting redirects.
-		unset($this->_headers['http_response_code']);
-
 		$this
+			->addHeader(303)
 			->addHeader('Location: ' . $url)
 			->sendOutput()
 		;
