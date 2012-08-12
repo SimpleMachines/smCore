@@ -99,12 +99,14 @@ class Apc extends AbstractDriver
 	 */
 	public function getStats()
 	{
+		$stats = apc_cache_info("user", true);
+
 		return array(
 			'name' => 'APC',
-			'items' => 0,
-			'hits' => 0,
-			'misses' => 0,
-			'servers' => array('N/A'),
+			'items' => $stats['num_entries'],
+			'hits' => $stats['num_hits'],
+			'misses' => $stats['num_misses'],
+			'servers' => array(),
 		);
 	}
 }

@@ -82,12 +82,10 @@ class Blackhole extends AbstractDriver
 	{
 		return array(
 			'name' => 'Black Hole',
-			'version' => 'N/A',
 			'items' => 0,
 			'hits' => 0,
 			'misses' => 0,
-			'uptime' => 0,
-			'servers' => array('N/A'),
+			'servers' => array(),
 		);
 	}
 }

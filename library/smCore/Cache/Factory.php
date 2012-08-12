@@ -26,7 +26,7 @@ class Factory
 {
 	public static function factory($driver, array $options = array())
 	{
-		$class = "\\smCore\\Cache\\Driver\\" . $driver;
+		$class = "\\smCore\\Cache\\Driver\\" . ucfirst(strtolower($driver));
 		return new $class($options);
 	}
 }
