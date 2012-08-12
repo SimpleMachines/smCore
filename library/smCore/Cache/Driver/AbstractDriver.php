@@ -36,7 +36,7 @@ abstract class AbstractDriver
 	 *
 	 * @return mixed The data from the cache or $failure_return on failure
 	 */
-	public abstract function load($key, $failure_return = false);
+	abstract public function load($key, $failure_return = false);
 
 	/**
 	 * Saves data into the cache.
@@ -45,7 +45,7 @@ abstract class AbstractDriver
 	 * @param mixed  $data     The data to be stored (null will remove the entry)
 	 * @param int    $lifetime How long should it be before we remove this piece of data from the cache?
 	 */
-	public abstract function save($key, $data, $lifetime = null);
+	abstract public function save($key, $data, $lifetime = null);
 
 	/**
 	 * Check if data for a key has been stored in the cache.
@@ -54,19 +54,19 @@ abstract class AbstractDriver
 	 *
 	 * @return boolean
 	 */
-	public abstract function test($key);
+	abstract public function test($key);
 
 	/**
 	 * Removes a cache item with key $key from the file cache.
 	 * 
 	 * @param string $key The key of the item to remove.
 	 */
-	public abstract function remove($key);
+	abstract public function remove($key);
 
 	/**
 	 * Flush the entire cache
 	 */
-	public abstract function flush();
+	abstract public function flush();
 
 	/**
 	 * Gets normalized information about a cached item
@@ -75,7 +75,7 @@ abstract class AbstractDriver
 	 *
 	 * @return array
 	 */
-	public abstract function getMetadata($key);
+	abstract public function getMetadata($key);
 
 	/**
 	 * Normalize a cache key

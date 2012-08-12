@@ -164,7 +164,7 @@ class Language
 				$data[$row['string_key']] = $row['string_value'];
 			}
 
-			$cache->save($cache_key, $data, array('smcore_language', 'smcore_language_' . $this->_code));
+			$cache->save($cache_key, $data);
 		}
 
 		$this->_addStrings($data);

@@ -48,7 +48,7 @@ class Session
 	public static function start()
 	{
 		// Only start if it wasn't started yet.
-		if (self::$_started === false)
+		if (false === self::$_started)
 		{
 			// We should start anew. What about when PHP already started? Kill it.
 			if (1 == ini_get('session.auto_start'))

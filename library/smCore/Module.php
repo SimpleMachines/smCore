@@ -231,14 +231,14 @@ class Module
 	 * Create an event, under this module's namespace, that can be fired/used later.
 	 *
 	 * @param string $name
-	 * @param array  $args
+	 * @param mixed  $arguments
 	 *
 	 * @return \smCore\Event
 	 */
-	public function createEvent($name, array $args = array())
+	public function createEvent($name, $arguments = null)
 	{
 		// Use proper namespacing - "com.fustrate.calendar" + "load" = "com.fustrate.calendar.load"
-		return new Event($this, $this->_config['identifier'] . '.' . $name, $args);
+		return new Event($this, $this->_config['identifier'] . '.' . $name, $arguments);
 	}
 
 	/**
@@ -267,7 +267,7 @@ class Module
 
 		if (!Application::get('user')->hasPermission($name))
 		{
-			throw new Exception('You do not have the permissions required to access this page.');
+			throw new Exception('exceptions.no_permission');
 		}
 
 		return $this;
@@ -282,7 +282,7 @@ class Module
 	 */
 	public function getSetting($name)
 	{
-		if (array_key_exists($name, $this->_config['settings']))
+		if (isset($this->_config['settings'][$name]))
 		{
 			return $this->_config['settings'][$name];
 		}
@@ -298,20 +298,12 @@ class Module
 	/**
 	 *
 	 *
-	 * @param mixed  $data     The value to save to the cache.
 	 * @param string $key      Unique key to save this data under, in the module's namespace.
-	 * @param array  $tags     Tags for this data, optional.
+	 * @param mixed  $data     The value to save to the cache.
 	 * @param int    $lifetime Amount of time to keep this data in the cache, optional.
 	 */
-	public function cacheSave($data, $key, array $tags = array(), $lifetime = false)
+	public function cacheSave($key, $data, $lifetime = null)
 	{
-		if (empty($key))
-		{
-			throw new Exception('exceptions.modules.invalid_cache_key');
-		}
-
-		$tags = array_merge(array($this->_config['identifier']), $tags);
-
 		Application::get('cache')->save($this->_config['namespaces']['cache'] . '.' . $key, $data, $lifetime);
 	}
 
@@ -322,11 +314,6 @@ class Module
 	 */
 	public function cacheLoad($key)
 	{
-		if (empty($key))
-		{
-			throw new Exception('exceptions.modules.invalid_cache_key');
-		}
-
 		return Application::get('cache')->load($this->_config['namespaces']['cache'] . '.' . $key);
 	}
 
@@ -337,11 +324,6 @@ class Module
 	 */
 	public function cacheTest($key)
 	{
-		if (empty($key))
-		{
-			throw new Exception('exceptions.modules.invalid_cache_key');
-		}
-
 		return Application::get('cache')->test($this->_config['namespaces']['cache'] . '_' . $key);
 	}
 
@@ -355,7 +337,7 @@ class Module
 	public function createToken($name)
 	{
 		$user = Application::get('user');
-		return md5(hash('sha256', $name . '%' . $user['user_token'] . '%' . $this->_config['identifier']));
+		return md5(hash('sha256', $name . '%' . $user['token'] . '%' . $this->_config['identifier']));
 	}
 
 	/**

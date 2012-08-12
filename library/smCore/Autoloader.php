@@ -66,7 +66,6 @@ class Autoloader
 		if (file_exists($filename))
 		{
 			require $filename;
-			return;
 		}
 	}
 }

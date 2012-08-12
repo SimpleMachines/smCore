@@ -173,7 +173,7 @@ class Response
 		}
 
 		$this
-			->addHeader($permanent ? 301 : 307)
+//			->addHeader($permanent ? 301 : 307)
 			->addHeader('Location: ' . $url)
 			->sendOutput()
 		;

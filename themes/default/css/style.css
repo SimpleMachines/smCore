@@ -22,8 +22,13 @@ body {
 	color: #666;
 	font-size: .9em;
 	padding: 3px .8em;
+	margin-top: .9em;
 	}
 #footer a,
 #footer a:hover {
 	color: #666;
 	}
+
+.flip-text {
+	text-align: right;
+}

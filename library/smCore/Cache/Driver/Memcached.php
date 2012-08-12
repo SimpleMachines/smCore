@@ -118,7 +118,7 @@ class Memcached extends AbstractDriver
 	/**
 	 * {@inheritdoc}
 	 */
-	public function clean($mode)
+	public function flush()
 	{
 	}
 
