@@ -7,8 +7,10 @@ author:
     name: smCore Dev Team
     website: http://smcore.org
 
-namespace: smCore\Modules\Auth
-lang_namespace: auth
+namespaces:
+    php:      smCore\Modules\Auth
+    lang:     auth
+    template: auth
 
 routes:
     login:

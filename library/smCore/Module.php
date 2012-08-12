@@ -29,7 +29,6 @@ class Module
 	protected $_application;
 
 	protected $_template_dir;
-	protected $_lang_prefix = '';
 
 	protected $_directory;
 	protected $_config;
@@ -52,16 +51,15 @@ class Module
 
 		$this->_template_dir = $this->_directory . '/Views/';
 
+		$this->_config['namespaces'] = array_merge(array(
+			'cache' => str_replace('.', '_', $this->_config['identifier']),
+			'lang' => $this->_config['identifier'],
+			'template' => $this->_config['identifier'],
+		), $this->_config['namespaces']);
+
 		if (empty($this->_config['settings']))
 		{
 			$this->_config['settings'] = array();
-		}
-
-		$this->_config['cache_namespace'] = str_replace('.', '_', $this->_config['identifier']);
-
-		if (!empty($this->_config['lang_namespace']))
-		{
-			$this->_lang_prefix = $this->_config['lang_namespace'] . '.';
 		}
 
 		if (is_dir($this->_template_dir))
@@ -88,7 +86,7 @@ class Module
 			throw new Exception(array('exceptions.modules.invalid_controller', $controller));
 		}
 
-		$controllerClass = $this->_config['namespace'] . '\\Controllers\\' . $controller;
+		$controllerClass = $this->_config['namespaces']['php'] . '\\Controllers\\' . $controller;
 		$controllerObject = new $controllerClass($this);
 
 		if (!is_callable(array($controllerObject, $method)))
@@ -119,7 +117,7 @@ class Module
 			throw new Exception(array('exceptions.modules.invalid_model', $name));
 		}
 
-		$modelClass = $this->_config['namespace'] . '\\Models\\' . $name;
+		$modelClass = $this->_config['namespaces']['php'] . '\\Models\\' . $name;
 
 		return new $modelClass($this);
 	}
@@ -140,7 +138,7 @@ class Module
 				throw new Exception(array('exceptions.modules.invalid_storage', $name));
 			}
 
-			$storageClass = $this->_config['namespace'] . '\\Storages\\' . $name;
+			$storageClass = $this->_config['namespaces']['php'] . '\\Storages\\' . $name;
 			$this->_storages[$name] = new $storageClass($this);
 		}
 
@@ -207,9 +205,9 @@ class Module
 	 */
 	public function lang($key, array $replacements = array())
 	{
-		if (Application::get('lang')->keyExists($this->_lang_prefix . $key))
+		if (Application::get('lang')->keyExists($this->_config['namespaces']['lang'] . '.' . $key))
 		{
-			return Application::get('lang')->get($this->_lang_prefix . $key, $replacements);
+			return Application::get('lang')->get($this->_config['namespaces']['lang'] . '.' . $key, $replacements);
 		}
 
 		return $key;
@@ -225,7 +223,7 @@ class Module
 	 */
 	public function throwLangException($key, array $replacements = array())
 	{
-		throw new Exception($this->lang($this->_lang_prefix . 'exceptions.' . $key, $replacements));
+		throw new Exception($this->lang($this->_config['namespaces']['lang'] . '.' . 'exceptions.' . $key, $replacements));
 	}
 
 	/**
@@ -313,7 +311,7 @@ class Module
 
 		$tags = array_merge(array($this->_config['identifier']), $tags);
 
-		Application::get('cache')->save($this->_config['cache_namespace'] . '_' . $key, $data, $tags, $lifetime);
+		Application::get('cache')->save($this->_config['namespaces']['cache'] . '.' . $key, $data, $lifetime);
 	}
 
 	/**
@@ -328,7 +326,7 @@ class Module
 			throw new Exception('exceptions.modules.invalid_cache_key');
 		}
 
-		return Application::get('cache')->load($this->_config['cache_namespace'] . '_' . $key);
+		return Application::get('cache')->load($this->_config['namespaces']['cache'] . '.' . $key);
 	}
 
 	/**
@@ -343,7 +341,7 @@ class Module
 			throw new Exception('exceptions.modules.invalid_cache_key');
 		}
 
-		return Application::get('cache')->test($this->_config['cache_namespace'] . '_' . $key);
+		return Application::get('cache')->test($this->_config['namespaces']['cache'] . '_' . $key);
 	}
 
 	/**

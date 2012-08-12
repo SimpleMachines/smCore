@@ -7,8 +7,10 @@ author:
     name: smCore Dev Team
     website: http://smcore.org
 
-namespace: smCore\Modules\Admin
-lang_namespace: admin
+namespaces:
+    php:      smCore\Modules\Admin
+    lang:     admin
+    template: admin
 
 routes:
     admin:

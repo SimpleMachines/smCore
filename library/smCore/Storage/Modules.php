@@ -51,9 +51,9 @@ class Modules implements IteratorAggregate
 
 		foreach ($this->_moduleData as $module)
 		{
-			new Autoloader($module['config']['namespace'], $module['directory']);
+			new Autoloader($module['config']['namespaces']['php'], $module['directory']);
 
-			$moduleClass = $module['config']['namespace'] . '\\Module';
+			$moduleClass = $module['config']['namespaces']['php'] . '\\Module';
 
 			if (!class_exists($moduleClass))
 			{
@@ -95,13 +95,18 @@ class Modules implements IteratorAggregate
 				throw new Exception(array('exceptions.modules.no_identifier', basename($module->getPathname())));
 			}
 
-			if (array_key_exists($config['identifier'], $this->_moduleData))
+			if (isset($this->_moduleData[$config['identifier']]))
 			{
 				throw new Exception(array(
 					'exceptions.modules.identifier_taken',
 					basename($module->getPathname()),
 					basename($this->_moduleData[$config['identifier']]['directory'])
 				));
+			}
+
+			if (!isset($config['namespaces']['php']))
+			{
+				throw new Exception('exceptions.modules.no_php_namespace');
 			}
 
 			$this->_moduleData[$config['identifier']] = array(
