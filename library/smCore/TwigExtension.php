@@ -9,9 +9,7 @@ class TwigExtension extends Twig_Extension
 	public function getFunctions()
 	{
 		return array(
-			'lang' => new Twig_Function_Function(__CLASS__ . '::function_lang', array(
-				'is_safe' => array('html'),
-			)),
+			'lang' => new Twig_Function_Function(__CLASS__ . '::function_lang'),
 			'smcMenu' => new Twig_Function_Function(__CLASS__ . '::function_smcMenu'),
 			'smcDebug' => new Twig_Function_Function(__CLASS__ . '::function_smcDebug'),
 		);
