@@ -27,7 +27,7 @@ use smCore\Application, smCore\Settings, smCore\Handlers\Session as SessionHandl
 class Session
 {
 	protected static $_started = false;
-	protected static $_lifetime = 0;
+	protected static $_lifetime = 3600;
 
 	protected static function _overrideIni()
 	{

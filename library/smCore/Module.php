@@ -24,6 +24,8 @@
 
 namespace smCore;
 
+use smCore\Security\Session;
+
 class Module
 {
 	protected $_application;
@@ -306,6 +308,8 @@ class Module
 		{
 			if (!$user->isLoggedIn())
 			{
+				Session::start();
+				$_SESSION['redirect_url'] = Application::get('request')->getUrl();
 				Application::get('response')->redirect('/login/');
 			}
 
@@ -334,8 +338,6 @@ class Module
 
 	public function validateSession($type, $lifetime = 3600)
 	{
-		// Security\Session::start();
-
 		if (!isset($_SESSION['session_' . $type]) || $_SESSION['session_' . $type] + $lifetime < time())
 		{
 			$input = Application::get('input');

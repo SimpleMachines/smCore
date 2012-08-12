@@ -72,8 +72,23 @@ class LogInOut extends Controller
 
 				// @todo: $module->fire('post_successful_login');
 
-				// @todo: redirect to the page they were on if they were redirected to the login page
-				Application::get('response')->redirect(Settings::URL);
+				if (isset($_SESSION['redirect_url']))
+				{
+					$url = $_SESSION['redirect_url'];
+
+					// If they also need to validate their session, help them out
+					if (!empty($_SESSION['redirect_needs_auth']))
+					{
+						$_SESSION['session_' . $_SESSION['redirect_needs_auth']] = time();
+						unset($_SESSION['redirect_needs_auth']);
+					}
+				}
+				else
+				{
+					$url = Settings::URL;
+				}
+
+				Application::get('response')->redirect($url);
 			}
 
 			return $module->render('login', array(

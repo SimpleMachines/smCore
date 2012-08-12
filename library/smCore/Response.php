@@ -165,15 +165,21 @@ class Response
 	 * @param string  $url       URL to redirect to
 	 * @param boolean $permanent Redirect permanently (301) or temporarily (307)
 	 */
-	public function redirect($url, $permanent = false)
+	public function redirect($url = null, $permanent = false)
 	{
-		if (!preg_match('/^https?:\/\//', $url))
+		if (null === $url)
+		{
+			$url = Settings::URL;
+		}
+		else if (!preg_match('/^https?:\/\//', $url))
 		{
 			$url = Settings::URL . '/' . ltrim($url, '/');
 		}
 
+		// HTTP response codes 301 and 307 cause trouble after form posting redirects.
+		unset($this->_headers['http_response_code']);
+
 		$this
-//			->addHeader($permanent ? 301 : 307)
 			->addHeader('Location: ' . $url)
 			->sendOutput()
 		;
