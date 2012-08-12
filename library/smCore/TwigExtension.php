@@ -13,6 +13,7 @@ class TwigExtension extends Twig_Extension
 				'is_safe' => array('html'),
 			)),
 			'smcMenu' => new Twig_Function_Function(__CLASS__ . '::function_smcMenu'),
+			'smcDebug' => new Twig_Function_Function(__CLASS__ . '::function_smcDebug'),
 		);
 	}
 
@@ -20,6 +21,7 @@ class TwigExtension extends Twig_Extension
 	{
 		return array(
 			'split' => new Twig_Filter_Function(__CLASS__ . '::filter_split'),
+			'hms' => new Twig_Filter_Function(__CLASS__ . '::filter_hms'),
 		);
 	}
 
@@ -63,6 +65,11 @@ class TwigExtension extends Twig_Extension
 		return $menu->getMenu();
 	}
 
+	public static function function_smcDebug($value)
+	{
+		return var_export($value, true);
+	}
+
 	/**
 	 * Splits a value into an array.
 	 *
@@ -95,5 +102,16 @@ class TwigExtension extends Twig_Extension
 		}
 
 		return explode($delimiter, $value, $limit);
+	}
+
+	public static function filter_hms($value)
+	{
+		$value = (int) $value;
+
+		$hours = floor($value / 3600);
+		$minutes = floor(($value - $hours * 3600) / 60);
+		$seconds = $value % 60;
+
+		return $hours . ':' . $minutes . ':' . $seconds;
 	}
 }
