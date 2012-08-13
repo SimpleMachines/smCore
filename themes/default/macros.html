@@ -3,10 +3,16 @@
 #}
 
 {% macro submenu(which) %}
-	{% set submenu = smcMenu(menu_active) %}
+{% set submenu = smcMenu(menu_active) %}
 		<ul class="nav nav-tabs">
-	{% for item in submenu[which]['submenu'] %}
+{% for item in submenu[which]['submenu'] %}
 			<li{{ item.active ? ' class="active"' : '' }}><a href="{{ item.url }}">{{ item.title }}</a></li>
-	{% endfor %}
+{% endfor %}
 		</ul>
-{% endmacro %}
+{%- endmacro %}
+
+{% macro pagination(url, pages, current_page) %}
+
+	{# todo #}
+
+{%- endmacro %}
