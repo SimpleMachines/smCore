@@ -22,7 +22,12 @@ routes:
         controller: Main
         method: authenticate
 
+    settings:
+        match: admin/settings
+        controller: Settings
+        method: main
+
     cache:
-        match: [admin/cache, admin/cache/main]
+        match: admin/cache
         controller: Cache
         method: main

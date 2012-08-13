@@ -1,0 +1,117 @@
+{% extends "@theme/layout.html" %}
+{% from "@theme/macros.html" import submenu %}
+
+{% set page_title = lang('admin.titles.main') %}
+{% set menu_active = ["admin", "admin_settings"] %}
+
+{% block body %}
+		{{ submenu("admin") }}
+
+		<div class="page-header">
+			<h1>{{ lang('admin.titles.settings') }}</h1>
+		</div>
+
+		<form class="form-horizontal">
+			<div class="well">
+				<fieldset>
+					<legend>{{ lang('admin.settings.urls_directories') }}</legend>
+
+					<div class="control-group">
+						<label class="control-label" for="input01">{{ lang('admin.settings.url') }}</label>
+						<div class="controls">
+							<input type="text" class="span6" name="settings_url" id="settings_url" value="{{ settings.url }}" />
+							<p class="help-block">
+								{{ lang('admin.settings.url.help') }}
+							</p>
+						</div>
+					</div>
+
+					<div class="control-group">
+						<label class="control-label" for="settings_module_dir">{{ lang('admin.settings.module_dir') }}</label>
+						<div class="controls">
+							<input type="text" class="span6" name="settings_module_dir" id="settings_module_dir" value="{{ settings.modules_dir }}" />
+							<p class="help-block">
+								{{ lang('admin.settings.module_dir.help') }}
+							</p>
+						</div>
+					</div>
+
+					<div class="control-group">
+						<label class="control-label" for="settings_themes_dir">{{ lang('admin.settings.themes_dir') }}</label>
+						<div class="controls">
+							<input type="text" class="span6" name="settings_themes_dir" id="settings_themes_dir" value="{{ settings.themes_dir }}" />
+							<p class="help-block">
+								{{ lang('admin.settings.themes_dir.help') }}
+							</p>
+						</div>
+					</div>
+
+					<div class="control-group">
+						<label class="control-label" for="settings_cache_dir">{{ lang('admin.settings.cache_dir') }}</label>
+						<div class="controls">
+							<input type="text" class="span6" name="settings_cache_dir" id="settings_cache_dir" value="{{ settings.cache_dir }}" />
+							<p class="help-block">
+								{{ lang('admin.settings.cache_dir.help') }}
+							</p>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+
+			<div class="well">
+				<fieldset>
+					<legend>{{ lang('admin.settings.cookies_sessions') }}</legend>
+
+					<div class"control-group">
+						<label class="control-label" for="settings_cookie_name">{{ lang('admin.settings.cookie_name') }}</label>
+						<div class="controls">
+							<input type="text" class="span6" name="settings_cookie_name" id="settings_cookie_name" value="{{ settings.cookie_name }}" />
+							<p class="help-block">
+								{{ lang('admin.settings.cookie_name.help') }}
+							</p>
+						</div>
+					</div>
+
+					<div class"control-group">
+						<label class="control-label" for="settings_cookie_domain">{{ lang('admin.settings.cookie_domain') }}</label>
+						<div class="controls">
+							<input type="text" class="span6" name="settings_cookie_domain" id="settings_cookie_domain" value="{{ settings.cookie_domain }}" />
+							<p class="help-block">
+								{{ lang('admin.settings.cookie_domain.help') }}
+							</p>
+						</div>
+					</div>
+
+					<div class"control-group">
+						<label class="control-label" for="settings_cookie_dir">{{ lang('admin.settings.cookie_dir') }}</label>
+						<div class="controls">
+							<input type="text" class="span6" name="settings_cookie_dir" id="settings_cookie_dir" value="{{ settings.cookie_dir }}" />
+							<p class="help-block">
+								{{ lang('admin.settings.cookie_dir.help') }}
+							</p>
+						</div>
+					</div>
+
+					<div class"control-group">
+						<label class="control-label" for="settings_cookie_db_driven">{{ lang('admin.settings.cookie_db_driven') }}</label>
+						<div class="controls">
+							<label class="checkbox">
+								<input type="checkbox" name="settings_cookie_db_driven" id="settings_cookie_db_driven"{{ settings.cookie_db_driven ? ' checked="checked"' : '' }} />
+								{{ lang('admin.settings.cookie_db_driven.help') }}
+							</label>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+
+			<div class="well">
+				<fieldset>
+					<legend>{{ lang('admin.settings.caching') }}</legend>
+				</fieldset>
+			</div>
+
+			<div style="text-align: center;">
+				<input type="submit" name="submit" value="{{ lang('save') }}" class="btn btn-primary" />
+			</div>
+		</form>
+{% endblock %}
