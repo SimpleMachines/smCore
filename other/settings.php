@@ -33,6 +33,13 @@ class Settings
 	const COOKIE_DOMAIN = '.mysite.com';
 
 	/**
+	 * Use database-driven sessions instead of file-based sessions?
+	 *
+	 * @todo: Change this to a string, to allow for memcached/etc. to be used for sessions?
+	 */
+	const SESSION_DB_DRIVEN = true;
+
+	/**
 	 * @todo: Default time zone should be a database setting and only used to display times, not store them
 	 */
 	const TIMEZONE = 'America/Los_Angeles'; 

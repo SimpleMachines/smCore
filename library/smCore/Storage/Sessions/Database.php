@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Sessions Storage
+ * smCore Sessions Storage - Database
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,11 +20,11 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Storage;
+namespace smCore\Storage\Sessions;
 
 use smCore\Application, smCore\Security\Session;
 
-class Sessions
+class Database
 {
 	/**
 	 * Read a session from the database by ID.

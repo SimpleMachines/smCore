@@ -42,13 +42,7 @@ class Factory
 			return self::$_storages[$name];
 		}
 
-		if (file_exists(__DIR__ . '/' . $name . '.php'))
-		{
-			$class = 'smCore\\Storage\\' . $name;
-			return self::$_storages[$name] = new $class();
-		}
-
-		// @todo: throw exception?
-		return null;
+		$class = 'smCore\\Storage\\' . $name;
+		return self::$_storages[$name] = new $class();
 	}
 }
