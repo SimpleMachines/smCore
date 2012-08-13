@@ -108,11 +108,13 @@ class File extends AbstractDriver
 		{
 			// Write the file.
 			set_file_buffer($fh, 0);
+			$cache_data = '<' . '?php if (time() > ' . $lifetime . ') { $expired = true; } else { $expired = false; $value = \'' . addcslashes(serialize($data), '\\\'') . '\';}' . '?' . '>';
+			$cache_bytes = 0;
 
 			// Only write if we can obtain a lock
 			if (flock($fh, LOCK_EX))
 			{
-				$cache_bytes = fwrite($fh, '<' . '?php if (time() > ' . $lifetime . ') { $expired = true; } else { $expired = false; $value = \'' . addcslashes(serialize($data), '\\\'') . '\';}' . '?' . '>');
+				$cache_bytes = fwrite($fh, $cache_data);
 			}
 
 			flock($fh, LOCK_UN);
