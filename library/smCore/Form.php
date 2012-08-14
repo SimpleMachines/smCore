@@ -21,11 +21,100 @@
  */
 
 namespace smCore;
+
 use smCore\Form\Control;
 
 class Form
 {
+	protected $_attributes = array();
 	protected $_controls = array();
+
+	public function __construct($action, array $controls = array())
+	{
+		$this->_attributes = array(
+			'action' => $action,
+			'method' => 'post',
+		);
+
+		$this->addControls($controls);
+	}
+
+	public function addControls(array $controls)
+	{
+		foreach ($controls as $name => $control)
+		{
+			$this->addControl($name, $control);
+		}
+
+		return $this;
+	}
+
+	public function addControl($name, $control)
+	{
+		$this->_controls[$name] = $control;
+
+		return $this;
+	}
+
+	public function getControl($name)
+	{
+		if (isset($this->_controls[$name]))
+		{
+			return $this->_controls[$name];
+		}
+
+		return null;
+	}
+
+	public function setAttribute($name, $value)
+	{
+		$this->_attributes[$name] = $value;
+
+		return $this;
+	}
+
+	public function getAttribute($name)
+	{
+		if (isset($this->_attributes[$name]))
+		{
+			return $this->_attributes['name'];
+		}
+
+		return null;
+	}
+
+	public function setAttributes(array $attributes)
+	{
+		foreach ($attributes as $name => $value)
+		{
+			$this->setAttribute($name, $value);
+		}
+
+		return $this;
+	}
+
+	public function getAttributes()
+	{
+		return $this->_attributes;
+	}
+
+	public function getControls()
+	{
+		return $this->_controls;
+	}
+}
+
+
+
+
+
+
+
+
+
+class Form2
+{
+	protected $_control_sections = array();
 
 	protected $_properties = array();
 	protected $_requiredProperties = array('action', 'method');
@@ -34,31 +123,58 @@ class Form
 	{
 		$this->_validateProperties($properties);
 		$this->_properties = $properties;
+		$section = 0;
 
 		if (!empty($properties['controls']))
 		{
 			foreach ($properties['controls'] as $name => $control)
-				$this->addControl($name, $control);
+			{
+				if (is_array($control))
+				{
+					foreach ($control as $real_name => $real_control)
+					{
+						if ($real_name === 0)
+						{
+							$section = $real_control;
+						}
+						else
+						{
+							$this->addControl($real_name, $real_control, $section);
+						}
+					}
+				}
+				else
+				{
+					$this->addControl($name, $control);
+				}
+			}
 
 			unset($this->_properties['controls']);
 		}
 	}
 
-	public function addControl($name, $control)
+	public function addControl($name, $control, $section = 0)
 	{
 		$this->_validateControl($control, $name);
-		$this->_controls[$name] = $control;
+		$this->_control_sections[$section][$name] = $control;
 
-		$this->_controls[$name]->setProperty('name', $name);
+		$this->_control_sections[$section][$name]->setProperty('name', $name);
 
-		if ($this->_controls[$name]->getProperty('id') === null)
-			$this->_controls[$name]->setProperty('id', $name);
+		if (null === $this->_controls[$section][$name]->getProperty('id'))
+		{
+			$this->_control_sections[$section][$name]->setProperty('id', $name);
+		}
 	}
 
 	public function getControl($name)
 	{
-		if (isset($this->_controls[$name]))
-			return $this->_controls[$name];
+		foreach ($this->_control_sections as $section => $controls)
+		{
+			if (isset($this->_control_sections[$section][$name]))
+			{
+				return $this->_controls[$name];
+			}
+		}
 
 		return false;
 	}
@@ -66,7 +182,9 @@ class Form
 	public function removeControl($name)
 	{
 		if (isset($this->_controls[$name]))
+		{
 			unset($this->_controls[$name]);
+		}
 	}
 
 	public function getControls()
@@ -82,7 +200,9 @@ class Form
 	public function getProperty($name)
 	{
 		if (!empty($name) && array_key_exists($name, $this->_properties))
+		{
 			return $this->_properties[$name];
+		}
 
 		return null;
 	}
@@ -104,7 +224,9 @@ class Form
 		);
 
 		if (!empty($this->_properties['id']))
+		{
 			$context['attributes']['id'] = $this->_properties['id'];
+		}
 
 		foreach ($this->_controls as $control)
 		{
@@ -112,7 +234,9 @@ class Form
 
 			// Add the enctype attribute so that the file(s) can be submitted correctly
 			if ($control->type === 'file')
+			{
 				$context['attributes']['enctype'] = 'multipart/form-data';
+			}
 		}
 
 		return $context;
@@ -132,16 +256,22 @@ class Form
 			if (($error = $control->validate($this)) !== true)
 			{
 				if (!empty($error))
+				{
 					$errors[] = $error;
+				}
 
 				$error_controls[] = $error['name'];
 			}
 			else
+			{
 				$values[$control->getProperty('name')] = $control->getValue();
+			}
 		}
 
 		if (empty($errors))
+		{
 			return $values;
+		}
 		else
 		{
 			/**
@@ -153,23 +283,48 @@ class Form
 		}
 	}
 
-	public function display()
-	{
-//		Application::$theme->addNamespace('forms', 'com.fustrate.forms');
-//		Application::$theme->loadTemplates('forms');
-//		Application::$theme->addTemplate('form', 'forms');
-//		Application::$context['form'] = $this->getContext();
-	}
-
 	protected function _validateProperties($properties)
 	{
 		if (!empty($this->_requiredProperties))
+		{
 			foreach ($this->_requiredProperties as $property)
+			{
 				if (!array_key_exists($property, $properties))
+				{
 					throw new Exception(array('exceptions.form.missing_property', $property));
+				}
+			}
+		}
 	}
 
 	protected function _validateControl(Control $control, $name)
 	{
+	}
+
+
+
+
+
+
+
+
+
+	public function getAction()
+	{
+		return $this->_properties['action'];
+	}
+
+	public function getMethod()
+	{
+		return $this->_properties['method'];
+	}
+
+
+
+
+
+	public function getIterator()
+	{
+		return new ArrayIterator($this->_controls);
 	}
 }

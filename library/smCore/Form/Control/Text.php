@@ -21,12 +21,11 @@
  */
 
 namespace smCore\Form\Control;
-use smCore\Application, smCore\Form\Control;
+
+use smCore\Form\Control;
 
 class Text extends Control
 {
-	public $type = 'text';
-
 	protected $_defaults = array(
 		'size' => 25,
 		'value' => '',
@@ -35,4 +34,9 @@ class Text extends Control
 		),
 		'type' => 'text',
 	);
+
+	public function getType()
+	{
+		return 'text';
+	}
 }

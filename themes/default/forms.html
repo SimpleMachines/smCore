@@ -1,0 +1,105 @@
+{#
+ #
+ # Form macros - WIP/@todo
+ #
+ #}
+
+{#
+ # Outer form macro
+ #
+ # @param smCore\Form form_object
+ #}
+{% macro form(form_object) %}
+<form{% for key, value in form_object.attributes %} {{ key }}="{{ value }}"{% endfor %} class="form-horizontal">
+	<div class="well alternate">
+{% for control in form_object.controls %}
+	{{ dynamic_macro(_self, "form_control_" ~ control.type, control) }}
+{% endfor %}
+	</div>
+
+	<div style="text-align: center;">
+		<input type="submit" name="submit" value="{{ lang('save') }}" class="btn btn-primary" />
+	</div>
+</form>
+{% endmacro %}
+
+{#
+ # Grouped form controls macro
+ #
+ # @param smCore\Form\Control control
+ #}
+{% macro form_control_group(control) %}
+	<fieldset>
+		<legend>{{ control.label }}</legend>
+{% if control.help is not empty %}
+		<div class="alert alert-info">
+			{{ control.help }}
+		</div>
+{% endif %}
+{% for inner_control in control.controls %}
+		{{ dynamic_macro(_self, "form_control_" ~ inner_control.type, inner_control) }}
+{% endfor %}
+	</fieldset>
+{% endmacro %}
+
+{#
+ # Basic text form control macro
+ #
+ # @param smCore\Form\Control control
+ #}
+{% macro form_control_text(control) %}
+	<div class="control-group">
+		<label class="control-label" for="{{ control.id }}">{{ control.label }}</label>
+		<div class="controls">
+			<input type="text" class="span6" name="{{ control.name |e('html_attr') |raw }}" id="{{ control.id |e('html_attr') |raw }}" value="{{ control.value |e('html_attr') |raw }}" />
+{% if control.help is not empty %}
+			<p class="help-block">
+				{{ control.help }}
+			</p>
+{% endif %}
+		</div>
+	</div>
+{% endmacro %}
+
+{#
+ # Select (dropdown) form control macro
+ #
+ # @param smCore\Form\Control control
+ #}
+{% macro form_control_select(control) %}
+	<div class="control-group">
+		<label class="control-label" for="{{ control.id }}">{{ control.label }}</label>
+		<div class="controls">
+			<select name="{{ control.name }}" id="{{ control.id }}">
+{% for key, value in control.options %}
+				<option value="{{ key }}"{{ key == control.value ? ' selected="selected"' : '' }}>{{ value }}</option>
+{% endfor %}
+			</select>
+{% if control.help is not empty %}
+			<p class="help-block">
+				{{ control.help }}
+			</p>
+{% endif %}
+		</div>
+	</div>
+{% endmacro %}
+
+{#
+ # Checkbox form control macro
+ #
+ # @param smCore\Form\Control control
+ #}
+{% macro form_control_checkbox(control) %}
+	<div class="control-group">
+		<label class="control-label" for="{{ control.id }}">{{ control.label }}</label>
+		<div class="controls">
+			<label class="checkbox">
+				<input type="checkbox" name="{{ control.name }}" id="{{ control.id }}"{{ control.value ? ' checked="checked"' : '' }} />
+				{{ control.help }}
+			</label>
+		</div>
+	</div>
+{% endmacro %}
+
+
+

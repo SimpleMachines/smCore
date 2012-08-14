@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Select Form Control Class
+ * smCore Form Control Group
  *
  * @package smCore
  * @author smCore Dev Team
@@ -22,55 +22,66 @@
 
 namespace smCore\Form\Control;
 
-use smCore\Form\Control;
+use smCore\Exception, smCore\Form\Control;
 
-class Select extends Control
+class Group extends Control
 {
 	protected $_properties;
-	protected $_options = array();
+	protected $_controls;
 
 	public function __construct(array $properties = array())
 	{
+		if (!isset($properties['label']))
+		{
+			throw new Exception('Control groups must have labels.');
+		}
+
 		$this->_properties = array_merge(array(
-			'label' => '',
-			'name' => '',
-			'id' => '',
-			'value' => '',
-			'validation' => array(
-				'required' => false,
-			),
+			'value' => null,
+			'label' => null,
+			'help' => null,
 		), $properties);
 
-		if (!empty($properties['options']))
+		if (!empty($properties['controls']))
 		{
-			$this->addOptions($properties['options']);
+			$this->addControls($properties['controls']);
 		}
 	}
 
-	public function addOption($value, $label)
+	public function addControls(array $controls)
 	{
-		$this->_options[$value] = $label;
-
-		return $this;
-	}
-
-	public function addOptions(array $options)
-	{
-		foreach ($options as $value => $label)
+		foreach ($controls as $name => $control)
 		{
-			$this->addOption($value, $label);
+			$this->addControl($name, $control);
 		}
 
 		return $this;
 	}
 
-	public function getOptions()
+	public function addControl($name, $control)
 	{
-		return $this->_options;
+		$this->_controls[$name] = $control;
+
+		return $this;
+	}
+
+	public function getLabel()
+	{
+		return $this->_properties['label'];
+	}
+
+	public function getControls()
+	{
+		return $this->_controls;
+	}
+
+	public function getValue()
+	{
+		// @todo: loop through controls
 	}
 
 	public function getType()
 	{
-		return 'select';
+		return 'group';
 	}
 }

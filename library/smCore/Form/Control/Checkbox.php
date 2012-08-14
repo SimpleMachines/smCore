@@ -25,10 +25,13 @@ use smCore\Application, smCore\Form\Control;
 
 class Checkbox extends Control
 {
-	public $type = 'checkbox';
-
 	public function getValue()
 	{
-		return Application::get('input')->post->keyExists($this->_properties['name']);
+		return $this->_properties['value'];
+	}
+
+	public function getType()
+	{
+		return 'checkbox';
 	}
 }
