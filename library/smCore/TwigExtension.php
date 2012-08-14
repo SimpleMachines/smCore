@@ -12,6 +12,12 @@ class TwigExtension extends Twig_Extension
 			'lang' => new Twig_Function_Function(__CLASS__ . '::function_lang'),
 			'smcMenu' => new Twig_Function_Function(__CLASS__ . '::function_smcMenu'),
 			'smcDebug' => new Twig_Function_Function(__CLASS__ . '::function_smcDebug'),
+			'dynamic_macro' => new Twig_Function_Function(__CLASS__ . '::function_dynamic_macro', array(
+				'is_safe' => array('html'),
+			)),
+			'url_for' => new Twig_Function_Function(__CLASS__ . '::function_url_for', array(
+				'is_safe' => array('all'),
+			)),
 		);
 	}
 
@@ -66,6 +72,63 @@ class TwigExtension extends Twig_Extension
 	public static function function_smcDebug($value)
 	{
 		return var_export($value, true);
+	}
+
+	public static function function_dynamic_macro(\Twig_Template $template, $name)
+	{
+		$arguments = array_slice(func_get_args(), 2);
+
+		static $who_do_you_think_you_are = null;
+
+		if (null === $who_do_you_think_you_are)
+		{
+			$who_do_you_think_you_are = array_map('strtolower', get_class_methods('Twig_Template') + array('getdebuginfo', 'gettemplatename'));
+		}
+
+		if (in_array('get' . strtolower($name), $who_do_you_think_you_are))
+		{
+			throw new \Twig_Error_Runtime('Who do you think you are? Gandalf?');
+		}
+
+		if (!method_exists($template, 'get' . $name))
+		{
+			throw new \Twig_Error_Runtime(sprintf('Dynamic macro calls only work on macros defined in the same file. Macro "%s" is undefined.', $name));
+		}
+
+		return call_user_method_array('get' . $name, $template, $arguments);
+	}
+
+	public static function function_url_for($endpoint, array $query_arguments = array())
+	{
+		if (!empty($endpoint))
+		{
+			$url = Settings::URL . '/' . trim($endpoint, '/') . '/';
+		}
+		else
+		{
+			$url = Settings::URL . '/';
+		}
+
+		if (!empty($query_arguments))
+		{
+			$arguments = array();
+
+			foreach ($query_arguments as $key => $value)
+			{
+				if (is_int($key))
+				{
+					$arguments[] = $value;
+				}
+				else
+				{
+					$arguments[] = urlencode($key) . '=' . urlencode($value);
+				}
+			}
+
+			return $url . '?' . implode(';', $arguments);
+		}
+
+		return $url;
 	}
 
 	/**
