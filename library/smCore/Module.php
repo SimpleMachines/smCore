@@ -208,14 +208,9 @@ class Module
 	 *
 	 * @return string
 	 */
-	public function lang($key, array $replacements = array())
+	public function lang($key, array $replacements = array(), $namespace = true)
 	{
-		if (Application::get('lang')->keyExists($this->_config['namespaces']['lang'] . '.' . $key))
-		{
-			return Application::get('lang')->get($this->_config['namespaces']['lang'] . '.' . $key, $replacements);
-		}
-
-		return $key;
+		return Application::get('lang')->get(($namespace ? $this->_config['namespaces']['lang'] . '.' : '') . $key, $replacements);
 	}
 
 	/**
