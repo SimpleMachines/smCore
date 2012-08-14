@@ -96,6 +96,7 @@ class Settings
 	 *         retry_timeout   int     Time to wait before attempting to retry an operation
 	 */
 	public static $cache = array(
-		'driver' => 'Blackhole',
+		'driver'      => 'Blackhole',
+		'default_ttl' => 3600,
 	);
 }
