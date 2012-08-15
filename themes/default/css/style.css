@@ -21,14 +21,13 @@ body {
 	border-top: 1px solid #ddd;
 	color: #666;
 	font-size: .9em;
-	padding: 3px .8em;
+	padding: 3px .8em 1em;
 	margin-top: .9em;
 	}
 #footer a,
 #footer a:hover {
 	color: #666;
 	}
-
 .flip-text {
 	text-align: right;
-}
+	}
