@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Admin Module - Cache Settings Controller
+ * smCore Admin Module - Maintenance Controller
  *
  * @package smCore
  * @author smCore Dev Team
@@ -24,7 +24,7 @@ namespace smCore\Modules\Admin\Controllers;
 
 use smCore\Application, smCore\Module\Controller, smCore\Settings;
 
-class Cache extends Controller
+class Maintenance extends Controller
 {
 	public function preDispatch()
 	{
@@ -37,10 +37,15 @@ class Cache extends Controller
 
 	public function main()
 	{
-		$cache_info = Application::get('cache')->getStats();
+		return $this->_getParentModule()->render('maintenance/main');
+	}
 
-		return $this->_getParentModule()->render('cache/main', array(
-			'cache_stats' => $cache_info,
-		));
+	public function cache()
+	{
+			$cache_info = Application::get('cache')->getStats();
+	
+			return $this->_getParentModule()->render('maintenance/cache', array(
+				'cache_stats' => $cache_info,
+			));
 	}
 }

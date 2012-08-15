@@ -22,12 +22,26 @@ routes:
         controller: Main
         method: authenticate
 
-    settings:
-        match: admin/settings
-        controller: Settings
+
+
+
+    configuration:
+        match: admin/config
+        controller: Configuration
         method: main
 
-    cache:
-        match: admin/cache
-        controller: Cache
+
+
+
+    modules:
+        match: admin/modules
+        controller: Modules
+        method: main
+
+
+
+
+    maintenance:
+        match: admin/maintenance
+        controller: Maintenance
         method: main

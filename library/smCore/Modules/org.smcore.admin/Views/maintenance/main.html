@@ -1,0 +1,9 @@
+{% extends "@theme/layout.html" %}
+{% from "@theme/macros.html" import submenu %}
+
+{% set page_title = "" %}
+{% set menu_active = ["admin", "admin_maintenance", "admin_maintenance_main"] %}
+
+{% block body %}
+	{{ submenu("admin") }}
+{% endblock %}
