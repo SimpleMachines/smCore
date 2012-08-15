@@ -251,7 +251,7 @@ class Application
 	/**
 	 * 
 	 *
-	 * @return 
+	 * @return Twig_Environment
 	 */
 	protected function _loadTheme()
 	{
@@ -269,6 +269,10 @@ class Application
 			{
 				$theme = $themes->getById(Settings::DEFAULT_THEME);
 			}
+			else
+			{
+				// @todo: throw exception
+			}
 		}
 
 		Twig_Autoloader::register();
@@ -284,9 +288,10 @@ class Application
 
 		$twig->addExtension(new TwigExtension());
 		$twig->addGlobal('scripturl', Settings::URL);
-		$twig->addGlobal('theme_url', trim(Settings::URL, '/?') . '/themes/' . $theme->getDirectory());
-		$twig->addGlobal('default_theme_url', trim(Settings::URL, '/?') . '/themes/default');
+		$twig->addGlobal('theme_url', rtrim(Settings::URL, '/') . '/themes/' . $theme->getDirectory());
+		$twig->addGlobal('default_theme_url', rtrim(Settings::URL, '/') . '/themes/default');
 		$twig->addGlobal('reload_counter', 0); // @todo
+		$twig->addGlobal('user', $user);
 
 		return $twig;
 	}
