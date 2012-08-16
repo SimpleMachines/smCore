@@ -11,11 +11,9 @@
  #}
 {% macro form(form_object) %}
 <form{% for key, value in form_object.attributes %} {{ key }}="{{ value }}"{% endfor %} class="form-horizontal">
-	<div class="well alternate">
 {% for control in form_object.controls %}
 	{{ dynamic_macro(_self, "form_control_" ~ control.type, control) }}
 {% endfor %}
-	</div>
 
 	<div style="text-align: center;">
 		<input type="submit" name="submit" value="{{ lang('save') }}" class="btn btn-primary" />
@@ -29,6 +27,7 @@
  # @param smCore\Form\Control control
  #}
 {% macro form_control_group(control) %}
+<div class="well">
 	<fieldset>
 		<legend>{{ control.label }}</legend>
 {% if control.help is not empty %}
@@ -40,6 +39,7 @@
 		{{ dynamic_macro(_self, "form_control_" ~ inner_control.type, inner_control) }}
 {% endfor %}
 	</fieldset>
+</div>
 {% endmacro %}
 
 {#
