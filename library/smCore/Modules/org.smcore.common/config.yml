@@ -1,0 +1,22 @@
+name: Internal smCore Common Pages Module
+description: |
+    Includes credits, _____, _____, and _____
+identifier: org.smcore.common
+version: 1.0 Alpha 1
+author:
+    name: smCore Dev Team
+    website: http://smcore.org
+
+namespaces:
+    php:      smCore\Modules\Common
+    template: auth
+
+routes:
+    credits:
+        match: credits
+        controller: Main
+        method: credits
+    terms:
+        match: [terms, privacy]
+        controller: Main
+        method: terms_and_privacy
