@@ -280,18 +280,16 @@ class Application
 		$twig_loader = new Twig_Loader_Filesystem(Settings::THEME_DIR . '/' . $theme->getDirectory());
 		$twig_loader->addPath(Settings::THEME_DIR . '/' . $theme->getDirectory(), 'theme');
 
-		$twig = new Twig_Environment($twig_loader, array(
+		$twig = new Twig\Environment($twig_loader, array(
 			'cache' => Settings::CACHE_DIR,
 			'recompile' => true,
 			'auto_reload' => true,
 		));
 
-		$twig->addExtension(new TwigExtension());
-		$twig->addGlobal('scripturl', Settings::URL);
-		$twig->addGlobal('theme_url', rtrim(Settings::URL, '/') . '/themes/' . $theme->getDirectory());
-		$twig->addGlobal('default_theme_url', rtrim(Settings::URL, '/') . '/themes/default');
-		$twig->addGlobal('reload_counter', 0); // @todo
-		$twig->addGlobal('user', $user);
+		$twig->addExtension(new Twig\Extension());
+
+		// @todo: only enable this extension if we're in debug mode
+//		$twig->addExtension(new \Twig_Extension_Debug());
 
 		return $twig;
 	}
