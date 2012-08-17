@@ -93,10 +93,13 @@ class Application
 		$dispatcher->fire(new Event(null, 'org.smcore.core.pre_router'));
 
 		$router = self::set('router', new Router);
-		$router->addRoutes(array(
-			'(?:themes|resources).*' => 404,
-			'(?:cache|library).*?' => 403,
-		), 'smCore');
+		$router
+			->addRoutes(array(
+				'(?:themes|resources).*' => 404,
+				'(?:cache|library).*?' => 403,
+			), 'smCore')
+			->setDefaultRoute('hello')
+		;
 
 		foreach ($modules as $identifier => $module)
 		{

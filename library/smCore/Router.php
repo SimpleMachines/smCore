@@ -26,6 +26,7 @@ class Router
 {
 	protected $_routes = null;
 	protected $_matches = array();
+	protected $_default_route = null;
 
 	protected $_disallowed_methods = array();
 
@@ -46,14 +47,12 @@ class Router
 		// Normalize the path - we don't want to miss a match because of a stray slash.
 		$path = trim($path, '/?');
 
-		if (empty($path))
+		if (empty($path) && !empty($this->_default_route))
 		{
-			if (!empty($this->_routes['default']))
-			{
-				return end($this->_routes['default']);
-			}
+			$path = $this->_default_route;
 		}
-		else if (array_key_exists($path, $this->_routes['literal']))
+
+		if (array_key_exists($path, $this->_routes['literal']))
 		{
 			return $this->_routes['literal'][$path];
 		}
@@ -73,6 +72,37 @@ class Router
 		return array('method' => 404);
 	}
 
+	/**
+	 * Set a default route (the home page)
+	 *
+	 * @param string $route
+	 */
+	public function setDefaultRoute($route)
+	{
+		if (!is_string($route) || strlen($route) < 1)
+		{
+			throw new Exception('@todo');
+		}
+
+		// We're only going to allow straight routes as the default route
+		if (false !== strpbrk($route, '([{?*:'))
+		{
+			throw new Exception('@todo');
+		}
+		
+
+		$this->_default_route = trim($route, '/?');
+
+		return $this;
+	}
+
+	/**
+	 * If the route was found via slug or regex, return a match for the slug, ordered caputre, or named capture.
+	 *
+	 * @param mixed $name The numbered URL parameter or name, if it was named in the route
+	 *
+	 * @return string|null
+	 */
 	public function getMatch($name)
 	{
 		if (array_key_exists($name, $this->_matches))
@@ -151,6 +181,7 @@ class Router
 			'instanceof',
 			'interface',
 			'isset',
+			'finally',
 			'list',
 			'namespace',
 			'new',
@@ -248,10 +279,6 @@ class Router
 					$match = preg_replace('/:([^\/]+)/', '(?<$1>[^/]+)', $match);
 					$match = str_replace('/', '\\/', $match);
 				}
-				else if (empty($match) && 0 === strlen($match))
-				{
-					$type = 'default';
-				}
 
 				$this->_routes[$type][$match] = array(
 					'module' => $identifier,
@@ -260,5 +287,7 @@ class Router
 				);
 			}
 		}
+
+		return $this;
 	}
 }
