@@ -93,7 +93,7 @@ class LogInOut extends Controller
 				}
 				else
 				{
-					$url = Settings::URL;
+					$url = null;
 				}
 
 				Application::get('response')->redirect($url);

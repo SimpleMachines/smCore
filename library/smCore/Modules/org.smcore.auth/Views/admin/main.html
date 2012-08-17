@@ -1,0 +1,17 @@
+{% extends "@theme/layout.html" %}
+{% from "@theme/macros.html" import submenu %}
+
+{% set page_title = lang('auth.admin.titles.main') %}
+{% set menu_active = ['admin', 'admin_users', 'admin_users_main'] %}
+
+{% block body %}
+		{{ submenu("admin") }}
+
+		<div class="page-header">
+			<h1>{{ lang('auth.admin.titles.main') }}</h1>
+		</div>
+
+		<div class="well">
+			User administration page...
+		</div>
+{% endblock %}
