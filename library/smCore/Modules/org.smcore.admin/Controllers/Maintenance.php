@@ -37,7 +37,26 @@ class Maintenance extends Controller
 
 	public function main()
 	{
-		return $this->_getParentModule()->render('maintenance/main');
+		$module = $this->_getParentModule();
+
+		$tasks = array(
+			'clear_cache' => array(
+				'name' => $module->lang('maintenance.empty_cache'),
+				'help' => $module->lang('maintenance.empty_cache.help'),
+				'link' => '#',
+				'button_text' => $module->lang('maintenance.empty_cache.button'),
+			),
+			'empty_logs' => array(
+				'name' => $module->lang('maintenance.empty_logs'),
+				'help' => $module->lang('maintenance.empty_logs.help'),
+				'link' => '#',
+				'button_text' => $module->lang('maintenance.empty_logs.button'),
+			),
+		);
+
+		return $this->_getParentModule()->render('maintenance/main', array(
+			'tasks' => $tasks
+		));
 	}
 
 	public function cache()

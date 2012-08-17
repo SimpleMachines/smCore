@@ -21,11 +21,21 @@
 {% for id, module in modules %}
 		<tr>
 			<td>{{ id }}</td>
-			<td>{{ module.name }}</td>
+			<td>
+				<strong>{{ module.name }}</strong>
+{% if module.author.name is not empty %}<br />
+				{{ lang('admin.modules.developer') }}: 
+	{% if module.author.website is not empty %}
+				<a href="{{ module.author.website }}">{{ module.author.name }}</a>
+	{% else %}
+				{{ module.author.name }}
+	{% endif %}
+{% endif %}
+			</td>
 			<td>{{ module.version }}</td>
 			<td>
 {% if module.admin_route %}
-				<a href="" class="btn btn-success">{{ lang('admin') }}</a>
+				<a href="{{ url_for(module.admin_route) }}" class="btn btn-success">{{ lang('admin') }}</a>
 {% endif %}
 			</td>
 		</tr>

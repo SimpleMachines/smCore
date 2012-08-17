@@ -22,7 +22,7 @@
 
 namespace smCore\Modules\Admin\Controllers;
 
-use smCore\Application, smCore\Module\Controller, smCore\Settings;
+use smCore\Application, smCore\Module\Controller;
 
 class Modules extends Controller
 {
@@ -45,12 +45,25 @@ class Modules extends Controller
 		foreach ($modules_storage as $identifier => $module_object)
 		{
 			$config = $module_object->getConfig();
+			$routes = $module_object->getRoutes();
 
 			$modules[$identifier] = array(
 				'name' => $config['name'],
 				'version' => $config['version'],
+				'author' => $config['author'],
 				'admin_route' => false,
 			);
+
+			if (isset($routes['admin']))
+			{
+				if (is_array($routes['admin']['match']))
+				{
+				}
+				else
+				{
+					$modules[$identifier]['admin_route'] = $routes['admin']['match'];
+				}
+			}
 		}
 
 		return $this->_getParentModule()->render('modules/main', array(
