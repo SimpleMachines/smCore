@@ -83,7 +83,7 @@ class Configuration extends Controller
 				)),
 				'cache_default_ttl' => new Control\Text(array(
 					'label' => $module->lang('settings.cache_default_ttl'),
-					'value' => $cache_settings['default_ttl'],
+					'value' => $settings['cache']['default_ttl'],
 					'help' => $module->lang('settings.cache_default_ttl.help'),
 				)),
 			),
