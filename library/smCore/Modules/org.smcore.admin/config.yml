@@ -13,7 +13,7 @@ namespaces:
     template: admin
 
 routes:
-    admin:
+    main:
         match: [admin, admin/main]
         controller: Main
         method: main

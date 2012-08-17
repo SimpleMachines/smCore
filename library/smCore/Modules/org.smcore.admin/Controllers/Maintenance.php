@@ -22,7 +22,7 @@
 
 namespace smCore\Modules\Admin\Controllers;
 
-use smCore\Application, smCore\Module\Controller, smCore\Settings;
+use smCore\Application, smCore\Module\Controller;
 
 class Maintenance extends Controller
 {
