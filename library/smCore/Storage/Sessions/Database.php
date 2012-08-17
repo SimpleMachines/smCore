@@ -49,7 +49,7 @@ class Database
 				AND session_expires > {int:time}",
 			array(
 				'id' => $id,
-				'time' => Application::get('time'),
+				'time' => time(),
 			)
 		);
 
@@ -91,7 +91,7 @@ class Database
 		}
 		else
 		{
-			$expires = Application::get('time') + Session::getLifetime();
+			$expires = time() + Session::getLifetime();
 		}
 
 		$db->query("
@@ -141,7 +141,7 @@ class Database
 			DELETE FROM {db_prefix}sessions
 			WHERE session_expires < {int:time}",
 			array(
-				'time' => Application::get('time'),
+				'time' => time(),
 			)
 		);
 	}

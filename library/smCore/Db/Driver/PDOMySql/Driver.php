@@ -21,8 +21,8 @@
  */
 
 namespace smCore\Db\Driver\PDOMySql;
-use smCore\Db\AbstractDriver, smCore\Db\PDO\Connection;
 
+use smCore\Db\AbstractDriver, smCore\Db\PDO\Connection;
 use PDO, PDOException, Exception;
 
 class Driver extends AbstractDriver

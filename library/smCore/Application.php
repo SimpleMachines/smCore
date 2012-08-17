@@ -55,8 +55,6 @@ class Application
 		}
 
 		self::$start_time = microtime(true);
-		date_default_timezone_set(Settings::TIMEZONE);
-		self::set('time', time());
 
 		new Handlers\Error();
 		new Handlers\Exception();

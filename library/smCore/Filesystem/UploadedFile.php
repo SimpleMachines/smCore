@@ -43,7 +43,7 @@ class UploadedFile extends File
 	 */
 	public function save($location = null)
 	{
-		if (null === $location)
+		if (empty($location))
 		{
 			throw new Exception('UploadedFile::save() needs a location to save the file to.');
 		}

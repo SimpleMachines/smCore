@@ -3,6 +3,8 @@
 /**
  * smCore Cookie Model
  *
+ * Unused as of yet
+ *
  * @package smCore
  * @author smCore Dev Team
  * @license MPL 1.1
@@ -66,7 +68,7 @@ class Cookie
 			return false;
 		}
 
-		if ($this->_expire < Application::get('time'))
+		if ($this->_expire < time())
 		{
 			return false;
 		}

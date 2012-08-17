@@ -94,7 +94,7 @@ class Module
 
 		if (!is_callable(array($controllerObject, $method)))
 		{
-			throw new Exception(array('exceptions.modules.method_not_callable', $controller, $method));
+			throw new Exception(array('exceptions.modules.method_not_callable', $controllerClass, $method));
 		}
 
 		$controllerObject->preDispatch($method);
