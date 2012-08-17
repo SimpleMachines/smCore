@@ -1,9 +1,14 @@
 <?php
 
-// Add our library directory to the include path, to make life easier
-set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ . '/library');
 ini_set('display_errors', 1);
 
-include_once __DIR__ . '/library/smCore/Application.php';
-$application = new smCore\Application(__DIR__ . '/settings.php');
+// Register the autoloader
+include_once __DIR__ . '/library/smCore/Autoloader.php';
+new smCore\Autoloader(null, __DIR__ . '/library');
+
+// Load the settings file and create the settings object
+include_once __DIR__ . '/settings.php';
+$settings = new Settings();
+
+$application = new smCore\Application($settings);
 $application->run();

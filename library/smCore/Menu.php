@@ -106,8 +106,10 @@ class Menu
 			{
 				if ($item['menu_visible'] && (empty($item['menu_permission']) || Application::get('user')->hasPermission($item['menu_permission'])))
 				{
+					$settings = Application::get('settings');
+
 					$parent[$item['menu_name']] = array(
-						'url' => Settings::URL . $item['menu_url'],
+						'url' => $settings['url'] . $item['menu_url'],
 						'title' => Application::get('lang')->get($item['menu_title']),
 						'submenu' => array(),
 						'active' => false,

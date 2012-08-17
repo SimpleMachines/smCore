@@ -168,13 +168,15 @@ class Response
 	 */
 	public function redirect($url = null, $permanent = false)
 	{
+		$settings = Application::get('settings');
+
 		if (null === $url)
 		{
-			$url = Settings::URL;
+			$url = $settings['url'];
 		}
 		else if (!preg_match('/^https?:\/\//', $url))
 		{
-			$url = Settings::URL . '/' . ltrim($url, '/');
+			$url = $settings['url'] . '/' . ltrim($url, '/');
 		}
 
 		$this

@@ -22,7 +22,7 @@
 
 namespace smCore\Storage\Sessions;
 
-use smCore\Application, smCore\Security\Session, smCore\Settings;
+use smCore\Application, smCore\Security\Session;
 
 class File
 {
@@ -40,7 +40,9 @@ class File
 			return false;
 		}
 
-		$file = Settings::CACHE_DIR . '/.smcore_session_' . $id;
+		$settings = Application::get('settings');
+
+		$file = $settings['cache_dir'] . '/.smcore_session_' . $id;
 
 		if (is_readable($file))
 		{
@@ -66,7 +68,8 @@ class File
 	 */
 	public function write($id, $data)
 	{
-		$file = Settings::CACHE_DIR . '/.smcore_session_' . $id;
+		$settings = Application::get('settings');
+		$file = $settings['cache_dir'] . '/.smcore_session_' . $id;
 		$expires = time() + Session::getLifetime();
 
 		// Get the old expiration time so we don't accidentally extend it
@@ -103,7 +106,9 @@ class File
 			return false;
 		}
 
-		@unlink(Settings::CACHE_DIR . '/.smcore_session_' . $id);
+		$settings = Application::get('settings');
+
+		@unlink($settings['cache_dir'] . '/.smcore_session_' . $id);
 
 		return true;
 	}
@@ -113,7 +118,8 @@ class File
 	 */
 	public function deleteExpired()
 	{
-		$sessions = glob(Settings::CACHE_DIR . '/.smcore_session_*');
+		$settings = Application::get('settings');
+		$sessions = glob($settings['cache_dir'] . '/.smcore_session_*');
 
 		// @todo
 	}

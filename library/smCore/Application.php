@@ -39,10 +39,9 @@ class Application
 
 	protected function __clone(){}
 
-	public function __construct($settings, $environment = 'default')
+	public function __construct(Settings $settings)
 	{
-		require_once $settings;
-		new Settings($environment);
+		self::set('settings', $settings);
 	}
 
 	/**
@@ -58,10 +57,6 @@ class Application
 		self::$start_time = microtime(true);
 		date_default_timezone_set(Settings::TIMEZONE);
 		self::set('time', time());
-
-		// Register our autoloader onto the stack
-		require __DIR__ . '/Autoloader.php';
-		new Autoloader(null, dirname(__DIR__));
 
 		new Handlers\Error();
 		new Handlers\Exception();
@@ -223,10 +218,9 @@ class Application
 	 */
 	protected function _loadDatabase()
 	{
-		$db = Db\Driver\Factory::factory(Settings::$database['driver'], Settings::$database);
+		$settings = self::get('settings');
 
-		// No access to database details after this point
-		Settings::$database = null;
+		$db = Db\Driver\Factory::factory($settings['database']['driver'], $settings['database']);
 
 		return $db->getConnection();
 	}
@@ -238,17 +232,9 @@ class Application
 	 */
 	protected function _loadCache()
 	{
-		if (!isset(Settings::$cache['prefix']))
-		{
-			Settings::$cache['prefix'] = Settings::UNIQUE_8;
-		}
+		$settings = self::get('settings');
 
-		if (!isset(Settings::$cache['directory']))
-		{
-			Settings::$cache['directory'] = Settings::CACHE_DIR;
-		}
-
-		return Cache\Factory::factory(Settings::$cache['driver'], Settings::$cache);
+		return Cache\Factory::factory($settings['cache']['driver'], $settings['cache']);
 	}
 
 	/**
@@ -261,6 +247,7 @@ class Application
 		$user = self::get('user');
 		$id = $user['theme'];
 		$themes = Storage\Factory::factory('Themes');
+		$settings = self::get('settings');
 
 		try
 		{
@@ -268,9 +255,9 @@ class Application
 		}
 		catch (Exception $e)
 		{
-			if (Settings::DEFAULT_THEME !== $id)
+			if ($settings['default_theme'] !== $id)
 			{
-				$theme = $themes->getById(Settings::DEFAULT_THEME);
+				$theme = $themes->getById($settings['default_theme']);
 			}
 			else
 			{
@@ -280,11 +267,11 @@ class Application
 
 		Twig_Autoloader::register();
 
-		$twig_loader = new Twig_Loader_Filesystem(Settings::THEME_DIR . '/' . $theme->getDirectory());
-		$twig_loader->addPath(Settings::THEME_DIR . '/' . $theme->getDirectory(), 'theme');
+		$twig_loader = new Twig_Loader_Filesystem($settings['theme_dir'] . '/' . $theme->getDirectory());
+		$twig_loader->addPath($settings['theme_dir'] . '/' . $theme->getDirectory(), 'theme');
 
 		$twig = new Twig\Environment($twig_loader, array(
-			'cache' => Settings::CACHE_DIR,
+			'cache' => $settings['cache_dir'],
 			'recompile' => true,
 			'auto_reload' => true,
 		));

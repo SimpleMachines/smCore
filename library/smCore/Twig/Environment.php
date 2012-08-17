@@ -22,7 +22,7 @@
 
 namespace smCore\Twig;
 
-use smCore\Application, smCore\Settings;
+use smCore\Application;
 use Twig_Environment;
 
 class Environment extends Twig_Environment
@@ -32,11 +32,13 @@ class Environment extends Twig_Environment
 	 */
 	public function mergeGlobals(array $context)
 	{
+		$settings = Application::get('settings');
+
 		return array_merge(array(
 			'user' => Application::get('user'),
-			'scripturl' => Settings::URL,
-			'theme_url' => rtrim(Settings::URL, '/') . '/themes/default', // @todo
-			'default_theme_url' => rtrim(Settings::URL, '/') . '/themes/default',
+			'scripturl' => $settings['url'],
+			'theme_url' => rtrim($settings['url'], '/') . '/themes/default', // @todo
+			'default_theme_url' => rtrim($settings['url'], '/') . '/themes/default',
 		), parent::mergeGlobals($context));
 	}
 
@@ -69,7 +71,9 @@ class Environment extends Twig_Environment
 	 */
 	public function getTemplateClass($name, $index = null)
 	{
-		$class = preg_replace('/[^a-z0-9_]/i', '_', str_replace(Settings::PATH, '', $this->loader->getCacheKey($name)));
+		$settings = Application::get('settings');
+
+		$class = preg_replace('/[^a-z0-9_]/i', '_', str_replace($settings['path'], '', $this->loader->getCacheKey($name)));
 
 		// Append a semi-unique suffix. The regex makes "File_One.html" and "File.One.html" the same =\
 		return $this->templateClassPrefix . $class . '_' . substr(md5($name), 0, 10) . (null === $index ? '' : '_' . $index);

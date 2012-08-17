@@ -22,7 +22,7 @@
 
 namespace smCore\Storage;
 
-use smCore\Application, smCore\Model\Role, smCore\Settings;
+use smCore\Application, smCore\Model\Role;
 
 class Roles
 {

@@ -22,7 +22,7 @@
 
 namespace smCore\Model;
 
-use smCore\Application, smCore\Event, smCore\Exception, smCore\Security\Crypt\Bcrypt, smCore\Settings, smCore\Storage;
+use smCore\Application, smCore\Event, smCore\Exception, smCore\Security\Crypt\Bcrypt, smCore\Storage;
 use ArrayAccess;
 
 class User implements ArrayAccess
@@ -33,14 +33,15 @@ class User implements ArrayAccess
 	public function __construct(array $data = null)
 	{
 		$roles = Storage\Factory::factory('Roles');
+		$settings = Application::get('settings');
 
 		// Set some defaults to begin with
 		$this->_data = array(
 			'id' => 0,
 			'ip' => Application::get('input')->server->getRaw('REMOTE_ADDR'),
 			'display_name' => 'Guest', // @todo lang string
-			'language' => Settings::DEFAULT_LANG,
-			'theme' => (int) Settings::DEFAULT_THEME,
+			'language' => $settings['default_lang'],
+			'theme' => (int) $settings['default_theme'],
 			'token' => '', // @todo
 			'email' => '',
 			'roles' => array(

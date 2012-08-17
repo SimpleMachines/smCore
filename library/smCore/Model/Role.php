@@ -22,7 +22,7 @@
 
 namespace smCore\Model;
 
-use smCore\Application, smCore\Settings, smCore\Storage\Factory as StorageFactory;
+use smCore\Application, smCore\Storage\Factory as StorageFactory;
 
 class Role
 {

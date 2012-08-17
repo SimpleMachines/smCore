@@ -22,7 +22,7 @@
 
 namespace smCore\Storage;
 
-use smCore\Application, smCore\Exception, smCore\Settings, smCore\Model\Language;
+use smCore\Application, smCore\Exception, smCore\Model\Language;
 
 class Languages
 {
@@ -69,9 +69,11 @@ class Languages
 			return $this->_runtimeCache[$code] = new Language($this->_languages[$code]['language_name'], $code, $this->_languages[$code]['id_language']);
 		}
 
-		if ($code !== Settings::DEFAULT_LANG)
+		$settings = Application::get('settings');
+
+		if ($code !== $settings['default_lang'])
 		{
-			return $this->getByCode(Settings::DEFAULT_LANG);
+			return $this->getByCode($settings['default_lang']);
 		}
 
 		throw new Exception(sprintf('There\'s been a bit of a problem loading the language "%s".', $code));

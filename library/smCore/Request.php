@@ -154,7 +154,15 @@ class Request
 				$this->_format = '';
 			}
 
-			$this->_path = trim($this->_path, '/?');
+			$this->_path = trim($this->_path, '/');
+
+			$settings = Application::get('settings');
+			$base = trim(parse_url($settings['url'], PHP_URL_PATH), '/');
+
+			if (!empty($base) && 0 === strpos($this->_path, $base))
+			{
+				$this->_path = trim(substr($this->_path, strlen($base)), '/');
+			}
 		}
 
 		// Rebuild the superglobals and the cages

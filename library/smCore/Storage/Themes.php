@@ -22,7 +22,7 @@
 
 namespace smCore\Storage;
 
-use smCore\Application, smCore\Exception, smCore\Model\Theme, smCore\Settings;
+use smCore\Application, smCore\Exception, smCore\Model\Theme;
 
 class Themes
 {
@@ -63,7 +63,9 @@ class Themes
 
 	public function getDefault()
 	{
-		return $this->getById(Settings::DEFAULT_THEME);
+		$settings = Application::get('settings');
+
+		return $this->getById($settings['default_theme']);
 	}
 
 	public function getPathForId($id)

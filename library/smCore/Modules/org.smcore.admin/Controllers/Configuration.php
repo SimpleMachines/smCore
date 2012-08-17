@@ -22,7 +22,7 @@
 
 namespace smCore\Modules\Admin\Controllers;
 
-use smCore\Application, smCore\Module\Controller, smCore\Form, smCore\Form\Control, smCore\Settings;
+use smCore\Application, smCore\Module\Controller, smCore\Form, smCore\Form\Control;
 
 class Configuration extends Controller
 {
@@ -36,30 +36,31 @@ class Configuration extends Controller
 	public function main()
 	{
 		$module = $this->_getParentModule();
+		$settings = Application::get('settings');
 
-		$form = new Form(Settings::URL . '/admin/settings/');
+		$form = new Form($settings['url'] . '/admin/settings/');
 
 		$form->addControl('urls_directories', new Control\Group(array(
 			'label' => $module->lang('settings.urls_directories'),
 			'controls' => array(
 				'url' => new Control\Text(array(
 					'label' => $module->lang('settings.url'),
-					'value' => Settings::URL,
+					'value' => $settings['url'],
 					'help' => $module->lang('settings.url.help'),
 				)),
 				'module_dir' => new Control\Text(array(
 					'label' => $module->lang('settings.module_dir'),
-					'value' => Settings::MODULE_DIR,
+					'value' => $settings['module_dir'],
 					'help' => $module->lang('settings.module_dir.help'),
 				)),
 				'theme_dir' => new Control\Text(array(
 					'label' => $module->lang('settings.theme_dir'),
-					'value' => Settings::THEME_DIR,
+					'value' => $settings['theme_dir'],
 					'help' => $module->lang('settings.theme_dir.help'),
 				)),
 				'cache_dir' => new Control\Text(array(
 					'label' => $module->lang('settings.cache_dir'),
-					'value' => Settings::CACHE_DIR,
+					'value' => $settings['cache_dir'],
 					'help' => $module->lang('settings.cache_dir.help'),
 				)),
 			),
@@ -71,7 +72,7 @@ class Configuration extends Controller
 			'controls' => array(
 				'cache_driver' => new Control\Select(array(
 					'label' => $module->lang('settings.cache_driver'),
-					'value' => Settings::$cache['driver'],
+					'value' => $settings['cache']['driver'],
 					'help' => $module->lang('settings.cache_driver.help'),
 					'options' => array(
 						'File' => $module->lang('settings.cache_driver_file'),
@@ -82,7 +83,7 @@ class Configuration extends Controller
 				)),
 				'cache_default_ttl' => new Control\Text(array(
 					'label' => $module->lang('settings.cache_default_ttl'),
-					'value' => Settings::$cache['default_ttl'],
+					'value' => $cache_settings['default_ttl'],
 					'help' => $module->lang('settings.cache_default_ttl.help'),
 				)),
 			),
@@ -93,20 +94,20 @@ class Configuration extends Controller
 			'controls' => array(
 				'cookie_name' => new Control\Text(array(
 					'label' => $module->lang('settings.cookie_name'),
-					'value' => Settings::COOKIE_NAME,
+					'value' => $settings['cookie_name'],
 				)),
 				'cookie_domain' => new Control\Text(array(
 					'label' => $module->lang('settings.cookie_domain'),
-					'value' => Settings::COOKIE_DOMAIN,
+					'value' => $settings['cookie_domain'],
 				)),
 				'cookie_path' => new Control\Text(array(
 					'label' => $module->lang('settings.cookie_path'),
-					'value' => Settings::COOKIE_PATH,
+					'value' => $settings['cookie_path'],
 				)),
 				'sessions_db_driven' => new Control\Checkbox(array(
-					'label' => $module->lang('settings.cookie_db_driven'),
-					'value' => (bool) Settings::SESSION_DB_DRIVEN,
-					'help' => $module->lang('settings.cookie_db_driven.help'),
+					'label' => $module->lang('settings.session_db_driven'),
+					'value' => $settings['session_db_driven'],
+					'help' => $module->lang('settings.session_db_driven.help'),
 				)),
 			),
 		)));

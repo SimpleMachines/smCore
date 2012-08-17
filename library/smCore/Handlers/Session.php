@@ -22,7 +22,7 @@
 
 namespace smCore\Handlers;
 
-use smCore\Storage\Factory as StorageFactory, smCore\Settings;
+use smCore\Application, smCore\Storage\Factory as StorageFactory;
 
 /**
  * Session handler class, replacing PHP's session functions. Session information is stored in the database.
@@ -38,7 +38,9 @@ class Session
 	 */
 	public function __construct()
 	{
-		$this->_storage = Settings::SESSION_DB_DRIVEN ? 'Sessions\Database' : 'Sessions\File';
+		$settings = Application::get('settings');
+
+		$this->_storage = $settings['session_db_driven'] ? 'Sessions\Database' : 'Sessions\File';
 
 		return session_set_save_handler(
 			array($this, 'open'),

@@ -22,7 +22,7 @@
 
 namespace smCore\Security;
 
-use smCore\Application, smCore\Settings, smCore\Handlers\Session as SessionHandler;
+use smCore\Application, smCore\Handlers\Session as SessionHandler;
 
 class Session
 {
@@ -31,6 +31,8 @@ class Session
 
 	protected static function _overrideIni()
 	{
+		$settings = Application::get('settings');
+
 		// @todo pay attention to safe mode set.
 		ini_set('arg_separator.output', '&amp;');
 		ini_set('session.gc_probability', '1');
@@ -42,7 +44,7 @@ class Session
 		ini_set('session.cookie_path', '/');
 		ini_set('session.cookie_secure', false);
 		ini_set('session.cookie_httponly', true);
-		ini_set('session.cookie_domain', Settings::COOKIE_DOMAIN);
+		ini_set('session.cookie_domain', $settings['cookie_domain']);
 	}
 
 	public static function start()
@@ -62,8 +64,10 @@ class Session
 			// Create the session handler, it will register itself to PHP.
 			new SessionHandler();
 
+			$settings = Application::get('settings');
+
 			// Go!
-			session_name(Settings::COOKIE_NAME);
+			session_name($settings['cookie_name']);
 			session_start();
 
 			self::$_started = true;
@@ -72,9 +76,11 @@ class Session
 
 	public static function end()
 	{
+		$settings = Application::get('settings');
+
 		unset($_SESSION['id_user']);
 		session_destroy();
-		setcookie(Settings::COOKIE_NAME, '', 0, Settings::COOKIE_PATH, Settings::COOKIE_DOMAIN);
+		setcookie($settings['cookie_name'], '', 0, $settings['cookie_path'], $settings['cookie_domain']);
 	}
 
 	public static function reinitialize()
@@ -92,7 +98,8 @@ class Session
 
 	public static function exists()
 	{
-		$cookie = Application::get('input')->cookie->getRaw(Settings::COOKIE_NAME);
+		$settings = Application::get('settings');
+		$cookie = Application::get('input')->cookie->getRaw($settings['cookie_name']);
 
 		if (empty($cookie))
 		{

@@ -22,7 +22,7 @@
 
 namespace smCore\Storage;
 
-use smCore\Application, smCore\Event, smCore\Exception, smCore\Model\User, smCore\Security\Session, smCore\Settings;
+use smCore\Application, smCore\Event, smCore\Exception, smCore\Model\User, smCore\Security\Session;
 
 class Users
 {

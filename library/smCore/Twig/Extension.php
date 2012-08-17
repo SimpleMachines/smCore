@@ -22,7 +22,7 @@
 
 namespace smCore\Twig;
 
-use smCore\Application, smCore\Settings;
+use smCore\Application;
 use Twig_Error_Runtime, Twig_Extension, Twig_Function_Function, Twig_Filter_Function;
 
 class Extension extends Twig_Extension
@@ -161,13 +161,15 @@ class Extension extends Twig_Extension
 	 */
 	public static function function_url_for($endpoint, array $query_arguments = array())
 	{
+		$settings = Application::get('settings');
+
 		if (!empty($endpoint))
 		{
-			$url = Settings::URL . '/' . trim($endpoint, '/') . '/';
+			$url = $settings['url'] . '/' . trim($endpoint, '/') . '/';
 		}
 		else
 		{
-			$url = Settings::URL . '/';
+			$url = $settings['url'] . '/';
 		}
 
 		if (!empty($query_arguments))

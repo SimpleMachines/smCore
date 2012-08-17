@@ -22,7 +22,7 @@
 
 namespace smCore\Modules\Auth\Controllers;
 
-use smCore\Application, smCore\Module\Controller, smCore\Security\Crypt\Bcrypt, smCore\Security\Session, smCore\Settings, smCore\Storage;
+use smCore\Application, smCore\Module\Controller, smCore\Security\Crypt\Bcrypt, smCore\Security\Session, smCore\Storage;
 
 class LogInOut extends Controller
 {
@@ -99,7 +99,9 @@ class LogInOut extends Controller
 				Application::get('response')->redirect($url);
 			}
 
-			setcookie(Settings::COOKIE_NAME, '', 0, Settings::COOKIE_PATH, Settings::COOKIE_DOMAIN);
+			$settings = Application::get('settings');
+
+			setcookie($settings['cookie_name'], '', 0, $settings['url'], $settings['cookie_domain']);
 
 			return $module->render('login', array(
 				'failed' => true,
@@ -116,6 +118,6 @@ class LogInOut extends Controller
 	{
 		Session::end();
 
-		Application::get('response')->redirect(Settings::URL);
+		Application::get('response')->redirect();
 	}
 }
