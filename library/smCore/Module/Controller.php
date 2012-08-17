@@ -22,10 +22,11 @@
 
 namespace smCore\Module;
 
-use smCore\Module;
+use smCore\Module, smCore\Container;
 
 abstract class Controller
 {
+	protected $_container;
 	protected $_parent_module;
 
 	/**
@@ -33,8 +34,9 @@ abstract class Controller
 	 *
 	 * @param smCore\Module $parentModule
 	 */
-	public function __construct(Module $parent_module)
+	public function __construct(Container $container, Module $parent_module)
 	{
+		$this->_container = $container;
 		$this->_parent_module = $parent_module;
 	}
 

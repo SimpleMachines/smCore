@@ -22,14 +22,16 @@
 
 namespace smCore\Module;
 
-use smCore, smCore\Module;
+use smCore, smCore\Module, smCore\Container;
 
 abstract class Model extends smCore\Model
 {
+	protected $_container;
 	protected $_parent_module;
 
-	public function __construct(Module $parent_module)
+	public function __construct(Container $container, Module $parent_module)
 	{
+		$this->_container = $container;
 		$this->_parent_module = $parent_module;
 	}
 

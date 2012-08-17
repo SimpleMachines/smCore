@@ -22,9 +22,9 @@
 
 namespace smCore\Model;
 
-use smCore\Application, smCore\Storage\Factory as StorageFactory;
+use smCore\Storage\Factory as StorageFactory;
 
-class Role
+class Role extends AbstractModel
 {
 	// Data for each individual user loaded
 	protected $_id;
@@ -34,8 +34,10 @@ class Role
 
 	const RECURSION_LIMIT = 10;
 
-	public function __construct($id, $name, $inherits = 0, array $permissions = array())
+	public function __construct($container, $id, $name, $inherits = 0, array $permissions = array())
 	{
+		parent::__construct($container);
+
 		$this->_id = (int) $id;
 		$this->_name = $name;
 
@@ -72,7 +74,7 @@ class Role
 
 		if ($this->_inherits !== null)
 		{
-			$inherits = StorageFactory::factory('Roles')->getRoleById($this->_inherits)->hasPermission($name, $recursion + 1);
+			$inherits = $this->_container['storage_factory']->factory('Roles')->getRoleById($this->_inherits)->hasPermission($name, $recursion + 1);
 
 			if ($inherits !== null)
 			{

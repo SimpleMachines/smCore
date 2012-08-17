@@ -22,7 +22,7 @@
 
 namespace smCore\Modules\Auth\Controllers;
 
-use smCore\Application, smCore\Module\Controller, smCore\Storage;
+use smCore\Module\Controller, smCore\Storage;
 
 class Register extends Controller
 {
@@ -38,7 +38,7 @@ class Register extends Controller
 		// We're going to skip the agreement part for now. That might be SMF-only, or a plugin.
 		return $module->render('register/start');
 
-		$input = Application::get('input');
+		$input = $this->_container['input'];
 
 		if ($input->post->keyExists('register_agree'))
 		{
@@ -57,12 +57,12 @@ class Register extends Controller
 	public function finish()
 	{
 		$module = $this->_getParentModule();
-		$input = Application::get('input');
+		$input = $this->_container['input'];
 
 		// Don't try to skip steps on us!
 		if (!$input->post->keyExists('register_username'))
 		{
-			Application::get('response')->redirect('/register/');
+			$this->_container['response']->redirect('/register/');
 		}
 
 		$username = $input->post->getRaw('register_username');
@@ -119,7 +119,7 @@ class Register extends Controller
 		}
 
 		// @todo add a findUserByData-ish method to storage, this query shouldn't be here
-		$db = Application::get('db');
+		$db = $this->_container['db'];
 
 		if ($db->query("SELECT * FROM {db_prefix}users WHERE LOWER(user_email) = {string:email}", array('email' => mb_strtolower($email)))->rowCount() > 0)
 		{

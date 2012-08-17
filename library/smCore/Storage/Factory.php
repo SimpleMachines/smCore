@@ -22,27 +22,35 @@
 
 namespace smCore\Storage;
 
-use smCore\Application, smCore\Exception;
+use smCore\Container, smCore\Exception;
 
 class Factory
 {
-	protected static $_storages = array();
+	protected $_storages = array();
 
-	public static function factory($name, $safe_mode = true)
+	protected $_container;
+
+	public function __construct(Container $container)
 	{
-		if ($safe_mode && Application::get('sending_output', false) === true)
+		$this->_container = $container;
+	}
+
+	public function factory($name, $safe_mode = true)
+	{
+		if ($safe_mode && $this->_container['sending_output'] === true)
 		{
 			throw new Exception('Cannot load storages after output has been started.');
 		}
 
+		// Normalize the class name
 		$name = ucfirst($name);
 
-		if (!empty(self::$_storages[$name]))
+		if (!empty($this->_storages[$name]))
 		{
-			return self::$_storages[$name];
+			return $this->_storages[$name];
 		}
 
 		$class = 'smCore\\Storage\\' . $name;
-		return self::$_storages[$name] = new $class();
+		return $this->_storages[$name] = new $class($this->_container);
 	}
 }

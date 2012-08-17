@@ -22,11 +22,18 @@
 
 namespace smCore\Twig;
 
-use smCore\Application;
+use smCore\Container;
 use Twig_Error_Runtime, Twig_Extension, Twig_Function_Function, Twig_Filter_Function;
 
 class Extension extends Twig_Extension
 {
+	protected static $_container;
+
+	public function __construct(Container $container)
+	{
+		self::$_container = $container;
+	}
+
 	/**
 	 * Functions built into smCore, available in any template
 	 *
@@ -77,9 +84,9 @@ class Extension extends Twig_Extension
 	 *
 	 * @return string
 	 */
-	public static function function_lang($key)
+	public function function_lang($key)
 	{
-		return Application::get('lang')->get($key, array_slice(func_get_args(), 1));
+		return self::$_container['lang']->get($key, array_slice(func_get_args(), 1));
 	}
 
 	/**
@@ -91,7 +98,7 @@ class Extension extends Twig_Extension
 	 */
 	public static function function_smcMenu()
 	{
-		$menu = Application::get('menu');
+		$menu = self::$_container['menu'];
 		$args = func_get_args();
 
 		if (!empty($args))
@@ -161,15 +168,13 @@ class Extension extends Twig_Extension
 	 */
 	public static function function_url_for($endpoint, array $query_arguments = array())
 	{
-		$settings = Application::get('settings');
-
 		if (!empty($endpoint))
 		{
-			$url = $settings['url'] . '/' . trim($endpoint, '/') . '/';
+			$url = self::$_container['settings']['url'] . '/' . trim($endpoint, '/') . '/';
 		}
 		else
 		{
-			$url = $settings['url'] . '/';
+			$url = self::$_container['settings']['url'] . '/';
 		}
 
 		if (!empty($query_arguments))

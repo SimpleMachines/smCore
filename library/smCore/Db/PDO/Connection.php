@@ -22,8 +22,8 @@
 
 namespace smCore\Db\PDO;
 
-use PDO, Closure;
 use smCore\Db\ConnectionInterface, smCore\Db\Query, smCore\Db\Expression, smCore\Db\Exception;
+use PDO, Closure;
 
 class Connection implements ConnectionInterface
 {

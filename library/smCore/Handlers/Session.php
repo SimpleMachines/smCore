@@ -22,7 +22,7 @@
 
 namespace smCore\Handlers;
 
-use smCore\Application, smCore\Storage\Factory as StorageFactory;
+use smCore\Container, smCore\Storage\Factory as StorageFactory;
 
 /**
  * Session handler class, replacing PHP's session functions. Session information is stored in the database.
@@ -36,11 +36,10 @@ class Session
 	 *
 	 * @return boolean Whether or not we were able to set the save handler. This can return false if the session is already started.
 	 */
-	public function __construct()
+	public function __construct(Container $container)
 	{
-		$settings = Application::get('settings');
-
-		$this->_storage = $settings['session_db_driven'] ? 'Sessions\Database' : 'Sessions\File';
+		// Voodoo magic - a container object loading a container object...
+		$this->_storage = $container['storage_factory']->factory($container['settings']['session_db_driven'] ? 'Sessions\Database' : 'Sessions\File');
 
 		return session_set_save_handler(
 			array($this, 'open'),
@@ -84,7 +83,7 @@ class Session
 	 */
 	public function read($id)
 	{
-		return StorageFactory::factory($this->_storage)->read($id);
+		return $this->_storage->read($id);
 	}
 
 	/**
@@ -103,7 +102,7 @@ class Session
 			return false;
 		}
 
-		return StorageFactory::factory($this->_storage, false)->write($id, $data);
+		return $this->_storage->write($id, $data);
 	}
 
 	/**
@@ -116,7 +115,7 @@ class Session
 	public function destroy($id)
 	{
 		// Just delete the row...
-		return StorageFactory::factory($this->_storage, false)->destroy($id);
+		return $this->_storage->destroy($id);
 	}
 
 	/**
@@ -129,6 +128,6 @@ class Session
 	public function gc($max_lifetime)
 	{
 		// We're going to ignore the max session lifetime
-		StorageFactory::factory($this->_storage)->deleteExpired();
+		$this->_storage->deleteExpired();
 	}
 }

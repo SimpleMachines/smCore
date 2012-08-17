@@ -22,7 +22,7 @@
 
 namespace smCore\Modules\Admin\Controllers;
 
-use smCore\Application, smCore\Module\Controller;
+use smCore\Module\Controller;
 
 class Maintenance extends Controller
 {
@@ -61,7 +61,7 @@ class Maintenance extends Controller
 
 	public function cache()
 	{
-			$cache_info = Application::get('cache')->getStats();
+			$cache_info = $this->_container['cache']->getStats();
 	
 			return $this->_getParentModule()->render('maintenance/cache', array(
 				'cache_stats' => $cache_info,

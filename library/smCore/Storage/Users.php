@@ -22,9 +22,9 @@
 
 namespace smCore\Storage;
 
-use smCore\Application, smCore\Event, smCore\Exception, smCore\Model\User, smCore\Security\Session;
+use smCore\Event, smCore\Exception, smCore\Model\User, smCore\Security\Session;
 
-class Users
+class Users extends AbstractStorage
 {
 	protected $_current_user;
 	protected $_loaded_users = array();
@@ -33,9 +33,9 @@ class Users
 	{
 		if (null === $this->_current_user)
 		{
-			if (Session::exists())
+			if ($this->_container['session']->exists())
 			{
-				Session::start();
+				$this->_container['session']->start();
 
 				if (isset($_SESSION['id_user']))
 				{
@@ -55,9 +55,7 @@ class Users
 
 	public function getUserByName($name)
 	{
-		$db = Application::get('db');
-
-		$result = $db->query("
+		$result = $this->_container['db']->query("
 			SELECT *
 			FROM {db_prefix}users
 			WHERE LOWER(user_login) = {string:name}
@@ -73,7 +71,7 @@ class Users
 		}
 
 		$row = $result->fetch();
-		$user = new User($row);
+		$user = new User($this->_container, $row);
 		$user->setData($row);
 
 		return $user;
@@ -81,9 +79,7 @@ class Users
 
 	public function getUserByEmail($email)
 	{
-		$db = Application::get('db');
-
-		$result = $db->query("
+		$result = $this->_container['db']->query("
 			SELECT *
 			FROM {db_prefix}users
 			WHERE LOWER(user_email) = {string:email}",
@@ -98,7 +94,7 @@ class Users
 		}
 
 		$row = $result->fetch();
-		$user = new User($row);
+		$user = new User($this->_container, $row);
 		$user->setData($row);
 
 		return $user;
@@ -107,7 +103,7 @@ class Users
 	public function getUserById($id)
 	{
 		// The User class will check if this is a good ID.
-		$user = new User(array(
+		$user = new User($this->_container, array(
 			'id_user' => $id,
 		));
 
@@ -116,12 +112,12 @@ class Users
 			return $user;
 		}
 
-		$cache = Application::get('cache');
+		$cache = $this->_container['cache'];
 
 		// If we've already fetched the data, there's no reason to grab it again
 		if (false === $data = $cache->load('user_data_' . $id))
 		{
-			$db = Application::get('db');
+			$db = $this->_container['db'];
 
 			$result = $db->query("
 				SELECT *
@@ -149,7 +145,7 @@ class Users
 
 	public function save(User $user)
 	{
-		$db = Application::get('db');
+		$db = $this->_container['db'];
 
 		if ($user['id'] < 1)
 		{
@@ -174,7 +170,7 @@ class Users
 			'user' => $user,
 		));
 
-		Application::get('events')->fire($event);
+		$this->_container['events']->fire($event);
 
 	}
 }

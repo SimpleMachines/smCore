@@ -22,13 +22,17 @@
 
 namespace smCore\Handlers;
 
-use smCore\Application;
+use smCore\Container;
 use Twig_Error;
 
 class Exception
 {
-	public function __construct()
+	protected $_container;
+
+	public function __construct(Container $container)
 	{
+		$this->_container = $container;
+
 		set_exception_handler(array($this, 'handle'));
 	}
 
@@ -39,24 +43,43 @@ class Exception
 	 */
 	public function handle($exception)
 	{
-		Application::set('sending_output', null);
-		$show_trace = Application::get('user', false) !== null && Application::get('user')->hasPermission('org.smcore.core.is_admin');
+		$message = $exception->getMessage();
 
-		$response = Application::get('response');
-		$twig = Application::get('twig', false);
+		if (!empty($message) && null !== $lang = $this->_container->get('lang', false))
+		{
+			// If it's an array, we have replacements to send along
+			if (is_array($message))
+			{
+				$message = $lang->get($message[0], array_slice($message, 1));
+			}
+			else
+			{
+				$message = $lang->get($message);
+			}
+		}
+		else if (is_array($message))
+		{
+			$message = var_export($message, true);
+		}
+
+		$this->_container->set('sending_output', null);
+
+		$show_trace = $this->_container->get('user', false) !== null && $this->_container->get('user')->hasPermission('org.smcore.core.is_admin');
+
+		$response = $this->_container->get('response');
 
 		// We can't show a nice screen if the exception came from the template engine or the theme hasn't been loaded
-		if (!($exception instanceof Twig_Error) && $twig !== null)
+		if (!($exception instanceof Twig_Error) && null !== $twig = $this->_container->get('twig', false))
 		{
 			$response->setBody($twig->render('error.html', array(
-				'error_message' => $exception->getMessage(),
+				'error_message' => $message,
 				'error_trace' => print_r($exception->getTrace(), true),
 				'show_trace' => $show_trace,
 			)));
 		}
 		else
 		{
-			$response->setBody('Uncaught exception error:<hr /><pre>' . $exception->getMessage() . '</pre>' . ($show_trace ? '<br /><pre>' . print_r($exception->getTrace(), true) . '</pre>' : ''));
+			$response->setBody('Uncaught exception error:<hr /><pre>' . $message . '</pre>' . ($show_trace ? '<br /><pre>' . print_r($exception->getTrace(), true) . '</pre>' : ''));
 		}
 
 		if ($exception->getCode() !== 0)

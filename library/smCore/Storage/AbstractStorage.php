@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Checkbox Form Control Class
+ * smCore Abstract Storage
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,19 +20,16 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Form\Control;
+namespace smCore\Storage;
 
-use smCore\Form\Control;
+use smCore\Container;
 
-class Checkbox extends Control
+abstract class AbstractStorage
 {
-	public function getValue()
-	{
-		return $this->_properties['value'];
-	}
+	protected $_container;
 
-	public function getType()
+	public function __construct(Container $container)
 	{
-		return 'checkbox';
+		$this->_container = $container;
 	}
 }

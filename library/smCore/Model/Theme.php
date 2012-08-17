@@ -22,7 +22,7 @@
 
 namespace smCore\Model;
 
-class Theme
+class Theme extends AbstractModel
 {
 	protected $_id;
 	protected $_directory;

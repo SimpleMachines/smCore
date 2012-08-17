@@ -22,7 +22,7 @@
 
 namespace smCore\Modules\Auth\Controllers;
 
-use smCore\Application, smCore\Module\Controller, smCore\Storage;
+use smCore\Module\Controller, smCore\Storage;
 
 class Admin extends Controller
 {

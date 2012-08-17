@@ -32,16 +32,16 @@ use Inspekt, Inspekt_Cage;
 
 class Application
 {
-	public static $start_time = null;
+	protected $_container;
 
-	protected static $_registry = array();
-	protected static $_lazyLoads = array();
+	public static $start_time = null;
 
 	protected function __clone(){}
 
 	public function __construct(Settings $settings)
 	{
-		self::set('settings', $settings);
+		$this->_container = new Container;
+		$this->_container['settings'] = $settings;
 	}
 
 	/**
@@ -56,37 +56,42 @@ class Application
 
 		self::$start_time = microtime(true);
 
-		new Handlers\Error();
-		new Handlers\Exception();
+		$this->_container['storage_factory'] = new Storage\Factory($this->_container);
 
-		self::addLazyLoader('db', array($this, '_loadDatabase'));
-		self::addLazyLoader('cache', array($this, '_loadCache'));
-		self::addLazyLoader('mail', array($this, '_loadMail'));
-		self::addLazyLoader('twig', array($this, '_loadTheme'));
+		new Handlers\Error($this->_container);
+		new Handlers\Exception($this->_container);
+		new Handlers\Session($this->_container);
 
-		self::set('input', Inspekt::makeSuperCage(null, false));
+		$this->_container['session'] = new Security\Session($this->_container);
 
-		$request = self::set('request', new Request);
-		$response = self::set('response', new Response);
+		$this->_container['db'] = array($this, 'loadDatabase');
+		$this->_container['cache'] = array($this, 'loadCache');
+		$this->_container['mail'] = array($this, 'loadMail');
+		$this->_container['twig'] = array($this, 'loadTheme');
 
-		$dispatcher = self::set('events', new EventDispatcher());
-		$dispatcher->setListeners(Storage\Factory::factory('Events')->getActiveListeners());
+		$this->_container['input'] = Inspekt::makeSuperCage(null, false);
 
-		$user = self::set('user', Storage\Factory::factory('Users')->getCurrentUser());
+		$this->_container['request'] = new Request($this->_container);
+		$this->_container['response'] = new Response($this->_container);
 
-		$modules = self::set('modules', Storage\Factory::factory('Modules'));
-		$lang = self::set('lang', Storage\Factory::factory('Languages')->getByCode($user['language']));
-		$lang->loadPackageByName('org.smcore.common');
+		$this->_container['events'] = new EventDispatcher;
+		$this->_container['events']->setListeners($this->_container['storage_factory']->factory('Events')->getActiveListeners());
 
-		self::set('menu', new Menu());
+		$this->_container['user'] = $this->_container['storage_factory']->factory('Users')->getCurrentUser();
+
+		$this->_container['modules'] = $this->_container['storage_factory']->factory('Modules');
+		$this->_container['lang'] = $this->_container['lang'] = $this->_container['storage_factory']->factory('Languages')->getByCode($this->_container['user']['language']);
+		$this->_container['lang']->loadPackageByName('org.smcore.common');
+
+		$this->_container['menu'] = new Menu($this->_container);
 
 		// @todo don't just call this here
-		self::get('theme');
+		$theme = $this->_container['theme'];
 
-		$dispatcher->fire(new Event(null, 'org.smcore.core.pre_router'));
+		$this->_container['events']->fire(new Event(null, 'org.smcore.core.pre_router'));
 
-		$router = self::set('router', new Router);
-		$router
+		$this->_container['router'] = new Router;
+		$this->_container['router']
 			->addRoutes(array(
 				'(?:themes|resources).*' => 404,
 				'(?:cache|library).*?' => 403,
@@ -94,119 +99,36 @@ class Application
 			->setDefaultRoute('hello')
 		;
 
-		foreach ($modules as $identifier => $module)
+		foreach ($this->_container['modules'] as $identifier => $module)
 		{
-			$router->addRoutes($module->getRoutes(), $identifier);
+			$this->_container['router']->addRoutes($module->getRoutes(), $identifier);
 		}
 
-		$route = $router->match(self::get('request')->getPath());
+		$route = $this->_container['router']->match($this->_container['request']->getPath());
 
 		if (is_int($route['method']))
 		{
 			$code = $route['method'];
 
 			// @todo: show the correct error screen
-			$response
+			$this->_container['response']
 				->addHeader($code)
-				->setBody(self::get('twig')->render('error.html', array(
+				->setBody($this->_container['twig']->render('error.html', array(
 					'code' => $code,
-					'error_message' => $lang->get('exceptions.error_code_' . $code) ?: $lang->get('exceptions.error_code_unknown'),
+					'error_message' => $this->_container['lang']->get('exceptions.error_code_' . $code) ?: $this->_container['lang']->get('exceptions.error_code_unknown'),
 				)))
 			;
 		}
 		else
 		{
-			$module = self::get('modules')->getModule($route['module'], $this);
+			$module = $this->_container['modules']->getModule($route['module'], $this);
 
-			$returned = $module->runControllerMethod($route['controller'], $route['method']);
-			$response->setBody($returned);
+			$this->_container['response']->setBody($module->runControllerMethod($route['controller'], $route['method']));
 		}
 
-		$dispatcher->fire(new Event(null, 'org.smcore.core.post_router'));
+		$this->_container['events']->fire(new Event(null, 'org.smcore.core.post_router'));
 
-		$response->sendOutput();
-	}
-
-	/**
-	 * Set an internal registry value.
-	 *
-	 * @param string $key   The name of this value
-	 * @param mixed  $value The value to store. Passing null will unset the key from the registry.
-	 */
-	public static function set($key, $value)
-	{
-		if ($value === null)
-		{
-			unset(self::$_registry[$key]);
-		}
-		else
-		{
-			self::$_registry[$key] = $value;
-
-			return self::$_registry[$key];
-		}
-	}
-
-	/**
-	 * Get a value from the internal application registry.
-	 *
-	 * @param string  $key      The name of the value to look for
-	 * @param boolean $lazyload Whether we should try lazy loading or not, if the key isn't already set.
-	 *
-	 * @return mixed Returns the value matched with the key passed, or null if nothing was found.
-	 */
-	public static function get($key, $lazyload = true)
-	{
-		if (array_key_exists($key, self::$_registry))
-		{
-			return self::$_registry[$key];
-		}
-		else if ($lazyload && array_key_exists($key, self::$_lazyLoads))
-		{
-			self::set($key, call_user_func_array(self::$_lazyLoads[$key][0], self::$_lazyLoads[$key][1]));
-			return self::$_registry[$key];
-		}
-
-		return null;
-	}
-
-	/**
-	 * Add a lazy loader for the internal registry.
-	 *
-	 * @param string   $key       The key to store the result of the callback under
-	 * @param callback $callback  A callback to run
-	 * @param array    $arguments Arguments to pass to the callback
-	 *
-	 * @return 
-	 */
-	public function addLazyLoader($key, $callback, array $arguments = array())
-	{
-		// @todo: throw an exception for invalid/duplicate/late
-		if (empty($key) || array_key_exists($key, self::$_registry) || array_key_exists($key, self::$_lazyLoads))
-		{
-			return;
-		}
-
-		// @todo: invalid callback exception
-		if (!is_callable($callback))
-		{
-			return;
-		}
-
-		self::$_lazyLoads[$key] = array($callback, $arguments);
-	}
-
-	/**
-	 * Remove a lazy loader.
-	 *
-	 * @param string $key The name of the lazy loader to remove.
-	 */
-	public function removeLazyLoader($key)
-	{
-		if (array_key_exists($key, self::$_lazyLoads))
-		{
-			unset(self::$_lazyLoads[$key]);
-		}
+		$this->_container['response']->sendOutput();
 	}
 
 	/**
@@ -214,25 +136,21 @@ class Application
 	 *
 	 * @return object The database object created.
 	 */
-	protected function _loadDatabase()
+	public function loadDatabase()
 	{
-		$settings = self::get('settings');
-
-		$db = Db\Driver\Factory::factory($settings['database']['driver'], $settings['database']);
+		$db = Db\Driver\Factory::factory($this->_container['settings']['database']['driver'], $this->_container['settings']['database']);
 
 		return $db->getConnection();
 	}
 
 	/**
-	 * Load the cache when necessary. Lazy loaded upon first call to Application::get('cache')
+	 * Load the cache when necessary. Lazy loaded by the dependency injection container.
 	 *
 	 * @return object A new Cache object to use.
 	 */
-	protected function _loadCache()
+	public function loadCache()
 	{
-		$settings = self::get('settings');
-
-		return Cache\Factory::factory($settings['cache']['driver'], $settings['cache']);
+		return Cache\Factory::factory($this->_container['settings']['cache']['driver'], $this->_container['settings']['cache']);
 	}
 
 	/**
@@ -240,12 +158,12 @@ class Application
 	 *
 	 * @return Twig_Environment
 	 */
-	protected function _loadTheme()
+	public function loadTheme()
 	{
-		$user = self::get('user');
+		$user = $this->_container['user'];
 		$id = $user['theme'];
-		$themes = Storage\Factory::factory('Themes');
-		$settings = self::get('settings');
+		$themes = $this->_container['storage_factory']->factory('Themes');
+		$settings = $this->_container['settings'];
 
 		try
 		{
@@ -268,13 +186,13 @@ class Application
 		$twig_loader = new Twig_Loader_Filesystem($settings['theme_dir'] . '/' . $theme->getDirectory());
 		$twig_loader->addPath($settings['theme_dir'] . '/' . $theme->getDirectory(), 'theme');
 
-		$twig = new Twig\Environment($twig_loader, array(
+		$twig = new Twig\Environment($this->_container, $twig_loader, array(
 			'cache' => $settings['cache_dir'],
 			'recompile' => true,
 			'auto_reload' => true,
 		));
 
-		$twig->addExtension(new Twig\Extension());
+		$twig->addExtension(new Twig\Extension($this->_container));
 
 		// @todo: only enable this extension if we're in debug mode
 //		$twig->addExtension(new \Twig_Extension_Debug());
@@ -285,7 +203,7 @@ class Application
 	/**
 	 * Setup for the mail object
 	 */
-	protected function _loadMail()
+	public function loadMail()
 	{
 	}
 }

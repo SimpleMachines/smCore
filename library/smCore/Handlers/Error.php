@@ -44,7 +44,7 @@ class Error
 		{
 			return;
 		}
-
+//debug_print_backtrace();
 		die('Error: ' . $errstr . ' in ' . $errfile . ' on line ' . $errline . '.');
 	}
 }

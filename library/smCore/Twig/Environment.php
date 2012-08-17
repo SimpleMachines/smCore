@@ -22,20 +22,29 @@
 
 namespace smCore\Twig;
 
-use smCore\Application;
-use Twig_Environment;
+use smCore\Container;
+use Twig_Environment, Twig_LoaderInterface;
 
 class Environment extends Twig_Environment
 {
+	protected $_container;
+
+	public function __construct(Container $container, Twig_LoaderInterface $loader = null, $options = array())
+	{
+		$this->_container = $container;
+
+		parent::__construct($loader, $options);
+	}
+
 	/**
 	 * Merges 
 	 */
 	public function mergeGlobals(array $context)
 	{
-		$settings = Application::get('settings');
+		$settings = $this->_container['settings'];
 
 		return array_merge(array(
-			'user' => Application::get('user'),
+			'user' => $this->_container['user'],
 			'scripturl' => $settings['url'],
 			'theme_url' => rtrim($settings['url'], '/') . '/themes/default', // @todo
 			'default_theme_url' => rtrim($settings['url'], '/') . '/themes/default',
@@ -71,7 +80,7 @@ class Environment extends Twig_Environment
 	 */
 	public function getTemplateClass($name, $index = null)
 	{
-		$settings = Application::get('settings');
+		$settings = $this->_container['settings'];
 
 		$class = preg_replace('/[^a-z0-9_]/i', '_', str_replace($settings['path'], '', $this->loader->getCacheKey($name)));
 

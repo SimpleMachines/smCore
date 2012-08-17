@@ -2,7 +2,7 @@
 
 namespace smCore\HelloWorld\Controllers;
 
-use smCore\Application, smCore\Module\Controller;
+use smCore\Module\Controller;
 
 class Main extends Controller
 {

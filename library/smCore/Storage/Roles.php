@@ -22,9 +22,9 @@
 
 namespace smCore\Storage;
 
-use smCore\Application, smCore\Model\Role;
+use smCore\Model\Role;
 
-class Roles
+class Roles extends AbstractStorage
 {
 	protected $_loaded_roles;
 
@@ -39,11 +39,11 @@ class Roles
 			return $this->_loaded_roles;
 		}
 
-		$cache = Application::get('cache');
+		$cache = $this->_container['cache'];
 
 		if (false === $this->_loaded_roles = $cache->load('core_roles'))
 		{
-			$db = Application::get('db');
+			$db = $this->_container['db'];
 
 			$this->_loaded_roles = array();
 
@@ -84,7 +84,7 @@ class Roles
 
 				foreach ($this->_loaded_roles as $id => $role)
 				{
-					$this->_loaded_roles[$id] = new Role($id, $role['title'], $role['inherits'], $role['permissions']);
+					$this->_loaded_roles[$id] = new Role($this->_container, $id, $role['title'], $role['inherits'], $role['permissions']);
 				}
 			}
 

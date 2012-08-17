@@ -22,7 +22,7 @@
 
 namespace smCore\Modules\Admin\Controllers;
 
-use smCore\Application, smCore\Module\Controller;
+use smCore\Module\Controller;
 
 class Modules extends Controller
 {
@@ -38,7 +38,7 @@ class Modules extends Controller
 	public function main()
 	{
 		$module = $this->_getParentModule();
-		$modules_storage = Application::get('modules')->getLoadedModules();
+		$modules_storage = $this->_container['modules']->getLoadedModules();
 
 		$modules = array();
 

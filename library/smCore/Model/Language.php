@@ -22,9 +22,9 @@
 
 namespace smCore\Model;
 
-use smCore\Application, smCore\FileIO\Factory as IOFactory;
+use smCore\FileIO\Factory as IOFactory;
 
-class Language
+class Language extends AbstractModel
 {
 	// Stores all the language strings
 	protected $_strings = array();
@@ -41,8 +41,10 @@ class Language
 	 * @param type $code
 	 * @param type $id
 	 */
-	public function __construct($name, $code, $id = 0)
+	public function __construct($container, $name, $code, $id = 0)
 	{
+		parent::__construct($container);
+
 		$this->_name = $name;
 		$this->_code = $code;
 		$this->_id = (int) $id;
@@ -56,11 +58,11 @@ class Language
 	{
 		if (null === $this->_packageData)
 		{
-			$cache = Application::get('cache');
+			$cache = $this->_container['cache'];
 
 			if (false === $this->_packageData = $cache->load('smcore_language_packages'))
 			{
-				$db = Application::get('db');
+				$db = $this->_container['db'];
 
 				$result = $db->query("
 					SELECT id_package, package_name, package_type
@@ -138,13 +140,13 @@ class Language
 	 */
 	protected function _loadPackageById($id_package, $force_recompile)
 	{
-		$cache = Application::get('cache');
+		$cache = $this->_container['cache'];
 
 		$cache_key = 'lang_package_' . (int) $id_package;
 
 		if ($force_recompile || false === $data = $cache->load($cache_key))
 		{
-			$db = Application::get('db');
+			$db = $this->_container['db'];
 
 			$result = $db->query("
 				SELECT string_key, string_value

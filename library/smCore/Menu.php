@@ -24,19 +24,23 @@ namespace smCore;
 
 class Menu
 {
+	protected $_container;
+
 	protected $_parents = array();
 	protected $_menu = array();
 	protected $_active = array();
 
-	public function __construct()
+	public function __construct(Container $container)
 	{
-		Application::get('lang')->loadPackagesByType('menu');
+		$this->_container = $container;
 
-		$cache = Application::get('cache');
+		$this->_container['lang']->loadPackagesByType('menu');
+
+		$cache = $this->_container['cache'];
 
 		if (false === $this->_parents = $cache->load('core_menu_rows'))
 		{
-			$db = Application::get('db');
+			$db = $this->_container['db'];
 
 			$result = $db->query("
 				SELECT *
@@ -104,13 +108,11 @@ class Menu
 		{
 			foreach ($this->_parents[$id] as $item)
 			{
-				if ($item['menu_visible'] && (empty($item['menu_permission']) || Application::get('user')->hasPermission($item['menu_permission'])))
+				if ($item['menu_visible'] && (empty($item['menu_permission']) || $this->_container['user']->hasPermission($item['menu_permission'])))
 				{
-					$settings = Application::get('settings');
-
 					$parent[$item['menu_name']] = array(
-						'url' => $settings['url'] . $item['menu_url'],
-						'title' => Application::get('lang')->get($item['menu_title']),
+						'url' => $this->_container['settings']['url'] . $item['menu_url'],
+						'title' => $this->_container['lang']->get($item['menu_title']),
 						'submenu' => array(),
 						'active' => false,
 					);

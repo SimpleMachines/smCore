@@ -22,7 +22,7 @@
 
 namespace smCore\Modules\Admin\Controllers;
 
-use smCore\Application, smCore\Module\Controller, smCore\Form, smCore\Form\Control;
+use smCore\Module\Controller, smCore\Form, smCore\Form\Control;
 
 class Configuration extends Controller
 {
@@ -36,7 +36,7 @@ class Configuration extends Controller
 	public function main()
 	{
 		$module = $this->_getParentModule();
-		$settings = Application::get('settings');
+		$settings = $this->_container['settings'];
 
 		$form = new Form($settings['url'] . '/admin/settings/');
 

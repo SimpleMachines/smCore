@@ -22,7 +22,7 @@
 
 namespace smCore\Modules\Auth\Controllers;
 
-use smCore\Application, smCore\Module\Controller, smCore\Security\Crypt\Bcrypt, smCore\Security\Session, smCore\Storage;
+use smCore\Module\Controller, smCore\Security\Crypt\Bcrypt, smCore\Security\Session, smCore\Storage;
 
 class LogInOut extends Controller
 {
@@ -34,7 +34,7 @@ class LogInOut extends Controller
 	public function login()
 	{
 		$module = $this->_getParentModule();
-		$input = Application::get('input');
+		$input = $this->_container['input'];
 
 		// I'd actually like to use the router to route to a different method depending on whether this was a GET or a POST
 		if ($input->post->keyExists('submit'))
@@ -67,7 +67,7 @@ class LogInOut extends Controller
 				if ($input->post->keyExists('login_forever'))
 				{
 					// Six years of seconds!
-					Session::setLifetime(189216000);
+					$this->_container['session']->setLifetime(189216000);
 				}
 				else
 				{
@@ -79,10 +79,10 @@ class LogInOut extends Controller
 						$minutes = 60;
 					}
 
-					Session::setLifetime($minutes * 60);
+					$this->_container['session']->setLifetime($minutes * 60);
 				}
 
-				Session::start();
+				$this->_container['session']->start();
 				$_SESSION['id_user'] = $user['id'];
 
 				// @todo: $module->fire('post_successful_login');
@@ -96,10 +96,10 @@ class LogInOut extends Controller
 					$url = null;
 				}
 
-				Application::get('response')->redirect($url);
+				$this->_container['response']->redirect($url);
 			}
 
-			$settings = Application::get('settings');
+			$settings = $this->_container['settings'];
 
 			setcookie($settings['cookie_name'], '', 0, $settings['url'], $settings['cookie_domain']);
 
@@ -116,8 +116,8 @@ class LogInOut extends Controller
 
 	public function logout()
 	{
-		Session::end();
+		$this->_container['session']->end();
 
-		Application::get('response')->redirect();
+		$this->_container['response']->redirect();
 	}
 }

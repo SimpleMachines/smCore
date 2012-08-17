@@ -24,33 +24,4 @@ namespace smCore;
 
 class Exception extends \Exception
 {
-	/**
-	 * Construct the exception
-	 *
-	 * @param  string    $msg
-	 * @param  int       $code
-	 * @param  Exception $previous
-	 */
-	public function __construct($msg = '', $code = 0, Exception $previous = null)
-	{
-		if (!empty($msg) && null !== Application::get('lang'))
-		{
-			// If it's an array, we have replacements to send along
-			if (is_array($msg))
-			{
-				$key = array_shift($msg);
-				$msg = Application::get('lang')->get($key, $msg);
-			}
-			else
-			{
-				$msg = Application::get('lang')->get($msg);
-			}
-		}
-		else if (is_array($msg))
-		{
-			$msg = var_export($msg, true);
-		}
-
-		parent::__construct($msg, (int) $code, $previous);
-	}
 }

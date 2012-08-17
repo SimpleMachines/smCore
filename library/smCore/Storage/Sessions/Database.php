@@ -22,9 +22,9 @@
 
 namespace smCore\Storage\Sessions;
 
-use smCore\Application, smCore\Security\Session;
+use smCore\Security\Session, smCore\Storage\AbstractStorage;
 
-class Database
+class Database extends AbstractStorage
 {
 	/**
 	 * Read a session from the database by ID.
@@ -40,7 +40,7 @@ class Database
 			return false;
 		}
 
-		$db = Application::get('db');
+		$db = $this->_container['db'];
 
 		$result = $db->query("
 			SELECT *
@@ -73,7 +73,7 @@ class Database
 	 */
 	public function write($id, $data)
 	{
-		$db = Application::get('db');
+		$db = $this->_container['db'];
 
 		$result = $db->query("
 			SELECT session_expires
@@ -121,7 +121,7 @@ class Database
 			return false;
 		}
 
-		Application::get('db')->query("
+		$this->_container['db']->query("
 			DELETE FROM {db_prefix}sessions
 			WHERE id_session = {string:id}",
 			array(
@@ -137,7 +137,7 @@ class Database
 	 */
 	public function deleteExpired()
 	{
-		Application::get('db')->query("
+		$this->_container['db']->query("
 			DELETE FROM {db_prefix}sessions
 			WHERE session_expires < {int:time}",
 			array(

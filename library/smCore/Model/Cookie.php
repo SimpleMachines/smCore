@@ -3,7 +3,7 @@
 /**
  * smCore Cookie Model
  *
- * Unused as of yet
+ * Unused as of yet, old code, definitely doesn't work
  *
  * @package smCore
  * @author smCore Dev Team
@@ -24,10 +24,12 @@
 
 namespace smCore\Model;
 
-use smCore\Application, smCore\Exception, smCore\Model, smCore\Request, smCore\Settingst;
+use smCore\Exception, smCore\Model;
 
-class Cookie
+class Cookie extends AbstractModel
 {
+	protected $_container;
+
 	protected $_name;
 	protected $_value;
 	protected $_expire = 0;
@@ -43,17 +45,22 @@ class Cookie
 	 * @param string  $name         The name of this cookie.
 	 * @param boolean $attempt_read If true, see if this cookie already exists and fetch its value.
 	 */
-	public function __construct($name, $attempt_read = true)
+	public function __construct(Container $container, $name = null, $attempt_read = true)
 	{
-		$input = Application::get('input');
+		$this->_container = $container;
 
-		$this->_name = $name;
-		$this->_domain = Settings::COOKIE_DOMAIN;
-		$this->_path = Settings::COOKIE_PATH;
+		$input = $this->_container['input'];
+		$settings = $this->_container['settings'];
+
+		$this->_name = null === $name ? $settings['cookie_name'] : null;
+		$this->_domain = $settings['cookie_domain'];
+		$this->_path = $settings['cookie_path'];
 
 		// Does this cookie already exist?
 		if ($attempt_read && $input->cookie->keyExists($name))
+		{
 			$this->_value = $input->cookie->getRaw($name);
+		}
 	}
 
 	/**
@@ -63,7 +70,7 @@ class Cookie
 	 */
 	public function validateSession()
 	{
-		if ($this->_name !== Settings::COOKIE_NAME)
+		if ($this->_name !== $this->_container['settings']['cookie_name'])
 		{
 			return false;
 		}
@@ -95,7 +102,7 @@ class Cookie
 	public static function validateSessionCookie()
 	{
 		// First things first.
-		$cookie_value = Application::get('input')->cookie->getRaw(Settings::COOKIE_NAME);
+		$cookie_value = $this->_container['input']->cookie->getRaw($this->_container['settings']['cookie_name']);
 
 		if (empty($cookie_value))
 		{
@@ -120,9 +127,9 @@ class Cookie
 			throw new Exception('security_invalid_cookie', 0, null, 'security');
 		}
 
-		$cookie = new self(Settings::COOKIE_NAME);
+		$cookie = new self($this->_container['settings']['cookie_name']);
 
-		$cookieValue = Request::getInstance()->getCookieValue($cookieName);
+		$cookieValue = $this->_container['request']->getCookieValue($cookieName);
 		$array = @unserialize($cookieValue);
 		// user, password, time, state
 		// or, 0, '', 0
@@ -148,7 +155,7 @@ class Cookie
 		}
 		else
 		{
-			$parsed_url = parse_url(Settings::APP_URL);
+			$parsed_url = parse_url($this->_container['settings']['url']);
 		}
 
 		$localCookies = Configuration::getConf()->getLocalCookies();
@@ -191,12 +198,12 @@ class Cookie
 	{
 		// We can't use readFromRequest() here, it would end up in an endless loop because empty-ing is done
 		// when the cookie is invalid (which readFromRequest() checks)
-		$cookieName = Settings::COOKIE_NAME;
-		$cookieValue = Request::getInstance()->getCookieValue($cookieName);
+		$cookieName = $this->_container['settings']['cookie_name'];
+		$cookieValue = $this->_container['request']->getCookieValue($cookieName);
 
 		if (!empty($cookieValue))
 		{
-			Request::getInstance()->unsetCookieValue($cookieName);
+			$this->_container['request']->unsetCookieValue($cookieName);
 		}
 
 		$cookie = new Cookie();
@@ -214,7 +221,7 @@ class Cookie
 	 */
 	public function initializeCookie($length = 0, $id_user = 0, $password = '', $fakeUrl = null)
 	{
-		$this->_name = Settings::COOKIE_NAME;
+		$this->_name = $this->_container['settings']['cookie_name'];
 		$this->_expire = time() + $length;
 
 		if (!empty($id_user))

@@ -22,21 +22,23 @@
 
 namespace smCore\Storage;
 
-use smCore\Application, smCore\Exception, smCore\Model\Language;
+use smCore\Exception, smCore\Model\Language;
 
-class Languages
+class Languages extends AbstractStorage
 {
 	protected $_languages = array();
 	protected $_runtimeCache = array();
 
-	public function __construct()
+	public function __construct($container)
 	{
-		$cache = Application::get('cache');
+		parent::__construct($container);
+
+		$cache = $this->_container['cache'];
 
 		// Load the configs
 		if (false === $this->_languages = $cache->load('core_languagestorage'))
 		{
-			$db = Application::get('db');
+			$db = $this->_container['db'];
 
 			$result = $db->query("
 				SELECT id_language, language_code, language_name
@@ -66,10 +68,10 @@ class Languages
 
 		if (!empty($this->_languages[$code]))
 		{
-			return $this->_runtimeCache[$code] = new Language($this->_languages[$code]['language_name'], $code, $this->_languages[$code]['id_language']);
+			return $this->_runtimeCache[$code] = new Language($this->_container, $this->_languages[$code]['language_name'], $code, $this->_languages[$code]['id_language']);
 		}
 
-		$settings = Application::get('settings');
+		$settings = $this->_container['settings'];
 
 		if ($code !== $settings['default_lang'])
 		{

@@ -22,7 +22,7 @@
 
 namespace smCore\Modules\Admin\Controllers;
 
-use smCore\Application, smCore\Module\Controller;
+use smCore\Module\Controller;
 
 class Main extends Controller
 {
@@ -49,7 +49,7 @@ class Main extends Controller
 	{
 		$module = $this->_getParentModule();
 
-		if (Application::get('input')->post->keyExists('authenticate_pass'))
+		if ($this->_container['input']->post->keyExists('authenticate_pass'))
 		{
 			$module->validateSession('admin');
 		}

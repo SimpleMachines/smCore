@@ -22,7 +22,7 @@
 
 namespace smCore\Form;
 
-use smCore\Application, smCore\Exception;
+use smCore\Exception;
 
 abstract class Control
 {
@@ -52,11 +52,11 @@ abstract class Control
 		return $this->_properties['help'];
 	}
 
-	public function getValue($from_submit = false)
+	public function getValue($from_submit = false, $input = null)
 	{
 		if ($from_submit && null === $this->_properties['value'])
 		{
-			$this->_properties['value'] = Application::get('input')->post->getRaw($this->_properties['name']);
+			$this->_properties['value'] = $input->post->getRaw($this->_properties['name']);
 		}
 
 		return $this->_properties['value'];
