@@ -170,12 +170,14 @@ class Extension extends Twig_Extension
 	{
 		if (!empty($endpoint))
 		{
-			$url = self::$_container['settings']['url'] . '/' . trim($endpoint, '/') . '/';
+			$url = '/' . trim($endpoint, '/') . '/';
 		}
 		else
 		{
-			$url = self::$_container['settings']['url'] . '/';
+			$url = '/';
 		}
+
+		$query = '';
 
 		if (!empty($query_arguments))
 		{
@@ -193,10 +195,10 @@ class Extension extends Twig_Extension
 				}
 			}
 
-			return $url . '?' . implode(';', $arguments);
+			$query = '?' . implode(';', $arguments);
 		}
 
-		return $url;
+		return self::$_container['settings']['url'] . str_replace('//', '/', $url) . $query;
 	}
 
 	/**
