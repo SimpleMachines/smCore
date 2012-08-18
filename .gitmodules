@@ -1,3 +1,6 @@
 [submodule "library/Symfony/Component/Finder"]
 	path = library/Symfony/Component/Finder
 	url = git://github.com/symfony/Finder.git
+[submodule "library/Symfony/Component/Yaml"]
+	path = library/Symfony/Component/Yaml
+	url = git://github.com/symfony/Yaml.git
