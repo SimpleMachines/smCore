@@ -7,10 +7,40 @@
 {% block body %}
 {{ submenu("admin") }}
 		<div class="page-header">
+			<a href="{{ url_for('/admin/end/', {'token': end_session_token}) }}" class="btn btn-danger pull-right">{{ lang('admin.end_session') }}</a>
 			<h1>{{ lang('admin.titles.main') }}</h1>
 		</div>
 
 		<div class="well">
 			{{ lang('admin.welcome_message', user.display_name, url_for('credits')) |raw |nl2br }}
+		</div>
+
+		<div class="row">
+			<div class="span8">
+				<div class="well">
+					<h3>Live from smCore</h3>
+
+					<div style="height: 8em; overflow: auto;">
+					</div>
+				</div>
+			</div>
+			<div class="span4">
+				<div class="well">
+					<h3>Important Information</h3>
+
+					<div style="height: 8em; overflow: auto;">
+						<dl class="dl-horizontal">
+							<dt>smCore Version:</dt>
+							<dd>{{ smcore_version }}</dd>
+
+							<dt>Your Version:</dt>
+							<dd>{{ installed_smcore_version }}</dd>
+
+							<dt>Administrators:</dt>
+							<dd>...</dd>
+						</dl>
+					</div>
+				</div>
+			</div>
 		</div>
 {% endblock %}

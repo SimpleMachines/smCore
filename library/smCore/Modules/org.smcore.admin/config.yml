@@ -21,6 +21,10 @@ routes:
         match: admin/authenticate
         controller: Main
         method: authenticate
+    end:
+        match: admin/end
+        controller: Main
+        method: endSession
 
     configuration:
         match: admin/config
@@ -36,3 +40,11 @@ routes:
         match: admin/maintenance
         controller: Maintenance
         method: main
+    maintenance_db:
+        match: admin/maintenance/database
+        controller: Maintenance
+        method: database
+    maintenance_cache:
+        match: admin/maintenance/cache
+        controller: Maintenance
+        method: cache

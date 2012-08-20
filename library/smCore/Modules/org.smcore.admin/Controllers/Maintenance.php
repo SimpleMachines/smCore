@@ -67,4 +67,9 @@ class Maintenance extends Controller
 			'cache_stats' => $cache_info,
 		));
 	}
+
+	public function database()
+	{
+		return $this->module->render('maintenance/database');
+	}
 }

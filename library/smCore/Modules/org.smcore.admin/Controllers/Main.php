@@ -40,9 +40,13 @@ class Main extends Controller
 
 	public function main()
 	{
-		$module = $this->_getParentModule();
+		$app = $this->app;
 
-		return $module->render('main');
+		return $this->module->render('main', array(
+			'smcore_version' => '???', // @todo: fetch from smCore.org
+			'installed_smcore_version' => $app::VERSION,
+			'end_session_token' => $this->module->createToken('end_admin_session'),
+		));
 	}
 
 	public function authenticate()
@@ -53,9 +57,20 @@ class Main extends Controller
 		}
 
 		return $this->module->render('admin_login');
+	}
 
+	public function endSession()
+	{
+		if (false !== $token = $this->app['input']->get->getAlnum('token'))
 		{
+			$this->module->checkToken('end_admin_session', $token);
+
+			$this->module->endSession('admin');
+
+			// Go back to the home page, since you're obviously not
+			$this->app['response']->redirect();
 		}
 
+		$this->module->throwLangException('end_session.missing_token');
 	}
 }

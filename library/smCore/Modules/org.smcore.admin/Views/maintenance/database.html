@@ -1,0 +1,13 @@
+{% extends "@theme/layout.html" %}
+{% from "@theme/macros.html" import submenu %}
+
+{% set page_title = lang('admin.titles.maintenance.database') %}
+{% set menu_active = ["admin", "admin_maintenance", "admin_maintenance_database"] %}
+
+{% block body %}
+		{{ submenu("admin") }}
+
+		<div class="page-header">
+			<h1>{{ lang('admin.titles.maintenance.database') }}</h1>
+		</div>
+{% endblock %}
