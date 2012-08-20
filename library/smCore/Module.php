@@ -428,7 +428,7 @@ class Module
 	/**
 	 * Create a unique token to use for a (likely destructive) request.
 	 *
-	 * @param string $name
+	 * @param string $name The name of the token
 	 *
 	 * @return string
 	 */
@@ -440,10 +440,9 @@ class Module
 	/**
 	 * Check a token sent with a (likely destructive) request.
 	 *
-	 * @param string $name
-	 * @param string $value
-	 *
-	 * @throws \smCore\Exception
+	 * @param string $name          The name of the token
+	 * @param string $value         The token value that was sent
+	 * @param string $langException A language key to use instead of the default if the token doesn't match
 	 */
 	public function checkToken($name, $value, $langException = null)
 	{

@@ -26,10 +26,19 @@ class EventDispatcher
 {
 	protected $_listeners = array();
 
+	/**
+	 * Creates a new EventDispatcher.
+	 */
 	public function __construct()
 	{
 	}
 
+	/**
+	 * Sets the listeners this event dispatcher should know about.
+	 *
+	 * @param array   $listeners
+	 * @param boolean $overwrite
+	 */
 	public function addListeners(array $listeners, $overwrite = false)
 	{
 		if ($overwrite)
@@ -43,11 +52,21 @@ class EventDispatcher
 		}
 	}
 
+	/**
+	 * Adds a listener to this dispatcher.
+	 *
 	public function addListener($name, $callback)
 	{
 		$this->_listeners[$name][] = $callback;
 	}
 
+	/**
+	 * Fires an event
+	 *
+	 * @param \smCore\Event $event
+	 *
+	 * @return 
+	 */
 	public function fire(Event $event)
 	{
 		$name = $event->getName();

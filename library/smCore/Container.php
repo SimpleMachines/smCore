@@ -121,9 +121,9 @@ class Container implements ArrayAccess
 	/**
 	 * Check if a lazy loader is registered
 	 *
-	 * @param 
+	 * @param string $key The name of the lazy loader to check for.
 	 *
-	 * @return 
+	 * @return boolean
 	 */
 	public function has($key)
 	{

@@ -37,9 +37,10 @@ class Language extends AbstractModel
 	/**
 	 * Loads the basic language file and sets up stuff
 	 * 
-	 * @param type $name
-	 * @param type $code
-	 * @param type $id
+	 * @param \smCore\Container $container Dependency Injection Container
+	 * @param string            $name The language name, i.e. 'English (American)'
+	 * @param string            $code The language code, i.e. 'en_US'
+	 * @param int               $id
 	 */
 	public function __construct($container, $name, $code, $id = 0)
 	{
@@ -51,8 +52,9 @@ class Language extends AbstractModel
 	}
 
 	/**
-	 * 
-	 * @return type
+	 * Search the cache for a package's strings, falling back to the database on failure
+	 *
+	 * @return array
 	 */
 	protected function _getPackageData()
 	{
@@ -91,10 +93,12 @@ class Language extends AbstractModel
 	}
 
 	/**
-	 * 
-	 * @param type $type
-	 * @param type $force_recompile
-	 * @return \smCore\Model\Language
+	 * Load all packages of a given type, i.e. menu
+	 *
+	 * @param string  $type
+	 * @param boolean $force_recompile
+	 *
+	 * @return self
 	 */
 	public function loadPackagesByType($type, $force_recompile = false)
 	{
@@ -114,10 +118,12 @@ class Language extends AbstractModel
 	}
 
 	/**
-	 * 
-	 * @param type $name
-	 * @param type $force_recompile
-	 * @return \smCore\Model\Language
+	 * Load a package by name
+	 *
+	 * @param string $name
+	 * @param boolean $force_recompile
+	 *
+	 * @return self
 	 */
 	public function loadPackageByName($name, $force_recompile = false)
 	{
@@ -134,9 +140,10 @@ class Language extends AbstractModel
 	}
 
 	/**
-	 * 
-	 * @param type $id_package
-	 * @param type $force_recompile
+	 * Load a package by internal ID
+	 *
+	 * @param int $id_package
+	 * @param boolean $force_recompile
 	 */
 	protected function _loadPackageById($id_package, $force_recompile)
 	{
@@ -175,7 +182,7 @@ class Language extends AbstractModel
 	/**
 	 * Merge the new strings onto the existing strings.
 	 *
-	 * @param array $strings An array of strings, with their keys flattened via _compileStrings()
+	 * @param array $strings An array of strings
 	 */
 	protected function _addStrings($strings)
 	{

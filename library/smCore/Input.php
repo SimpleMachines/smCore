@@ -44,6 +44,13 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 		);
 	}
 
+	/**
+	 * Returns a raw value from the input data.
+	 *
+	 * @param string $key The key to use
+	 *
+	 * @return mixed The raw value from the input data, or false if the key doesn't exist
+	 */
 	public function getRaw($key)
 	{
 		if (isset($this->_data[$key]))
@@ -54,6 +61,13 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 		return false;
 	}
 
+	/**
+	 * Validates and returns an integer from the input data.
+	 *
+	 * @param string $key
+	 *
+	 * @return mixed
+	 */
 	public function getInt($key)
 	{
 		if (!isset($this->_data[$key]) || !$this->testInt($this->_data[$key]))
@@ -69,6 +83,13 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 		return ctype_digit((string) $value);
 	}
 
+	/**
+	 * Validates and returns a float from the input data.
+	 *
+	 * @param string $key
+	 *
+	 * @return mixed
+	 */
 	public function getFloat($key)
 	{
 		if (!isset($this->_data[$key]) || !is_numeric($this->_data[$key]))
@@ -85,6 +106,13 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 		return 1 === preg_match($this->_regexes['float'], (string) $value);
 	}
 
+	/**
+	 * Validates and returns a hex value from the input data.
+	 *
+	 * @param string $key
+	 *
+	 * @return mixed
+	 */
 	public function getHex($key)
 	{
 		if (!isset($this->_data[$key]) || !$this->testHex($this->_data[$key]))
@@ -100,6 +128,13 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 		return ctype_xdigit((string) $value);
 	}
 
+	/**
+	 * Validates and returns a telephone number from the input data.
+	 *
+	 * @param string $key
+	 *
+	 * @return mixed
+	 */
 	public function getTelephone($key)
 	{
 		if (!isset($this->_data[$key]) || !$this->testTelephone($this->_data[$key]))
@@ -121,6 +156,13 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 		return false;
 	}
 
+	/**
+	 * Validates and returns a zip code from the input data.
+	 *
+	 * @param string $key
+	 *
+	 * @return mixed
+	 */
 	public function getZip($key)
 	{
 		if (!isset($this->_data[$key]) || !$this->testZip($this->_data[$key]))
@@ -136,6 +178,13 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 		return 1 === preg_match($this->_regexes['zip_us'], $value);
 	}
 
+	/**
+	 * Validates and returns a hostname from the input data.
+	 *
+	 * @param string $key
+	 *
+	 * @return mixed
+	 */
 	public function getHostname($key)
 	{
 		if (!isset($this->_data[$key]) || !$this->testHostname($this->_data[$key]))
@@ -167,13 +216,13 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 	}
 
 	/**
-	 * 
+	 * Validates and returns an IP address from the input data.
 	 *
-	 * @param 
+	 * @param string $key
 	 *
-	 * @return 
+	 * @return mixed
 	 */
-	public function getIp($value)
+	public function getIp($key)
 	{
 		if (!isset($this->_data[$key]) || !$this->testIp($this->_data[$key]))
 		{
@@ -188,6 +237,13 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 		return false !== filter_var($value, FILTER_VALIDATE_IP);
 	}
 
+	/**
+	 * Validates and returns an email address from the input data.
+	 *
+	 * @param string $key
+	 *
+	 * @return mixed
+	 */
 	public function getEmail($key)
 	{
 		if (!isset($this->_data[$key]) || !$this->testEmail($this->_data[$key]))
@@ -202,11 +258,11 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 	 * Validate an email address.
 	 *
 	 * This only tests the domain portion, because despite what any RFC says, a mail server
-	 * can do whatever it wants with the local portion. Validating on the RFC alone
+	 * can do whatever it wants with the local portion. Validating on the RFC alone for now.
 	 *
-	 * @param mixed $value
+	 * @param mixed $value The email address to test
 	 *
-	 * @return boolean
+	 * @return boolean True if it looks like a valid email address, false otherwise
 	 */
 	public function testEmail($value)
 	{
@@ -227,6 +283,13 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 		return $this->testHostname($domain);
 	}
 
+	/**
+	 * Returns a value from the input data, if it's in a set of options.
+	 *
+	 * @param string $key
+	 *
+	 * @return mixed
+	 */
 	public function getIn($key, $options)
 	{
 		if (!isset($this->_data[$key]) || !$this->testOneOf($this->_data[$key], $options))
@@ -247,6 +310,13 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 		return false !== strpos((string) $options, (string) $value);
 	}
 
+	/**
+	 * Returns a value from the input data, if it's greater than a certain value.
+	 *
+	 * @param string $key
+	 *
+	 * @return mixed
+	 */
 	public function getGreaterThan($key, $compare)
 	{
 		if (!isset($this->_data[$key]) || !$this->testGreaterThan($this->_data[$key], $compare))
@@ -262,6 +332,13 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 		return $value > $compare;
 	}
 
+	/**
+	 * Returns a value from the input data, if it's less than a certain value.
+	 *
+	 * @param string $key
+	 *
+	 * @return mixed
+	 */
 	public function getLessThan($key, $compare)
 	{
 		if (!isset($this->_data[$key]) || !$this->testLessThan($this->_data[$key], $compare))

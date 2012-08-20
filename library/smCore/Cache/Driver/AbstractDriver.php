@@ -71,7 +71,7 @@ abstract class AbstractDriver
 	/**
 	 * Gets normalized information about a cached item
 	 *
-	 * @param string $key
+	 * @param string $key The key to retrieve metadata for
 	 *
 	 * @return array
 	 */
@@ -87,9 +87,9 @@ abstract class AbstractDriver
 	/**
 	 * Normalize a cache key
 	 *
-	 * @param string $key
+	 * @param string $key The cache key to normalize
 	 *
-	 * @return string
+	 * @return string The cache key, but with invalid characters replaced by underscores.
 	 */
 	protected function _normalize($key)
 	{

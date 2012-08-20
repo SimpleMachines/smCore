@@ -30,6 +30,12 @@ class User extends AbstractModel implements ArrayAccess
 	// Data for this user
 	protected $_data = array();
 
+	/**
+	 * Create a new User object
+	 *
+	 * @param smCore\Container $container
+	 * @param array            $data
+	 */
 	public function __construct($container, array $data = null)
 	{
 		parent::__construct($container);
@@ -141,7 +147,7 @@ class User extends AbstractModel implements ArrayAccess
 	}
 
 	/**
-	 * 
+	 * Set a user's password
 	 *
 	 * @param string $password 
 	 *

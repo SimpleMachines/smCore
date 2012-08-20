@@ -34,6 +34,11 @@ class Application extends Container
 
 	protected function __clone(){}
 
+	/**
+	 * Creates a new smCore application
+	 *
+	 * @param \smCore\Settings $settings A settings object to grab vital information from
+	 */
 	public function __construct(Settings $settings)
 	{
 		$this['settings'] = $settings;
@@ -150,7 +155,7 @@ class Application extends Container
 	}
 
 	/**
-	 * 
+	 * Load Twig and everything that goes along with it
 	 *
 	 * @return Twig_Environment
 	 */

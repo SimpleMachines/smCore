@@ -28,6 +28,11 @@ abstract class AbstractModel
 {
 	protected $_container;
 
+	/**
+	 * Sets up the dependency container for models to use
+	 *
+	 * @param \smCore\Container $container
+	 */
 	public function __construct(Container $container)
 	{
 		$this->_container = $container;

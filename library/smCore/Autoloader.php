@@ -29,6 +29,12 @@ class Autoloader
 	protected $namespace;
 	protected $directory;
 
+	/**
+	 * Create a new autoloader
+	 *
+	 * @param string $namespace The namespace for which to attempt to autoload files
+	 * @param string $directory The directory to look for namespaced files in
+	 */
 	public function __construct($namespace, $directory)
 	{
 		$this->namespace = $namespace ? trim($namespace, '\\') : null;
