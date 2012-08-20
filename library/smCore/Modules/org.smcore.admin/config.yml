@@ -22,24 +22,15 @@ routes:
         controller: Main
         method: authenticate
 
-
-
-
     configuration:
         match: admin/config
         controller: Configuration
         method: main
 
-
-
-
     modules:
         match: admin/modules
         controller: Modules
         method: main
-
-
-
 
     maintenance:
         match: admin/maintenance

@@ -30,8 +30,13 @@ class EventDispatcher
 	{
 	}
 
-	public function setListeners($listeners)
+	public function addListeners(array $listeners, $overwrite = false)
 	{
+		if ($overwrite)
+		{
+			$this->_listeners = array();
+		}
+
 		foreach ($listeners as $listener)
 		{
 			$this->_listeners[$listener['listener_name']][] = $listener['callback'];

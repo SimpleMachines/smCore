@@ -28,91 +28,90 @@ class Configuration extends Controller
 {
 	public function preDispatch($method)
 	{
-		$this->_getParentModule()
+		$this->module
 			->requireAdmin()
 			->loadLangPackage();
 	}
 
 	public function main()
 	{
-		$module = $this->_getParentModule();
-		$settings = $this->_container['settings'];
+		$settings = $this->app['settings'];
 
 		$form = new Form($settings['url'] . '/admin/settings/');
 
 		$form->addControl('urls_directories', new Control\Group(array(
-			'label' => $module->lang('settings.urls_directories'),
+			'label' => $this->module->lang('settings.urls_directories'),
 			'controls' => array(
 				'url' => new Control\Text(array(
-					'label' => $module->lang('settings.url'),
+					'label' => $this->module->lang('settings.url'),
 					'value' => $settings['url'],
-					'help' => $module->lang('settings.url.help'),
+					'help' => $this->module->lang('settings.url.help'),
 				)),
 				'module_dir' => new Control\Text(array(
-					'label' => $module->lang('settings.module_dir'),
+					'label' => $this->module->lang('settings.module_dir'),
 					'value' => $settings['module_dir'],
-					'help' => $module->lang('settings.module_dir.help'),
+					'help' => $this->module->lang('settings.module_dir.help'),
 				)),
 				'theme_dir' => new Control\Text(array(
-					'label' => $module->lang('settings.theme_dir'),
+					'label' => $this->module->lang('settings.theme_dir'),
 					'value' => $settings['theme_dir'],
-					'help' => $module->lang('settings.theme_dir.help'),
+					'help' => $this->module->lang('settings.theme_dir.help'),
 				)),
 				'cache_dir' => new Control\Text(array(
-					'label' => $module->lang('settings.cache_dir'),
+					'label' => $this->module->lang('settings.cache_dir'),
 					'value' => $settings['cache_dir'],
-					'help' => $module->lang('settings.cache_dir.help'),
+					'help' => $this->module->lang('settings.cache_dir.help'),
 				)),
 			),
 		)));
 
 		$form->addControl('caching', new Control\Group(array(
-			'label' => $module->lang('settings.caching'),
+			'label' => $this->module->lang('settings.caching'),
 			'help' => 'These settings control blah blah blah.',
 			'controls' => array(
 				'cache_driver' => new Control\Select(array(
-					'label' => $module->lang('settings.cache_driver'),
+					'label' => $this->module->lang('settings.cache_driver'),
 					'value' => $settings['cache']['driver'],
-					'help' => $module->lang('settings.cache_driver.help'),
+					'help' => $this->module->lang('settings.cache_driver.help'),
 					'options' => array(
-						'File' => $module->lang('settings.cache_driver_file'),
-						'Memcached' => $module->lang('settings.cache_driver_memcached'),
-						'APC' => $module->lang('settings.cache_driver_apc'),
-						'Blackhole' => $module->lang('settings.cache_driver_blackhole'),
+						'File' => $this->module->lang('settings.cache_driver_file'),
+						'Memcached' => $this->module->lang('settings.cache_driver_memcached'),
+						'APC' => $this->module->lang('settings.cache_driver_apc'),
+						'Blackhole' => $this->module->lang('settings.cache_driver_blackhole'),
 					),
 				)),
 				'cache_default_ttl' => new Control\Text(array(
-					'label' => $module->lang('settings.cache_default_ttl'),
+					'label' => $this->module->lang('settings.cache_default_ttl'),
 					'value' => $settings['cache']['default_ttl'],
-					'help' => $module->lang('settings.cache_default_ttl.help'),
+					'help' => $this->module->lang('settings.cache_default_ttl.help'),
 				)),
 			),
 		)));
 
 		$form->addControl('cookies_sessions', new Control\Group(array(
-			'label' => $module->lang('settings.cookies_sessions'),
+			'label' => $this->module->lang('settings.cookies_sessions'),
 			'controls' => array(
 				'cookie_name' => new Control\Text(array(
-					'label' => $module->lang('settings.cookie_name'),
+					'label' => $this->module->lang('settings.cookie_name'),
 					'value' => $settings['cookie_name'],
 				)),
 				'cookie_domain' => new Control\Text(array(
-					'label' => $module->lang('settings.cookie_domain'),
+					'label' => $this->module->lang('settings.cookie_domain'),
 					'value' => $settings['cookie_domain'],
 				)),
 				'cookie_path' => new Control\Text(array(
-					'label' => $module->lang('settings.cookie_path'),
+					'label' => $this->module->lang('settings.cookie_path'),
 					'value' => $settings['cookie_path'],
 				)),
 				'sessions_db_driven' => new Control\Checkbox(array(
-					'label' => $module->lang('settings.session_db_driven'),
+					'label' => $this->module->lang('settings.session_db_driven'),
 					'value' => $settings['session_db_driven'],
-					'help' => $module->lang('settings.session_db_driven.help'),
+					'help' => $this->module->lang('settings.session_db_driven.help'),
 				)),
 			),
 		)));
 
-		return $module->render('configuration/form', array(
+		return $this->module->render('configuration/form', array(
 			'form' => $form,
 		));
 	}

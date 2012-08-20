@@ -28,7 +28,7 @@ class Modules extends Controller
 {
 	public function preDispatch()
 	{
-		$this->_getParentModule()
+		$this->module
 			->loadLangPackage()
 			->requireAdmin()
 			->validateSession('admin')
@@ -37,8 +37,7 @@ class Modules extends Controller
 
 	public function main()
 	{
-		$module = $this->_getParentModule();
-		$modules_storage = $this->_container['modules']->getLoadedModules();
+		$modules_storage = $this->app['modules']->getLoadedModules();
 
 		$modules = array();
 
@@ -66,7 +65,7 @@ class Modules extends Controller
 			}
 		}
 
-		return $this->_getParentModule()->render('modules/main', array(
+		return $this->module->render('modules/main', array(
 			'modules' => $modules,
 		));
 	}

@@ -28,7 +28,7 @@ use smCore\Security\Session;
 
 class Module
 {
-	protected $_container;
+	protected $app;
 
 	protected $_template_dir;
 
@@ -46,9 +46,10 @@ class Module
 	 * @param array  $config    The contents of this module's config.yaml file.
 	 * @param string $directory The directory where this module is located.
 	 */
-	public function __construct(Container $container, $config, $directory)
+	public function __construct(Application $app, $config, $directory)
 	{
-		$this->_container = $container;
+		$this->app = $app;
+
 		$this->_config = $config;
 		$this->_directory = $directory;
 
@@ -67,8 +68,8 @@ class Module
 
 		if (is_dir($this->_template_dir))
 		{
-			$this->_container['twig']->getLoader()->addPath($this->_template_dir, $this->_config['namespaces']['template']);
-			$this->_container['twig']->getLoader()->addPath($this->_template_dir, $this->_config['identifier']);
+			$app['twig']->getLoader()->addPath($this->_template_dir, $this->_config['namespaces']['template']);
+			$app['twig']->getLoader()->addPath($this->_template_dir, $this->_config['identifier']);
 		}
 	}
 
@@ -91,7 +92,7 @@ class Module
 		}
 
 		$controllerClass = $this->_config['namespaces']['php'] . '\\Controllers\\' . $controller;
-		$controllerObject = new $controllerClass($this->_container, $this);
+		$controllerObject = new $controllerClass($this->app, $this);
 
 		if (!is_callable(array($controllerObject, $method)))
 		{
@@ -123,7 +124,7 @@ class Module
 
 		$modelClass = $this->_config['namespaces']['php'] . '\\Models\\' . $name;
 
-		return new $modelClass($this->_container, $this);
+		return new $modelClass($this->app, $this);
 	}
 
 	/**
@@ -143,7 +144,7 @@ class Module
 			}
 
 			$storageClass = $this->_config['namespaces']['php'] . '\\Storages\\' . $name;
-			$this->_storages[$name] = new $storageClass($this->_container, $this);
+			$this->_storages[$name] = new $storageClass($this->app, $this);
 		}
 
 		return $this->_storages[$name];
@@ -163,20 +164,20 @@ class Module
 	{
 		if ($sending_output)
 		{
-			$this->_container['sending_output'] = true;
+			$this->app['sending_output'] = true;
 		}
 
-		return $this->_container['twig']->render('@' . $this->_config['namespaces']['template'] . '/' . $name . '.html', $context);
+		return $this->app['twig']->render('@' . $this->_config['namespaces']['template'] . '/' . $name . '.html', $context);
 	}
 
 	public function display($name, array $context = array(), $sending_output = true)
 	{
 		if ($sending_output)
 		{
-			$this->_container['sending_output'] = true;
+			$this->app['sending_output'] = true;
 		}
 
-		$this->_container['twig']->display('@' . $this->_config['namespaces']['template'] . '/' . $name . '.html', $context);
+		$this->app['twig']->display('@' . $this->_config['namespaces']['template'] . '/' . $name . '.html', $context);
 
 		return $this;
 	}
@@ -191,11 +192,11 @@ class Module
 	{
 		if (empty($package_name))
 		{
-			$this->_container['lang']->loadPackageByName($this->_config['identifier']);
+			$this->app['lang']->loadPackageByName($this->_config['identifier']);
 		}
 		else
 		{
-			$this->_container['lang']->loadPackageByName($this->_config['identifier'] . '.' . $package_name);
+			$this->app['lang']->loadPackageByName($this->_config['identifier'] . '.' . $package_name);
 		}
 
 		return $this;
@@ -211,7 +212,7 @@ class Module
 	 */
 	public function lang($key, array $replacements = array(), $namespace = true)
 	{
-		return $this->_container['lang']->get(($namespace ? $this->_config['namespaces']['lang'] . '.' : '') . $key, $replacements);
+		return $this->app['lang']->get(($namespace ? $this->_config['namespaces']['lang'] . '.' : '') . $key, $replacements);
 	}
 
 	/**
@@ -261,7 +262,7 @@ class Module
 			$event = new Event($this, $this->_config['identifier'] . '.' . $event);
 		}
 
-		return $this->_container['events']->fire($event);		
+		return $this->app['events']->fire($event);		
 	}
 
 	/**
@@ -273,7 +274,7 @@ class Module
 	 */
 	public function hasPermission($name)
 	{
-		return $this->_container['user']->hasPermission($this->_config['identifier'] . '.' . $name);
+		return $this->app['user']->hasPermission($this->_config['identifier'] . '.' . $name);
 	}
 
 	/**
@@ -288,7 +289,7 @@ class Module
 			$name = $this->_config['identifier'] . '.' . $name;
 		}
 
-		if (!$this->_container['user']->hasPermission($name))
+		if (!$this->app['user']->hasPermission($name))
 		{
 			throw new Exception('exceptions.no_permission');
 		}
@@ -298,13 +299,13 @@ class Module
 
 	public function requireAdmin()
 	{
-		if (!$this->_container['user']->isAdmin())
+		if (!$this->app['user']->isAdmin())
 		{
-			if (!$this->_container['user']->isLoggedIn())
+			if (!$this->app['user']->isLoggedIn())
 			{
-				$this->_container['session']->start();
-				$_SESSION['redirect_url'] = $this->_container['request']->getUrl();
-				$this->_container['response']->redirect('login');
+				$this->app['session']->start();
+				$_SESSION['redirect_url'] = $this->app['request']->getUrl();
+				$this->app['response']->redirect('login');
 			}
 
 			throw new Exception('exceptions.admin_required');
@@ -315,7 +316,7 @@ class Module
 
 	public function noGuests($message = null, $exception_on_failure = true)
 	{
-		if ($this->_container['user']->hasRole(0))
+		if ($this->app['user']->hasRole(0))
 		{
 			if ($exception_on_failure)
 			{
@@ -332,13 +333,13 @@ class Module
 	{
 		if (!isset($_SESSION['session_' . $type]) || $_SESSION['session_' . $type] + $lifetime < time())
 		{
-			$input = $this->_container['input'];
+			$input = $this->app['input'];
 
 			if ($input->post->keyExists('authenticate_pass'))
 			{
 				$bcrypt = new Security\Crypt\Bcrypt();
 
-				if ($bcrypt->match($input->post->getRaw('authenticate_pass'), $this->_container['user']['password']))
+				if ($bcrypt->match($input->post->getRaw('authenticate_pass'), $this->app['user']['password']))
 				{
 					$_SESSION['session_' . $type] = time();
 
@@ -351,14 +352,14 @@ class Module
 						$url = 'admin';
 					}
 
-					$this->_container['response']->redirect($url);
+					$this->app['response']->redirect($url);
 				}
 			}
 
-			if ('admin/authenticate' !== $path = $this->_container['request']->getPath())
+			if ('admin/authenticate' !== $path = $this->app['request']->getPath())
 			{
 				$_SESSION['redirect_url'] = $path;
-				$this->_container['response']->redirect('/admin/authenticate/');
+				$this->app['response']->redirect('/admin/authenticate/');
 			}
 		}
 
@@ -401,7 +402,7 @@ class Module
 	 */
 	public function cacheSave($key, $data, $lifetime = null)
 	{
-		$this->_container['cache']->save($this->_config['namespaces']['cache'] . '.' . $key, $data, $lifetime);
+		$this->app['cache']->save($this->_config['namespaces']['cache'] . '.' . $key, $data, $lifetime);
 	}
 
 	/**
@@ -411,7 +412,7 @@ class Module
 	 */
 	public function cacheLoad($key)
 	{
-		return $this->_container['cache']->load($this->_config['namespaces']['cache'] . '.' . $key);
+		return $this->app['cache']->load($this->_config['namespaces']['cache'] . '.' . $key);
 	}
 
 	/**
@@ -421,7 +422,7 @@ class Module
 	 */
 	public function cacheTest($key)
 	{
-		return $this->_container['cache']->test($this->_config['namespaces']['cache'] . '_' . $key);
+		return $this->app['cache']->test($this->_config['namespaces']['cache'] . '_' . $key);
 	}
 
 	/**
@@ -433,7 +434,7 @@ class Module
 	 */
 	public function createToken($name)
 	{
-		return md5(hash('sha256', $name . '%' . $this->_container['user']['token'] . '%' . $this->_config['identifier']));
+		return md5(hash('sha256', $name . '%' . $this->app['user']['token'] . '%' . $this->_config['identifier']));
 	}
 
 	/**

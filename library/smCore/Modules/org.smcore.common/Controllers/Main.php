@@ -28,20 +28,16 @@ class Main extends Controller
 {
 	public function preDispatch()
 	{
-		$this->_getParentModule()->loadLangPackage();
+		$this->module->loadLangPackage();
 	}
 
 	public function credits()
 	{
-		$module = $this->_getParentModule();
-
-		return $module->render('credits');
+		return $this->module->render('credits');
 	}
 
 	public function terms_and_privacy()
 	{
-		$module = $this->_getParentModule();
-
-		return $module->render('terms_and_privacy');
+		return $this->module->render('terms_and_privacy');
 	}
 }

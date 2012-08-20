@@ -28,13 +28,12 @@ class LogInOut extends Controller
 {
 	public function preDispatch()
 	{
-		$this->_getParentModule()->loadLangPackage();
+		$this->module->loadLangPackage();
 	}
 
 	public function login()
 	{
-		$module = $this->_getParentModule();
-		$input = $this->_container['input'];
+		$input = $this->app['input'];
 
 		// I'd actually like to use the router to route to a different method depending on whether this was a GET or a POST
 		if ($input->post->keyExists('submit'))
@@ -53,7 +52,7 @@ class LogInOut extends Controller
 
 				if (false === $user)
 				{
-					return $module->render('login', array(
+					return $this->module->render('login', array(
 						'failed' => true,
 						'username' => $username,
 					));
@@ -67,7 +66,7 @@ class LogInOut extends Controller
 				if ($input->post->keyExists('login_forever'))
 				{
 					// Six years of seconds!
-					$this->_container['session']->setLifetime(189216000);
+					$this->app['session']->setLifetime(189216000);
 				}
 				else
 				{
@@ -79,10 +78,10 @@ class LogInOut extends Controller
 						$minutes = 60;
 					}
 
-					$this->_container['session']->setLifetime($minutes * 60);
+					$this->app['session']->setLifetime($minutes * 60);
 				}
 
-				$this->_container['session']->start();
+				$this->app['session']->start();
 				$_SESSION['id_user'] = $user['id'];
 
 				// @todo: $module->fire('post_successful_login');
@@ -96,28 +95,25 @@ class LogInOut extends Controller
 					$url = null;
 				}
 
-				$this->_container['response']->redirect($url);
+				$this->app['response']->redirect($url);
 			}
 
-			$settings = $this->_container['settings'];
+			setcookie($this->app['settings']['cookie_name'], '', 0, $this->app['settings']['url'], $this->app['settings']['cookie_domain']);
 
-			setcookie($settings['cookie_name'], '', 0, $settings['url'], $settings['cookie_domain']);
-
-			return $module->render('login', array(
+			return $this->module->render('login', array(
 				'failed' => true,
 				'username' => $username,
 			));
 		}
 
-		return $module->render('login', array(
+		return $this->module->render('login', array(
 			'username' => '',
 		));
 	}
 
 	public function logout()
 	{
-		$this->_container['session']->end();
-
-		$this->_container['response']->redirect();
+		$this->app['session']->end();
+		$this->app['response']->redirect();
 	}
 }

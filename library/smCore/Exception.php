@@ -24,4 +24,25 @@ namespace smCore;
 
 class Exception extends \Exception
 {
+	protected $_raw_message;
+
+	public function __construct($exception, $code = 0, $previous = null)
+	{
+		if (is_array($exception))
+		{
+			$this->_raw_message = $exception;
+			$exception = $exception[0];
+		}
+		else
+		{
+			$this->_raw_message = $exception;
+		}
+
+		parent::__construct($exception, $code, $previous);
+	}
+
+	public function getRawMessage()
+	{
+		return $this->_raw_message;
+	}
 }

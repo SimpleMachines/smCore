@@ -28,7 +28,7 @@ class Maintenance extends Controller
 {
 	public function preDispatch()
 	{
-		$this->_getParentModule()
+		$this->module
 			->loadLangPackage()
 			->requireAdmin()
 			->validateSession('admin')
@@ -37,7 +37,7 @@ class Maintenance extends Controller
 
 	public function main()
 	{
-		$module = $this->_getParentModule();
+		$module = $this->module;
 
 		$tasks = array(
 			'clear_cache' => array(
@@ -54,17 +54,17 @@ class Maintenance extends Controller
 			),
 		);
 
-		return $this->_getParentModule()->render('maintenance/main', array(
+		return $module->render('maintenance/main', array(
 			'tasks' => $tasks
 		));
 	}
 
 	public function cache()
 	{
-			$cache_info = $this->_container['cache']->getStats();
-	
-			return $this->_getParentModule()->render('maintenance/cache', array(
-				'cache_stats' => $cache_info,
-			));
+		$cache_info = $this->app['cache']->getStats();
+
+		return $this->module->render('maintenance/cache', array(
+			'cache_stats' => $cache_info,
+		));
 	}
 }

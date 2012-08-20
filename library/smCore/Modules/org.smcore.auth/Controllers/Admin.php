@@ -28,13 +28,11 @@ class Admin extends Controller
 {
 	public function preDispatch()
 	{
-		$this->_getParentModule()->loadLangPackage();
+		$this->module->loadLangPackage();
 	}
 
 	public function main()
 	{
-		$module = $this->_getParentModule();
-
-		return $module->render('admin/main');
+		return $this->module->render('admin/main');
 	}
 }

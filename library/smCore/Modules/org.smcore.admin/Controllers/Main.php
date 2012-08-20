@@ -28,13 +28,13 @@ class Main extends Controller
 {
 	public function preDispatch($method)
 	{
-		$this->_getParentModule()
+		$this->module
 			->requireAdmin()
 			->loadLangPackage();
 
 		if ($method !== 'authenticate')
 		{
-			$this->_getParentModule()->validateSession('admin');
+			$this->module->validateSession('admin');
 		}
 	}
 
@@ -47,13 +47,15 @@ class Main extends Controller
 
 	public function authenticate()
 	{
-		$module = $this->_getParentModule();
-
-		if ($this->_container['input']->post->keyExists('authenticate_pass'))
+		if ($this->app['input']->post->keyExists('authenticate_pass'))
 		{
-			$module->validateSession('admin');
+			$this->module->validateSession('admin');
 		}
 
-		return $module->render('admin_login');
+		return $this->module->render('admin_login');
+
+		{
+		}
+
 	}
 }

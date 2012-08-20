@@ -43,33 +43,40 @@ class Exception
 	 */
 	public function handle($exception)
 	{
-		$message = $exception->getMessage();
-
-		if (!empty($message) && null !== $lang = $this->_container->get('lang', false))
+		if ($exception instanceof \smCore\Exception)
 		{
-			// If it's an array, we have replacements to send along
-			if (is_array($message))
+			$message = $exception->getRawMessage();
+
+			if (!empty($message) && isset($this->_container['lang']) && null !== $lang = $this->_container['lang'])
 			{
-				$message = $lang->get($message[0], array_slice($message, 1));
+				// If it's an array, we have replacements to send along
+				if (is_array($message))
+				{
+					$message = $lang->get($message[0], array_slice($message, 1));
+				}
+				else
+				{
+					$message = $lang->get($message);
+				}
 			}
-			else
+			else if (is_array($message))
 			{
-				$message = $lang->get($message);
+				$message = var_export($message, true);
 			}
 		}
-		else if (is_array($message))
+		else
 		{
-			$message = var_export($message, true);
+			$message = $exception->getMessage();
 		}
 
-		$this->_container->set('sending_output', null);
+		$this->_container['sending_output'] = null;
 
-		$show_trace = $this->_container->get('user', false) !== null && $this->_container->get('user')->hasPermission('org.smcore.core.is_admin');
+		$show_trace = isset($this->_container['user']) && $this->_container['user']->hasPermission('org.smcore.core.is_admin');
 
-		$response = $this->_container->get('response');
+		$response = $this->_container['response'];
 
 		// We can't show a nice screen if the exception came from the template engine or the theme hasn't been loaded
-		if (!($exception instanceof Twig_Error) && null !== $twig = $this->_container->get('twig', false))
+		if (!($exception instanceof Twig_Error) && isset($this->_container['twig']) && null !== $twig = $this->_container['twig'])
 		{
 			$response->setBody($twig->render('error.html', array(
 				'error_message' => $message,
