@@ -31,6 +31,7 @@ use Inspekt, Inspekt_Cage;
 
 class Application extends Container
 {
+	const VERSION = '1.0 Alpha 1';
 
 	protected function __clone(){}
 

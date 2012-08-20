@@ -234,31 +234,4 @@ class Language extends AbstractModel
  		// Return the key, so we at least know what's not there
 		return $key;
 	}
-
-	/**
-	 * Compile an array of language strings into a string-imploded array
-	 *
-	 * This helps with retrieval for humans, who would rather not type out arrays, and machines
-	 * which may or may not like to be speedier in their lookups.
-	 *
-	 * @param array $base     The base of the key for this level, to be imploded by $separator
-	 * @param array $strings  A key=>value array of strings to compile
-	 * @param array $compiled The array in which to store compiled values, passed by reference
-	 */
-	protected function _compileStrings($base, $strings, &$compiled)
-	{
-		foreach ($strings as $key => $val)
-		{
-			$current_key = array_merge($base, array($key));
-
-			if (is_array($val))
-			{
-				$this->_compileStrings($current_key, $val, $compiled);
-			}
-			else
-			{
-				$compiled[implode('.', $current_key)] = $val;
-			}
-		}
-	}
 }

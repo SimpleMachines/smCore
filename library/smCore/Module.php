@@ -225,7 +225,7 @@ class Module
 	 */
 	public function throwLangException($key, array $replacements = array())
 	{
-		throw new Exception($this->lang($this->_config['namespaces']['lang'] . '.' . 'exceptions.' . $key, $replacements));
+		throw new Exception($this->lang('exceptions.' . $key, $replacements));
 	}
 
 	/**
@@ -364,6 +364,11 @@ class Module
 		}
 
 		return $this;
+	}
+
+	public function endSession($type)
+	{
+		unset($_SESSION['session_' . $type]);
 	}
 
 	/**

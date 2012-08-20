@@ -55,6 +55,9 @@ class EventDispatcher
 	/**
 	 * Adds a listener to this dispatcher.
 	 *
+	 * @param string   $name
+	 * @param callable $callback
+	 */
 	public function addListener($name, $callback)
 	{
 		$this->_listeners[$name][] = $callback;
@@ -83,6 +86,7 @@ class EventDispatcher
 			if (is_callable($listener))
 			{
 				$result = call_user_func($listener, $event);
+				$event->hasFired(true);
 
 				// An event sequence can be interrupted by returning a non-null value
 				if ($result !== null)
@@ -93,7 +97,7 @@ class EventDispatcher
 		}
 	}
 
-	public static function getListeners($name = null)
+	public function getListeners($name = null)
 	{
 		if (null === $name)
 		{
