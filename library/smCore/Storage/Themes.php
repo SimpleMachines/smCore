@@ -34,11 +34,11 @@ class Themes extends AbstractStorage
 
 	public function getById($id)
 	{
-		$cache = $this->_container['cache'];
+		$cache = $this->_app['cache'];
 
 		if (false === $theme = $cache->load('smcore_theme_' . $id))
 		{
-			$db = $this->_container['db'];
+			$db = $this->_app['db'];
 
 			$result = $db->query("
 				SELECT *
@@ -63,7 +63,7 @@ class Themes extends AbstractStorage
 
 	public function getDefault()
 	{
-		return $this->getById($this->_container['settings']['default_theme']);
+		return $this->getById($this->_app['settings']['default_theme']);
 	}
 
 	public function getPathForId($id)

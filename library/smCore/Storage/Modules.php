@@ -32,17 +32,17 @@ class Modules extends AbstractStorage implements IteratorAggregate
 	protected $_moduleData;
 	protected $_modules = array();
 
-	public function __construct($container)
+	public function __construct($app)
 	{
-		parent::__construct($container);
+		parent::__construct($app);
 
-		$cache = $this->_container['cache'];
+		$cache = $this->_app['cache'];
 		
 		// Load the configs
 		if (false === $this->_moduleData = $cache->load('core_module_registry_data'))
 		{
 			$this->_moduleData = array();
-			$settings = $this->_container['settings'];
+			$settings = $this->_app['settings'];
 
 			// Load internal modules first, then any user-added modules
 			// @todo won't this try /path/to/smcore/library/smCore/Storage/Modules ?
@@ -63,7 +63,7 @@ class Modules extends AbstractStorage implements IteratorAggregate
 				$moduleClass = 'smCore\\Module';
 			}
 
-			$this->_modules[$module['config']['identifier']] = new $moduleClass($this->_container, $module['config'], $module['directory']);
+			$this->_modules[$module['config']['identifier']] = new $moduleClass($this->_app, $module['config'], $module['directory']);
 		}
 	}
 

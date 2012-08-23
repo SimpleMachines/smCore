@@ -33,7 +33,7 @@ class LogInOut extends Controller
 
 	public function login()
 	{
-		$input = $this->app['input'];
+		$input = $this->_app['input'];
 
 		// I'd actually like to use the router to route to a different method depending on whether this was a GET or a POST
 		if ($input->post->keyExists('submit'))
@@ -66,7 +66,7 @@ class LogInOut extends Controller
 				if ($input->post->keyExists('login_forever'))
 				{
 					// Six years of seconds!
-					$this->app['session']->setLifetime(189216000);
+					$this->_app['session']->setLifetime(189216000);
 				}
 				else
 				{
@@ -78,10 +78,10 @@ class LogInOut extends Controller
 						$minutes = 60;
 					}
 
-					$this->app['session']->setLifetime($minutes * 60);
+					$this->_app['session']->setLifetime($minutes * 60);
 				}
 
-				$this->app['session']->start();
+				$this->_app['session']->start();
 				$_SESSION['id_user'] = $user['id'];
 
 				// @todo: $module->fire('post_successful_login');
@@ -95,10 +95,10 @@ class LogInOut extends Controller
 					$url = null;
 				}
 
-				$this->app['response']->redirect($url);
+				$this->_app['response']->redirect($url);
 			}
 
-			setcookie($this->app['settings']['cookie_name'], '', 0, $this->app['settings']['url'], $this->app['settings']['cookie_domain']);
+			setcookie($this->_app['settings']['cookie_name'], '', 0, $this->_app['settings']['url'], $this->_app['settings']['cookie_domain']);
 
 			return $this->module->render('login', array(
 				'failed' => true,
@@ -113,7 +113,7 @@ class LogInOut extends Controller
 
 	public function logout()
 	{
-		$this->app['session']->end();
-		$this->app['response']->redirect();
+		$this->_app['session']->end();
+		$this->_app['response']->redirect();
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Dependency Injection Container
+ * smCore Container Class
  *
  * @package smCore
  * @author smCore Dev Team
@@ -30,30 +30,24 @@ class Container implements ArrayAccess
 	protected $_lazy_loaders = array();
 
 	/**
-	 * Set a dependency for use later.
+	 * ArrayAccess - Set a value in the internal registry
 	 *
 	 * @param string $key   The name of this value
-	 * @param mixed  $value The value to store. Passing null will unset the key from the registry.
+	 * @param mixed  $value The value to store
 	 *
-	 * @return mixed Returns the value that was set.
+	 * @return mixed Returns the value that was set
 	 */
 	public function offsetSet($key, $value)
 	{
-		if (is_callable($value))
-		{
-			$this->add($key, $value);
-			return;
-		}
-
 		return $this->_registry[$key] = $value;
 	}
 
 	/**
-	 * Get a value from the dependency register.
+	 * ArrayAccess - Get a value from the internal registry.
 	 *
 	 * @param string $key The name of the value to look for
 	 *
-	 * @return mixed Returns the value matched with the key passed, or null if nothing was found.
+	 * @return mixed Returns the value matched with the key passed, or null if nothing was found
 	 */
 	public function offsetGet($key)
 	{
@@ -70,11 +64,23 @@ class Container implements ArrayAccess
 		return null;
 	}
 
+	/**
+	 * ArrayAccess - Check if a key exists in the internal registry.
+	 *
+	 * @param string $key The key to unset
+	 *
+	 * @return boolean True if the offset exists in the internal registry, false otherwise
+	 */
 	public function offsetExists($key)
 	{
 		return isset($this->_registry[$key]);
 	}
 
+	/**
+	 * ArrayAccess - Unset a key from the internal registry.
+	 *
+	 * @param string $key The key to unset
+	 */
 	public function offsetUnset($key)
 	{
 		unset($this->_registry[$key]);
@@ -86,13 +92,15 @@ class Container implements ArrayAccess
 	 * @param string   $key       The key to store the result of the callback under
 	 * @param callback $callback  A callback to run
 	 * @param array    $arguments Arguments to pass to the callback, optional
+	 *
+	 * @return self
 	 */
 	public function add($key, $callback, array $arguments = array())
 	{
 		// @todo: throw an exception for invalid/duplicate/late
 		if (empty($key) || array_key_exists($key, $this->_registry) || array_key_exists($key, $this->_lazy_loaders))
 		{
-			return;
+			return $this;
 		}
 
 		if (!is_callable($callback))
@@ -100,15 +108,17 @@ class Container implements ArrayAccess
 			throw new Exception(sprintf('Invalid callback registered for lazy loader "%s"', $key));
 		}
 
-		array_unshift($arguments, $this);
-
 		$this->_lazy_loaders[$key] = array($callback, $arguments);
+
+		return $this;
 	}
 
 	/**
 	 * Remove a lazy loader.
 	 *
 	 * @param string $key The name of the lazy loader to remove.
+	 *
+	 * @return self
 	 */
 	public function remove($key)
 	{
@@ -116,6 +126,8 @@ class Container implements ArrayAccess
 		{
 			unset($this->_lazy_loaders[$key]);
 		}
+
+		return $this;
 	}
 
 	/**

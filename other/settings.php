@@ -33,7 +33,7 @@ class Settings extends smCore\Settings
 		 *
 		 * @todo: Change this to a string, to allow for memcached/etc. to be used for sessions?
 		 */
-		'session_db_driven' => true,
+		'session_driver'    => 'Database',
 
 		/**
 		 * @todo: Default time zone should be a database setting and only used to display times, not store them

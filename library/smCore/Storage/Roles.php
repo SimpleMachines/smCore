@@ -39,11 +39,11 @@ class Roles extends AbstractStorage
 			return $this->_loaded_roles;
 		}
 
-		$cache = $this->_container['cache'];
+		$cache = $this->_app['cache'];
 
 		if (false === $this->_loaded_roles = $cache->load('core_roles'))
 		{
-			$db = $this->_container['db'];
+			$db = $this->_app['db'];
 
 			$this->_loaded_roles = array();
 
@@ -84,7 +84,7 @@ class Roles extends AbstractStorage
 
 				foreach ($this->_loaded_roles as $id => $role)
 				{
-					$this->_loaded_roles[$id] = new Role($this->_container, $id, $role['title'], $role['inherits'], $role['permissions']);
+					$this->_loaded_roles[$id] = new Role($this->_app, $id, $role['title'], $role['inherits'], $role['permissions']);
 				}
 			}
 

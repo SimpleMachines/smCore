@@ -33,9 +33,9 @@ class Users extends AbstractStorage
 	{
 		if (null === $this->_current_user)
 		{
-			if ($this->_container['session']->exists())
+			if ($this->_app['session']->exists())
 			{
-				$this->_container['session']->start();
+				$this->_app['session']->start();
 
 				if (isset($_SESSION['id_user']))
 				{
@@ -55,7 +55,7 @@ class Users extends AbstractStorage
 
 	public function getUserByName($name)
 	{
-		$result = $this->_container['db']->query("
+		$result = $this->_app['db']->query("
 			SELECT *
 			FROM {db_prefix}users
 			WHERE LOWER(user_login) = {string:name}
@@ -71,7 +71,7 @@ class Users extends AbstractStorage
 		}
 
 		$row = $result->fetch();
-		$user = new User($this->_container, $row);
+		$user = new User($this->_app, $row);
 		$user->setData($row);
 
 		return $user;
@@ -79,7 +79,7 @@ class Users extends AbstractStorage
 
 	public function getUserByEmail($email)
 	{
-		$result = $this->_container['db']->query("
+		$result = $this->_app['db']->query("
 			SELECT *
 			FROM {db_prefix}users
 			WHERE LOWER(user_email) = {string:email}",
@@ -94,7 +94,7 @@ class Users extends AbstractStorage
 		}
 
 		$row = $result->fetch();
-		$user = new User($this->_container, $row);
+		$user = new User($this->_app, $row);
 		$user->setData($row);
 
 		return $user;
@@ -103,7 +103,7 @@ class Users extends AbstractStorage
 	public function getUserById($id)
 	{
 		// The User class will check if this is a good ID.
-		$user = new User($this->_container, array(
+		$user = new User($this->_app, array(
 			'id_user' => $id,
 		));
 
@@ -112,12 +112,12 @@ class Users extends AbstractStorage
 			return $user;
 		}
 
-		$cache = $this->_container['cache'];
+		$cache = $this->_app['cache'];
 
 		// If we've already fetched the data, there's no reason to grab it again
 		if (false === $data = $cache->load('user_data_' . $id))
 		{
-			$db = $this->_container['db'];
+			$db = $this->_app['db'];
 
 			$result = $db->query("
 				SELECT *
@@ -145,7 +145,7 @@ class Users extends AbstractStorage
 
 	public function save(User $user)
 	{
-		$db = $this->_container['db'];
+		$db = $this->_app['db'];
 
 		if ($user['id'] < 1)
 		{
@@ -170,7 +170,7 @@ class Users extends AbstractStorage
 			'user' => $user,
 		));
 
-		$this->_container['events']->fire($event);
+		$this->_app['events']->fire($event);
 
 	}
 }

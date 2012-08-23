@@ -35,7 +35,7 @@ class Configuration extends Controller
 
 	public function main()
 	{
-		$settings = $this->app['settings'];
+		$settings = $this->_app['settings'];
 
 		$form = new Form($settings['url'] . '/admin/settings/');
 

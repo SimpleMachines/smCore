@@ -28,7 +28,7 @@ namespace smCore;
 
 class Response
 {
-	protected $_container;
+	protected $_app;
 
 	private $_headers = array();
 	private $_meta = array();
@@ -52,9 +52,9 @@ class Response
 	/**
 	 * Constructor for the Response class.
 	 */
-	public function __construct(Container $container)
+	public function __construct(Application $app)
 	{
-		$this->_container = $container;
+		$this->_app = $app;
 
 		// Security.
 		$this
@@ -64,7 +64,7 @@ class Response
 
 		// Search engines leak prevention
 		// Do not let search engines index anything if there is something in $_GET.
-		if ($this->_container['request']->hasGetParams())
+		if ($this->_app['request']->hasGetParams())
 		{
 			$this->_meta[] = '<meta name="robots" content="noindex" />';
 		}
@@ -174,11 +174,11 @@ class Response
 	{
 		if (null === $url)
 		{
-			$url = $this->_container['settings']['url'];
+			$url = $this->_app['settings']['url'];
 		}
 		else if (!preg_match('/^https?:\/\//', $url))
 		{
-			$url = $this->_container['settings']['url'] . '/' . ltrim($url, '/');
+			$url = $this->_app['settings']['url'] . '/' . ltrim($url, '/');
 		}
 
 		$this

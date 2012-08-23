@@ -22,19 +22,14 @@
 
 namespace smCore\Model;
 
-use smCore\Container;
+use smCore\Application;
 
 abstract class AbstractModel
 {
-	protected $_container;
+	protected $_app;
 
-	/**
-	 * Sets up the dependency container for models to use
-	 *
-	 * @param \smCore\Container $container
-	 */
-	public function __construct(Container $container)
+	public function __construct(Application $app)
 	{
-		$this->_container = $container;
+		$this->_app = $app;
 	}
 }

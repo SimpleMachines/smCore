@@ -26,7 +26,7 @@ use Inspekt_Cage;
 
 class Request
 {
-	protected $_container;
+	protected $_app;
 
 	protected $_url;
 	protected $_method = 'GET';
@@ -36,15 +36,15 @@ class Request
 	protected $_has_get_params = false;
 	protected $_subdomain = 'www';
 
-	public function __construct(Container $container)
+	public function __construct(Application $app)
 	{
-		$this->_container = $container;
+		$this->_app = $app;
 
-		$this->_method = $this->_container['input']->server->getAlpha('REQUEST_METHOD');
+		$this->_method = $this->_app['input']->server->getAlpha('REQUEST_METHOD');
 		$this->_is_xml_http_request =
-			$this->_container['input']->server->getAlpha('X_REQUESTED_WITH') == 'XMLHttpRequest'
-			|| $this->_container['input']->get->keyExists('xmlHttpRequest')
-			|| $this->_container['input']->post->keyExists('xmlHttpRequest')
+			$this->_app['input']->server->getAlpha('X_REQUESTED_WITH') == 'XMLHttpRequest'
+			|| $this->_app['input']->get->keyExists('xmlHttpRequest')
+			|| $this->_app['input']->post->keyExists('xmlHttpRequest')
 		;
 
 		// Get the app-relative path requested
@@ -162,7 +162,7 @@ class Request
 
 			$this->_path = trim($this->_path, '/');
 
-			$base = trim(parse_url($this->_container['settings']['url'], PHP_URL_PATH), '/');
+			$base = trim(parse_url($this->_app['settings']['url'], PHP_URL_PATH), '/');
 
 			if (!empty($base) && 0 === strpos($this->_path, $base))
 			{
@@ -174,7 +174,7 @@ class Request
 		$_REQUEST = $_POST + $_GET;
 
 		// Forget what $_GET actually says - overwrite it with our fake query string.
-		$this->_container['input']->get = Inspekt_Cage::Factory($_GET, null, '_GET', false);
-		$this->_container['input']->request = Inspekt_Cage::Factory($_REQUEST, null, '_GET', false);
+		$this->_app['input']->get = Inspekt_Cage::Factory($_GET, null, '_GET', false);
+		$this->_app['input']->request = Inspekt_Cage::Factory($_REQUEST, null, '_GET', false);
 	}
 }

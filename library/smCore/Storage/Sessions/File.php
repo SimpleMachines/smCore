@@ -40,7 +40,7 @@ class File extends AbstractStorage
 			return false;
 		}
 
-		$settings = $this->_container['settings'];
+		$settings = $this->_app['settings'];
 
 		$file = $settings['cache_dir'] . '/.smcore_session_' . $id;
 
@@ -68,9 +68,9 @@ class File extends AbstractStorage
 	 */
 	public function write($id, $data)
 	{
-		$settings = $this->_container['settings'];
+		$settings = $this->_app['settings'];
 		$file = $settings['cache_dir'] . '/.smcore_session_' . $id;
-		$expires = time() + $this->_container['session']->getLifetime();
+		$expires = time() + $this->_app['session']->getLifetime();
 
 		// Get the old expiration time so we don't accidentally extend it
 		if (is_readable($file))
@@ -106,7 +106,7 @@ class File extends AbstractStorage
 			return false;
 		}
 
-		@unlink($this->_container['settings']['cache_dir'] . '/.smcore_session_' . $id);
+		@unlink($this->_app['settings']['cache_dir'] . '/.smcore_session_' . $id);
 
 		return true;
 	}
@@ -116,7 +116,7 @@ class File extends AbstractStorage
 	 */
 	public function deleteExpired()
 	{
-		$sessions = glob($this->_container['settings']['cache_dir'] . '/.smcore_session_*');
+		$sessions = glob($this->_app['settings']['cache_dir'] . '/.smcore_session_*');
 
 		// @todo
 	}

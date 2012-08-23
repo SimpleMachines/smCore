@@ -37,7 +37,7 @@ class Modules extends Controller
 
 	public function main()
 	{
-		$modules_storage = $this->app['modules']->getLoadedModules();
+		$modules_storage = $this->_app['modules']->getLoadedModules();
 
 		$modules = array();
 

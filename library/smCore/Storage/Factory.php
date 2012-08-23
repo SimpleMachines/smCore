@@ -22,28 +22,25 @@
 
 namespace smCore\Storage;
 
-use smCore\Container, smCore\Exception;
+use smCore\Application, smCore\Exception;
 
 class Factory
 {
 	protected $_storages = array();
 
-	protected $_container;
+	protected $_app;
 
-	public function __construct(Container $container)
+	public function __construct(Application $app)
 	{
-		$this->_container = $container;
+		$this->_app = $app;
 	}
 
 	public function factory($name, $safe_mode = true)
 	{
-		if ($safe_mode && $this->_container['sending_output'] === true)
+		if ($safe_mode && $this->_app['sending_output'] === true)
 		{
 			throw new Exception('Cannot load storages after output has been started.');
 		}
-
-		// Normalize the class name
-		$name = ucfirst($name);
 
 		if (!empty($this->_storages[$name]))
 		{
@@ -51,6 +48,6 @@ class Factory
 		}
 
 		$class = 'smCore\\Storage\\' . $name;
-		return $this->_storages[$name] = new $class($this->_container);
+		return $this->_storages[$name] = new $class($this->_app);
 	}
 }

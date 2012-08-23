@@ -40,7 +40,7 @@ class Database extends AbstractStorage
 			return false;
 		}
 
-		$db = $this->_container['db'];
+		$db = $this->_app['db'];
 
 		$result = $db->query("
 			SELECT *
@@ -73,7 +73,7 @@ class Database extends AbstractStorage
 	 */
 	public function write($id, $data)
 	{
-		$db = $this->_container['db'];
+		$db = $this->_app['db'];
 
 		$result = $db->query("
 			SELECT session_expires
@@ -91,7 +91,7 @@ class Database extends AbstractStorage
 		}
 		else
 		{
-			$expires = time() + Session::getLifetime();
+			$expires = time() + $this->_app['session']->getLifetime();
 		}
 
 		$db->query("
@@ -121,7 +121,7 @@ class Database extends AbstractStorage
 			return false;
 		}
 
-		$this->_container['db']->query("
+		$this->_app['db']->query("
 			DELETE FROM {db_prefix}sessions
 			WHERE id_session = {string:id}",
 			array(
@@ -137,7 +137,7 @@ class Database extends AbstractStorage
 	 */
 	public function deleteExpired()
 	{
-		$this->_container['db']->query("
+		$this->_app['db']->query("
 			DELETE FROM {db_prefix}sessions
 			WHERE session_expires < {int:time}",
 			array(

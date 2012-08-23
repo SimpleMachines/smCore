@@ -28,7 +28,7 @@ use smCore\Security\Session;
 
 class Module
 {
-	protected $app;
+	protected $_app;
 
 	protected $_template_dir;
 
@@ -48,7 +48,7 @@ class Module
 	 */
 	public function __construct(Application $app, $config, $directory)
 	{
-		$this->app = $app;
+		$this->_app = $app;
 
 		$this->_config = $config;
 		$this->_directory = $directory;
@@ -92,7 +92,7 @@ class Module
 		}
 
 		$controllerClass = $this->_config['namespaces']['php'] . '\\Controllers\\' . $controller;
-		$controllerObject = new $controllerClass($this->app, $this);
+		$controllerObject = new $controllerClass($this->_app, $this);
 
 		if (!is_callable(array($controllerObject, $method)))
 		{
@@ -124,7 +124,7 @@ class Module
 
 		$modelClass = $this->_config['namespaces']['php'] . '\\Models\\' . $name;
 
-		return new $modelClass($this->app, $this);
+		return new $modelClass($this->_app, $this);
 	}
 
 	/**
@@ -144,7 +144,7 @@ class Module
 			}
 
 			$storageClass = $this->_config['namespaces']['php'] . '\\Storages\\' . $name;
-			$this->_storages[$name] = new $storageClass($this->app, $this);
+			$this->_storages[$name] = new $storageClass($this->_app, $this);
 		}
 
 		return $this->_storages[$name];
@@ -164,20 +164,20 @@ class Module
 	{
 		if ($sending_output)
 		{
-			$this->app['sending_output'] = true;
+			$this->_app['sending_output'] = true;
 		}
 
-		return $this->app['twig']->render('@' . $this->_config['namespaces']['template'] . '/' . $name . '.html', $context);
+		return $this->_app['twig']->render('@' . $this->_config['namespaces']['template'] . '/' . $name . '.html', $context);
 	}
 
 	public function display($name, array $context = array(), $sending_output = true)
 	{
 		if ($sending_output)
 		{
-			$this->app['sending_output'] = true;
+			$this->_app['sending_output'] = true;
 		}
 
-		$this->app['twig']->display('@' . $this->_config['namespaces']['template'] . '/' . $name . '.html', $context);
+		$this->_app['twig']->display('@' . $this->_config['namespaces']['template'] . '/' . $name . '.html', $context);
 
 		return $this;
 	}
@@ -192,11 +192,11 @@ class Module
 	{
 		if (empty($package_name))
 		{
-			$this->app['lang']->loadPackageByName($this->_config['identifier']);
+			$this->_app['lang']->loadPackageByName($this->_config['identifier']);
 		}
 		else
 		{
-			$this->app['lang']->loadPackageByName($this->_config['identifier'] . '.' . $package_name);
+			$this->_app['lang']->loadPackageByName($this->_config['identifier'] . '.' . $package_name);
 		}
 
 		return $this;
@@ -212,7 +212,7 @@ class Module
 	 */
 	public function lang($key, array $replacements = array(), $namespace = true)
 	{
-		return $this->app['lang']->get(($namespace ? $this->_config['namespaces']['lang'] . '.' : '') . $key, $replacements);
+		return $this->_app['lang']->get(($namespace ? $this->_config['namespaces']['lang'] . '.' : '') . $key, $replacements);
 	}
 
 	/**
@@ -262,7 +262,7 @@ class Module
 			$event = new Event($this, $this->_config['identifier'] . '.' . $event);
 		}
 
-		return $this->app['events']->fire($event);		
+		return $this->_app['events']->fire($event);		
 	}
 
 	/**
@@ -274,7 +274,7 @@ class Module
 	 */
 	public function hasPermission($name)
 	{
-		return $this->app['user']->hasPermission($this->_config['identifier'] . '.' . $name);
+		return $this->_app['user']->hasPermission($this->_config['identifier'] . '.' . $name);
 	}
 
 	/**
@@ -289,7 +289,7 @@ class Module
 			$name = $this->_config['identifier'] . '.' . $name;
 		}
 
-		if (!$this->app['user']->hasPermission($name))
+		if (!$this->_app['user']->hasPermission($name))
 		{
 			throw new Exception('exceptions.no_permission');
 		}
@@ -299,13 +299,13 @@ class Module
 
 	public function requireAdmin()
 	{
-		if (!$this->app['user']->isAdmin())
+		if (!$this->_app['user']->isAdmin())
 		{
-			if (!$this->app['user']->isLoggedIn())
+			if (!$this->_app['user']->isLoggedIn())
 			{
-				$this->app['session']->start();
-				$_SESSION['redirect_url'] = $this->app['request']->getUrl();
-				$this->app['response']->redirect('login');
+				$this->_app['session']->start();
+				$_SESSION['redirect_url'] = $this->_app['request']->getUrl();
+				$this->_app['response']->redirect('login');
 			}
 
 			throw new Exception('exceptions.admin_required');
@@ -316,7 +316,7 @@ class Module
 
 	public function noGuests($message = null, $exception_on_failure = true)
 	{
-		if ($this->app['user']->hasRole(0))
+		if ($this->_app['user']->hasRole(0))
 		{
 			if ($exception_on_failure)
 			{
@@ -333,13 +333,13 @@ class Module
 	{
 		if (!isset($_SESSION['session_' . $type]) || $_SESSION['session_' . $type] + $lifetime < time())
 		{
-			$input = $this->app['input'];
+			$input = $this->_app['input'];
 
 			if ($input->post->keyExists('authenticate_pass'))
 			{
 				$bcrypt = new Security\Crypt\Bcrypt();
 
-				if ($bcrypt->match($input->post->getRaw('authenticate_pass'), $this->app['user']['password']))
+				if ($bcrypt->match($input->post->getRaw('authenticate_pass'), $this->_app['user']['password']))
 				{
 					$_SESSION['session_' . $type] = time();
 
@@ -352,14 +352,14 @@ class Module
 						$url = 'admin';
 					}
 
-					$this->app['response']->redirect($url);
+					$this->_app['response']->redirect($url);
 				}
 			}
 
-			if ('admin/authenticate' !== $path = $this->app['request']->getPath())
+			if ('admin/authenticate' !== $path = $this->_app['request']->getPath())
 			{
 				$_SESSION['redirect_url'] = $path;
-				$this->app['response']->redirect('/admin/authenticate/');
+				$this->_app['response']->redirect('/admin/authenticate/');
 			}
 		}
 
@@ -407,7 +407,7 @@ class Module
 	 */
 	public function cacheSave($key, $data, $lifetime = null)
 	{
-		$this->app['cache']->save($this->_config['namespaces']['cache'] . '.' . $key, $data, $lifetime);
+		$this->_app['cache']->save($this->_config['namespaces']['cache'] . '.' . $key, $data, $lifetime);
 	}
 
 	/**
@@ -417,7 +417,7 @@ class Module
 	 */
 	public function cacheLoad($key)
 	{
-		return $this->app['cache']->load($this->_config['namespaces']['cache'] . '.' . $key);
+		return $this->_app['cache']->load($this->_config['namespaces']['cache'] . '.' . $key);
 	}
 
 	/**
@@ -427,7 +427,7 @@ class Module
 	 */
 	public function cacheTest($key)
 	{
-		return $this->app['cache']->test($this->_config['namespaces']['cache'] . '_' . $key);
+		return $this->_app['cache']->test($this->_config['namespaces']['cache'] . '_' . $key);
 	}
 
 	/**
@@ -439,7 +439,7 @@ class Module
 	 */
 	public function createToken($name)
 	{
-		return md5(hash('sha256', $name . '%' . $this->app['user']['token'] . '%' . $this->_config['identifier']));
+		return md5(hash('sha256', $name . '%' . $this->_app['user']['token'] . '%' . $this->_config['identifier']));
 	}
 
 	/**

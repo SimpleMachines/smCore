@@ -30,9 +30,19 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 	protected $_data;
 	protected $_regexes;
 
-	public function __construct(array $data = array())
+	public function __construct(array $data = array(), $normalize_keys = false)
 	{
-		$this->_data = $data;
+		if ($normalize_keys)
+		{
+			foreach ($data as $key => $value)
+			{
+				$this->_data[strtolower($key)] = $value;
+			}
+		}
+		else
+		{
+			$this->_data = $data;
+		}
 
 		$this->_regexes = array(
 			'zip_us'   => '/^[0-9]{5}(?:\-[0-9]{4})?$/',
@@ -59,6 +69,26 @@ class Input implements ArrayAccess, Countable, IteratorAggregate
 		}
 
 		return false;
+	}
+
+	public function keyExists($key)
+	{
+		return isset($this->_data[$key]);
+	}
+
+	public function getAlpha($key)
+	{
+		if (!isset($this->_data[$key]) || !$this->testAlpha($this->_data[$key]))
+		{
+			return false;
+		}
+
+		return $this->_data[$key];
+	}
+
+	public function testAlpha($value)
+	{
+		return ctype_alpha((string) $value);
 	}
 
 	/**

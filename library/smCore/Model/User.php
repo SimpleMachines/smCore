@@ -22,7 +22,7 @@
 
 namespace smCore\Model;
 
-use smCore\Event, smCore\Exception, smCore\Security\Crypt\Bcrypt, smCore\Storage;
+use smCore\Application, smCore\Event, smCore\Exception, smCore\Security\Crypt\Bcrypt, smCore\Storage;
 use ArrayAccess;
 
 class User extends AbstractModel implements ArrayAccess
@@ -33,22 +33,22 @@ class User extends AbstractModel implements ArrayAccess
 	/**
 	 * Create a new User object
 	 *
-	 * @param smCore\Container $container
-	 * @param array            $data
+	 * @param smCore\Application $app
+	 * @param array              $data
 	 */
-	public function __construct($container, array $data = null)
+	public function __construct(Application $app, array $data = null)
 	{
-		parent::__construct($container);
+		parent::__construct($app);
 
-		$roles = $this->_container['storage_factory']->factory('Roles');
+		$roles = $this->_app['storage_factory']->factory('Roles');
 
 		// Set some defaults to begin with
 		$this->_data = array(
 			'id' => 0,
-			'ip' => $this->_container['input']->server->getRaw('REMOTE_ADDR'),
+			'ip' => $this->_app['input']->server->getRaw('REMOTE_ADDR'),
 			'display_name' => 'Guest', // @todo lang string
-			'language' => $this->_container['settings']['default_lang'],
-			'theme' => (int) $this->_container['settings']['default_theme'],
+			'language' => $this->_app['settings']['default_lang'],
+			'theme' => (int) $this->_app['settings']['default_theme'],
 			'token' => '', // @todo
 			'email' => '',
 			'roles' => array(
@@ -76,7 +76,7 @@ class User extends AbstractModel implements ArrayAccess
 			$this->_data['id'] = (int) $data['id_user'];
 		}
 
-		$roles = $this->_container['storage_factory']->factory('Roles');
+		$roles = $this->_app['storage_factory']->factory('Roles');
 
 		if (!empty($data['user_primary_role']))
 		{
@@ -128,7 +128,7 @@ class User extends AbstractModel implements ArrayAccess
 			'data' => $data,
 		));
 
-		$this->_container['events']->fire($event);
+		$this->_app['events']->fire($event);
 
 		return $this;
 	}
@@ -169,7 +169,7 @@ class User extends AbstractModel implements ArrayAccess
 	 */
 	public function save()
 	{
-		return $this->_container['storage_factory']->factory('Users')->save($this);
+		return $this->_app['storage_factory']->factory('Users')->save($this);
 	}
 
 	/**

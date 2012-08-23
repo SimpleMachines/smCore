@@ -26,11 +26,11 @@ class Events extends AbstractStorage
 {
 	public function getActiveListeners()
 	{
-		$cache = $this->_container['cache'];
+		$cache = $this->_app['cache'];
 
 		if (false === $events = $cache->load('smcore_active_listeners'))
 		{
-			$db = $this->_container['db'];
+			$db = $this->_app['db'];
 			$events = array();
 
 			$result = $db->query("

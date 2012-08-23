@@ -29,16 +29,16 @@ class Languages extends AbstractStorage
 	protected $_languages = array();
 	protected $_runtimeCache = array();
 
-	public function __construct($container)
+	public function __construct($app)
 	{
-		parent::__construct($container);
+		parent::__construct($app);
 
-		$cache = $this->_container['cache'];
+		$cache = $this->_app['cache'];
 
 		// Load the configs
 		if (false === $this->_languages = $cache->load('core_languagestorage'))
 		{
-			$db = $this->_container['db'];
+			$db = $this->_app['db'];
 
 			$result = $db->query("
 				SELECT id_language, language_code, language_name
@@ -68,10 +68,10 @@ class Languages extends AbstractStorage
 
 		if (!empty($this->_languages[$code]))
 		{
-			return $this->_runtimeCache[$code] = new Language($this->_container, $this->_languages[$code]['language_name'], $code, $this->_languages[$code]['id_language']);
+			return $this->_runtimeCache[$code] = new Language($this->_app, $this->_languages[$code]['language_name'], $code, $this->_languages[$code]['id_language']);
 		}
 
-		$settings = $this->_container['settings'];
+		$settings = $this->_app['settings'];
 
 		if ($code !== $settings['default_lang'])
 		{

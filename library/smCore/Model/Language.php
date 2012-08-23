@@ -37,14 +37,14 @@ class Language extends AbstractModel
 	/**
 	 * Loads the basic language file and sets up stuff
 	 * 
-	 * @param \smCore\Container $container Dependency Injection Container
-	 * @param string            $name The language name, i.e. 'English (American)'
-	 * @param string            $code The language code, i.e. 'en_US'
-	 * @param int               $id
+	 * @param \smCore\Application $app
+	 * @param string              $name The language name, i.e. 'English (American)'
+	 * @param string              $code The language code, i.e. 'en_US'
+	 * @param int                 $id
 	 */
-	public function __construct($container, $name, $code, $id = 0)
+	public function __construct($app, $name, $code, $id = 0)
 	{
-		parent::__construct($container);
+		parent::__construct($app);
 
 		$this->_name = $name;
 		$this->_code = $code;
@@ -60,11 +60,11 @@ class Language extends AbstractModel
 	{
 		if (null === $this->_packageData)
 		{
-			$cache = $this->_container['cache'];
+			$cache = $this->_app['cache'];
 
 			if (false === $this->_packageData = $cache->load('smcore_language_packages'))
 			{
-				$db = $this->_container['db'];
+				$db = $this->_app['db'];
 
 				$result = $db->query("
 					SELECT id_package, package_name, package_type
@@ -147,13 +147,13 @@ class Language extends AbstractModel
 	 */
 	protected function _loadPackageById($id_package, $force_recompile)
 	{
-		$cache = $this->_container['cache'];
+		$cache = $this->_app['cache'];
 
 		$cache_key = 'lang_package_' . (int) $id_package;
 
 		if ($force_recompile || false === $data = $cache->load($cache_key))
 		{
-			$db = $this->_container['db'];
+			$db = $this->_app['db'];
 
 			$result = $db->query("
 				SELECT string_key, string_value

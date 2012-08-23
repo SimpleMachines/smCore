@@ -52,7 +52,7 @@ class Factory
 			'ini' => 'ini',
 			'json' => 'json',
 			'xml' => 'xml',
-			'yaml' => 'yml',
+			'yaml' => 'yaml',
 			'yml' => 'yaml',
 		);
 

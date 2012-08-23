@@ -22,18 +22,18 @@
 
 namespace smCore\Security;
 
-use smCore\Container;
+use smCore\Application;
 
 class Session
 {
-	protected $_container;
+	protected $_app;
 
 	protected $_started = false;
 	protected $_lifetime = 3600;
 
-	public function __construct(Container $container)
+	public function __construct(Application $app)
 	{
-		$this->_container = $container;
+		$this->_app = $app;
 	}
 
 	protected function _overrideIni()
@@ -49,7 +49,7 @@ class Session
 		ini_set('session.cookie_path', '/');
 		ini_set('session.cookie_secure', false);
 		ini_set('session.cookie_httponly', true);
-		ini_set('session.cookie_domain', $this->_container['settings']['cookie_domain']);
+		ini_set('session.cookie_domain', $this->_app['settings']['cookie_domain']);
 	}
 
 	public function start()
@@ -67,7 +67,7 @@ class Session
 			$this->_overrideIni();
 
 			// Go!
-			session_name($this->_container['settings']['cookie_name']);
+			session_name($this->_app['settings']['cookie_name']);
 			session_start();
 
 			$this->_started = true;
@@ -78,7 +78,7 @@ class Session
 	{
 		unset($_SESSION['id_user']);
 		session_destroy();
-		setcookie($this->_container['settings']['cookie_name'], '', 0, $this->_container['settings']['cookie_path'], $this->_container['settings']['cookie_domain']);
+		setcookie($this->_app['settings']['cookie_name'], '', 0, $this->_app['settings']['cookie_path'], $this->_app['settings']['cookie_domain']);
 	}
 
 	public function reinitialize()
@@ -96,7 +96,7 @@ class Session
 
 	public function exists()
 	{
-		$cookie = $this->_container['input']->cookie->getRaw($this->_container['settings']['cookie_name']);
+		$cookie = $this->_app['input']->cookie->getRaw($this->_app['settings']['cookie_name']);
 
 		if (empty($cookie))
 		{

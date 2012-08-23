@@ -61,7 +61,7 @@ class Maintenance extends Controller
 
 	public function cache()
 	{
-		$cache_info = $this->app['cache']->getStats();
+		$cache_info = $this->_app['cache']->getStats();
 
 		return $this->module->render('maintenance/cache', array(
 			'cache_stats' => $cache_info,

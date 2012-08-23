@@ -26,12 +26,12 @@ use smCore\Application, smCore\Module;
 
 abstract class Storage extends smCore\Storage
 {
-	protected $app;
+	protected $_app;
 	protected $module;
 
 	public function __construct(Application $app, Module $module)
 	{
-		$this->app = $app;
+		$this->_app = $app;
 		$this->module = $module;
 	}
 }

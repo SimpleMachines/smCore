@@ -22,14 +22,14 @@
 
 namespace smCore\Storage;
 
-use smCore\Container;
+use smCore\Application;
 
 abstract class AbstractStorage
 {
-	protected $_container;
+	protected $_app;
 
-	public function __construct(Container $container)
+	public function __construct(Application $app)
 	{
-		$this->_container = $container;
+		$this->_app = $app;
 	}
 }

@@ -36,7 +36,7 @@ class Register extends Controller
 		// We're going to skip the agreement part for now. That might be SMF-only, or a plugin.
 		return $this->module->render('register/start');
 
-		$input = $this->app['input'];
+		$input = $this->_app['input'];
 
 		if ($input->post->keyExists('register_agree'))
 		{
@@ -54,12 +54,12 @@ class Register extends Controller
 
 	public function finish()
 	{
-		$input = $this->app['input'];
+		$input = $this->_app['input'];
 
 		// Don't try to skip steps on us!
 		if (!$input->post->keyExists('register_username'))
 		{
-			$this->app['response']->redirect('/register/');
+			$this->_app['response']->redirect('/register/');
 		}
 
 		$username = $input->post->getRaw('register_username');
@@ -116,7 +116,7 @@ class Register extends Controller
 		}
 
 		// @todo add a findUserByData-ish method to storage, this query shouldn't be here
-		$db = $this->app['db'];
+		$db = $this->_app['db'];
 
 		if ($db->query("SELECT * FROM {db_prefix}users WHERE LOWER(user_email) = {string:email}", array('email' => mb_strtolower($email)))->rowCount() > 0)
 		{

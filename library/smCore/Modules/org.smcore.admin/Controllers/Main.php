@@ -40,7 +40,7 @@ class Main extends Controller
 
 	public function main()
 	{
-		$app = $this->app;
+		$app = $this->_app;
 
 		return $this->module->render('main', array(
 			'smcore_version' => '???', // @todo: fetch from smCore.org
@@ -51,7 +51,7 @@ class Main extends Controller
 
 	public function authenticate()
 	{
-		if ($this->app['input']->post->keyExists('authenticate_pass'))
+		if ($this->_app['input']->post->keyExists('authenticate_pass'))
 		{
 			$this->module->validateSession('admin');
 		}
@@ -61,14 +61,14 @@ class Main extends Controller
 
 	public function endSession()
 	{
-		if (false !== $token = $this->app['input']->get->getAlnum('token'))
+		if (false !== $token = $this->_app['input']->get->getAlnum('token'))
 		{
 			$this->module->checkToken('end_admin_session', $token);
 
 			$this->module->endSession('admin');
 
 			// Go back to the home page, since you're obviously not
-			$this->app['response']->redirect();
+			$this->_app['response']->redirect();
 		}
 
 		$this->module->throwLangException('end_session.missing_token');

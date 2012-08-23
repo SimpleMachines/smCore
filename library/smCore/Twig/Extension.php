@@ -22,16 +22,16 @@
 
 namespace smCore\Twig;
 
-use smCore\Container;
+use smCore\Application;
 use Twig_Error_Runtime, Twig_Extension, Twig_Function_Function, Twig_Filter_Function;
 
 class Extension extends Twig_Extension
 {
-	protected static $_container;
+	protected static $_app;
 
-	public function __construct(Container $container)
+	public function __construct(Application $app)
 	{
-		self::$_container = $container;
+		self::$_app = $app;
 	}
 
 	/**
@@ -86,7 +86,7 @@ class Extension extends Twig_Extension
 	 */
 	public function function_lang($key)
 	{
-		return self::$_container['lang']->get($key, array_slice(func_get_args(), 1));
+		return self::$_app['lang']->get($key, array_slice(func_get_args(), 1));
 	}
 
 	/**
@@ -98,7 +98,7 @@ class Extension extends Twig_Extension
 	 */
 	public static function function_smcMenu()
 	{
-		$menu = self::$_container['menu'];
+		$menu = self::$_app['menu'];
 		$args = func_get_args();
 
 		if (!empty($args))
@@ -198,7 +198,7 @@ class Extension extends Twig_Extension
 			$query = '?' . implode(';', $arguments);
 		}
 
-		return self::$_container['settings']['url'] . str_replace('//', '/', $url) . $query;
+		return self::$_app['settings']['url'] . str_replace('//', '/', $url) . $query;
 	}
 
 	/**
