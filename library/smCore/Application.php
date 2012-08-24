@@ -65,10 +65,10 @@ class Application extends Container
 
 		$this['session'] = new Security\Session($this);
 
-		$this['db'] = array($this, 'loadDatabase');
-		$this['cache'] = array($this, 'loadCache');
-		$this['mail'] = array($this, 'loadMail');
-		$this['twig'] = array($this, 'loadTheme');
+		$this->add('db', array($this, 'loadDatabase'));
+		$this->add('cache', array($this, 'loadCache'));
+		$this->add('mail', array($this, 'loadMail'));
+		$this->add('twig', array($this, 'loadTheme'));
 
 		$this['input'] = Inspekt::makeSuperCage(null, false);
 
