@@ -39,9 +39,12 @@ class Events extends AbstractStorage
 				WHERE listener_enabled = 1"
 			);
 
-			if ($result->rowCount() > 0)
+			while ($row = $result->fetch())
 			{
-				$events = $result->fetchAll();
+				$events[] = array(
+					'name' => $row['listener_name'],
+					'callback' => $row['listener_callback'],
+				);
 			}
 
 			$cache->save('smcore_active_listeners', $events);

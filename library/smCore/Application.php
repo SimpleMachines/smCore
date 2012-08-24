@@ -90,7 +90,7 @@ class Application extends Container
 		// @todo don't just call this here
 		$theme = $this['theme'];
 
-		$this['events']->fire(new Event(null, 'org.smcore.core.pre_router'));
+		$this['events']->fire('org.smcore.core.pre_router');
 
 		$this['router'] = new Router;
 		$this['router']
@@ -128,7 +128,7 @@ class Application extends Container
 			$this['response']->setBody($module->runControllerMethod($route['controller'], $route['method']));
 		}
 
-		$this['events']->fire(new Event(null, 'org.smcore.core.post_router'));
+		$this['events']->fire('org.smcore.core.post_router');
 
 		$this['response']->sendOutput();
 	}

@@ -166,11 +166,9 @@ class Users extends AbstractStorage
 			
 		}
 
-		$event = new Event($this, 'org.smcore.user_data_save', array(
+		$this->_app['events']->fire('org.smcore.user_data_save', array(
 			'user' => $user,
 		));
-
-		$this->_app['events']->fire($event);
 
 	}
 }

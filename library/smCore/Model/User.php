@@ -124,11 +124,10 @@ class User extends AbstractModel implements ArrayAccess
 			$this->_data['password'] = $data['user_pass'];
 		}
 
-		$event = new Event($this, 'org.smcore.user_data_set', array(
-			'data' => $data,
+		$this->_app['events']->fire('org.smcore.user_data_set', array(
+			'user' => $this,
+			'data' => &$data,
 		));
-
-		$this->_app['events']->fire($event);
 
 		return $this;
 	}

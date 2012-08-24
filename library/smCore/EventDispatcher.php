@@ -48,7 +48,7 @@ class EventDispatcher
 
 		foreach ($listeners as $listener)
 		{
-			$this->_listeners[$listener['listener_name']][] = $listener['callback'];
+			$this->_listeners[$listener['name']][] = $listener['callback'];
 		}
 	}
 
@@ -70,8 +70,13 @@ class EventDispatcher
 	 *
 	 * @return 
 	 */
-	public function fire(Event $event)
+	public function fire($event, array $data = array())
 	{
+		if (!$event instanceof Event)
+		{
+			$event = new Event($event, $data);
+		}
+
 		$name = $event->getName();
 
 		if (empty($this->_listeners[$name]))
@@ -89,9 +94,9 @@ class EventDispatcher
 				$event->hasFired(true);
 
 				// An event sequence can be interrupted by returning a non-null value
-				if ($result !== null)
+				if ($event->isPropagationStopped())
 				{
-					return $result;
+					return;
 				}
 			}
 		}

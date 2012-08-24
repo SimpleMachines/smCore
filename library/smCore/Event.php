@@ -22,48 +22,46 @@
 
 namespace smCore;
 
-use ArrayAccess, Iterator, Countable, ArrayObject;
+use ArrayAccess, IteratorAggregate, Countable, ArrayIterator;
 
-class Event implements ArrayAccess, Iterator, Countable
+class Event implements ArrayAccess, IteratorAggregate
 {
-	protected $subject;
 	protected $name;
-	protected $arguments;
-	protected $value = null;
+	protected $data;
+
+	protected $stopped = false;
 	protected $fired = false;
 
 	protected $dispatcher;
 
-	public function __construct($subject, $name, array $arguments = array())
+	public function __construct($name, array $data = array())
 	{
-		$this->subject = $subject;
 		$this->name = $name;
-		$this->arguments = $arguments;
+		$this->data = $data;
 	}
 
 	public function setDispatcher(EventDispatcher $dispatcher)
 	{
 		$this->dispatcher = $dispatcher;
+
+		return $this;
 	}
 
-	public function getSubject()
+	public function getDispatcher()
 	{
-		return $this->subject;
+		return $this->dispatcher;
+	}
+
+	public function setName($name)
+	{
+		$this->name = $name;
+
+		return $this;
 	}
 
 	public function getName()
 	{
 		return $this->name;
-	}
-
-	public function getValue()
-	{
-		return $this->value;
-	}
-
-	public function setValue($value)
-	{
-		$this->value = $value;
 	}
 
 	public function hasFired($firing = false)
@@ -77,6 +75,28 @@ class Event implements ArrayAccess, Iterator, Countable
 	}
 
 	/**
+	 * Check if a listener has asked for this event to stop being sent to listeners.
+	 *
+	 * @return boolean True if propagation is stopped, false otherwise
+	 */
+	public function isPropagationStopped()
+	{
+		return $this->stopped;
+	}
+
+	/**
+	 * Stop any further listeners from being notified of this event.
+	 *
+	 * @return self
+	 */
+	public function stopPropagation()
+	{
+		$this->stopped = true;
+
+		return $this;
+	}
+
+	/**
 	 * ArrayAccess method for checking for the existence of an event argument.
 	 *
 	 * @param mixed $offset The offset the check
@@ -85,7 +105,7 @@ class Event implements ArrayAccess, Iterator, Countable
 	 */
 	public function offsetExists($offset)
 	{
-		return isset($this->arguments[$offset]);
+		return isset($this->data[$offset]);
 	}
 
 	/**
@@ -96,7 +116,7 @@ class Event implements ArrayAccess, Iterator, Countable
 	 */
 	public function offsetSet($offset, $value)
 	{
-		$this->arguments[$offset] = $value;
+		$this->data[$offset] = $value;
 	}
 
 	/**
@@ -108,9 +128,9 @@ class Event implements ArrayAccess, Iterator, Countable
 	 */
 	public function offsetGet($offset)
 	{
-		if (isset($this->arguments[$offset]))
+		if (isset($this->data[$offset]))
 		{
-			return $this->arguments[$offset];
+			return $this->data[$offset];
 		}
 
 		return null;
@@ -123,64 +143,14 @@ class Event implements ArrayAccess, Iterator, Countable
 	 */
 	public function offsetUnset($offset)
 	{
-		unset($this->arguments[$offset]);
+		unset($this->data[$offset]);
 	}
 
 	/**
-	 * Iterator interface method
+	 * ArrayIterator interface method
 	 */
-	public function rewind()
+	public function getIterator()
 	{
-		reset($this->arguments);
-	}
-
-	/**
-	 * Iterator interface method
-	 *
-	 * @return mixed The argument at the current pointer offset
-	 */
-	public function current()
-	{
-		return current($this->arguments);
-	}
-
-	/**
-	 * Iterator interface method
-	 *
-	 * @return mixed The key of the argument at the current pointer offset
-	 */
-	public function key()
-	{
-		return key($this->arguments);
-	}
-
-	/**
-	 * Iterator interface method
-	 *
-	 * @return mixed The next argument
-	 */
-	public function next()
-	{
-		return next($this->arguments);
-	}
-
-	/**
-	 * Iterator interface method
-	 *
-	 * @return boolean True if the argument pointer is valid, false otherwise
-	 */
-	public function valid()
-	{
-		return $this->current() !== false;
-	}    
-
-	/**
-	 * Countable interface method
-	 *
-	 * @return int The number of arguments in this event
-	 */
-	public function count()
-	{
-		return count($this->arguments);
+		return new ArrayIterator($this->data);
 	}
 }

@@ -250,16 +250,16 @@ class Module
 	 *
 	 * @return \smCore\Event
 	 */
-	public function fire($event, $arguments = null)
+	public function fire($event, array $arguments = array())
 	{
 		if (!$event instanceof Event)
 		{
 			if (!is_string($event) || empty($event))
 			{
-				throw new Exception('Event names must be ');
+				throw new Exception('Event names must be strings.');
 			}
 
-			$event = new Event($this, $this->_config['identifier'] . '.' . $event);
+			$event = $this->_config['identifier'] . '.' . $event;
 		}
 
 		return $this->_app['events']->fire($event);		
