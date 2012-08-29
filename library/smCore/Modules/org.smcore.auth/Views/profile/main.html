@@ -1,0 +1,51 @@
+{% extends "@theme/layout.html" %}
+{% from "@theme/macros.html" import submenu %}
+
+{% set page_title = lang('auth.titles.profile_main', user.display_name) %}
+
+{% block body %}
+		{{ submenu('profile') }}
+
+		<div class="page-header">
+			<h1>{{ lang('auth.titles.profile_main', user.display_name) }}</h1>
+		</div>
+
+		<div class="well">
+			<dl class="dl-horizontal">
+				<dt>
+					Display Name:
+				</dt>
+				<dd>
+					{{ user.display_name }}
+				</dd>
+
+				<dt>
+					Email: 
+				</dt>
+				<dd>
+					{{ user.email }}
+				</dd>
+
+				<dt>
+					Registered:
+				</dt>
+				<dd>
+					...
+				</dd>
+
+				<dt>
+					Account Type:
+				</dt>
+				<dd>
+					...
+				</dd>
+
+				<dt>
+					.
+				</dt>
+				<dd>
+				.
+				</dd>
+			</dl>
+		</div>
+{% endblock %}

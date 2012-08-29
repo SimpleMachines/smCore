@@ -30,8 +30,15 @@ routes:
         match: register/activate
         controller: Register
 
-
-
+    # User account management
+    profile:
+        match: [profile, profile/:user]
+        controller: Profile
+        method: main
+    settings:
+        match: [profile/settings, profile/:user/settings]
+        controller: Profile
+        method: settings
 
     admin:
         match: admin/users
