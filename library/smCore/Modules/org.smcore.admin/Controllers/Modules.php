@@ -65,6 +65,8 @@ class Modules extends Controller
 			}
 		}
 
+		$this->_app['menu']->setActive('admin', 'admin_modules');
+
 		return $this->module->render('modules/main', array(
 			'modules' => $modules,
 		));

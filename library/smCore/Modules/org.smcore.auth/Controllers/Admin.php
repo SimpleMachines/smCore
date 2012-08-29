@@ -33,6 +33,9 @@ class Admin extends Controller
 
 	public function main()
 	{
+
+		$this->_app['menu']->setActive('admin', 'admin_users', 'admin_users_main');
+
 		return $this->module->render('admin/main');
 	}
 }

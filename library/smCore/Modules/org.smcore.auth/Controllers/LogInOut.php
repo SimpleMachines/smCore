@@ -35,6 +35,8 @@ class LogInOut extends Controller
 	{
 		$input = $this->_app['input'];
 
+		$this->_app['menu']->setActive('login');
+
 		// I'd actually like to use the router to route to a different method depending on whether this was a GET or a POST
 		if ($input->post->keyExists('submit'))
 		{

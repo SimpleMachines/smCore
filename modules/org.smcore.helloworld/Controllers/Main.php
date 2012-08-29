@@ -10,6 +10,8 @@ class Main extends Controller
 	{
 		$dir = new \smCore\Filesystem\Directory(__DIR__ . '/doesntexist/');
 
+		$this->_app['menu']->setActive('home');
+
 		return $this->module->render('hello_world');
 	}
 }

@@ -85,7 +85,12 @@ class Application extends Container
 		$this['lang'] = $this['lang'] = $this['storage_factory']->factory('Languages')->getByCode($this['user']['language']);
 		$this['lang']->loadPackageByName('org.smcore.common');
 
-		$this['menu'] = new Menu($this);
+		$this['menu'] = new Menu;
+
+		$this['events']->fire('org.smcore.core.menu', array(
+			'menu' => &$this['menu'],
+			'app' => $this,
+		));
 
 		// @todo don't just call this here
 		$theme = $this['theme'];

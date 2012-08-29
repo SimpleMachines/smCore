@@ -47,7 +47,6 @@ class Extension extends Twig_Extension
 				'is_safe' => array('html'),
 			)),
 			'lang' => new Twig_Function_Function(__CLASS__ . '::function_lang'),
-			'smcMenu' => new Twig_Function_Function(__CLASS__ . '::function_smcMenu'),
 			'url_for' => new Twig_Function_Function(__CLASS__ . '::function_url_for', array(
 				'is_safe' => array('all'),
 			)),
@@ -87,31 +86,6 @@ class Extension extends Twig_Extension
 	public function function_lang($key)
 	{
 		return self::$_app['lang']->get($key, array_slice(func_get_args(), 1));
-	}
-
-	/**
-	 * 
-	 *
-	 * @param 
-	 *
-	 * @return 
-	 */
-	public static function function_smcMenu()
-	{
-		$menu = self::$_app['menu'];
-		$args = func_get_args();
-
-		if (!empty($args))
-		{
-			if (is_array($args[0]))
-			{
-				$args = $args[0];
-			}
-
-			call_user_func_array(array($menu, 'setActive'), $args);
-		}
-
-		return $menu->getMenu();
 	}
 
 	/**

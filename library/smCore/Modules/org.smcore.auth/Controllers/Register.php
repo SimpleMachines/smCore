@@ -33,6 +33,8 @@ class Register extends Controller
 
 	public function register()
 	{
+		$this->_app['menu']->setActive('register');
+
 		// We're going to skip the agreement part for now. That might be SMF-only, or a plugin.
 		return $this->module->render('register/start');
 
@@ -133,6 +135,8 @@ class Register extends Controller
 			->setPassword($pass1)
 			->save()
 		;
+
+		$this->_app['menu']->setActive('register');
 
 		return $this->module->render('register/finish');
 	}

@@ -42,6 +42,8 @@ class Main extends Controller
 	{
 		$app = $this->_app;
 
+		$this->_app['menu']->setActive('admin', 'admin_center');
+
 		return $this->module->render('main', array(
 			'smcore_version' => '???', // @todo: fetch from smCore.org
 			'installed_smcore_version' => $app::VERSION,
@@ -55,6 +57,8 @@ class Main extends Controller
 		{
 			$this->module->validateSession('admin');
 		}
+
+		$this->_app['menu']->setActive('admin');
 
 		return $this->module->render('admin_login');
 	}

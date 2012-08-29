@@ -3,23 +3,22 @@
 #}
 
 {% macro submenu(which) %}
-{% set submenu = smcMenu(menu_active) %}
 		<ul class="nav nav-tabs">
-{% for item in submenu[which]['submenu'] %}
-{% if item.submenu is not empty %}
+{% for item in menu[which] if item.visible %}
+{% if item.hasChildren %}
 			<li class="dropdown{{ item.active ? ' active' : '' }}">
-				<a class="dropdown-toggle" data-toggle="dropdown" href="{{ item.url }}">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="{{ url_for(item.url) }}">
 					{{ item.title }}
 					<b class="caret"></b>
 				</a>
 				<ul class="dropdown-menu">
-{% for subitem in item.submenu %}
-					<li{{ subitem.active ? ' class="active"' : '' }}><a href="{{ subitem.url }}">{{ subitem.title }}</a></li>
+{% for subitem in item %}
+					<li{{ subitem.active ? ' class="active"' : '' }}><a href="{{ url_for(subitem.url) }}">{{ subitem.title }}</a></li>
 {% endfor %}
 				</ul>
 			</li>
 {% else %}
-			<li{{ item.active ? ' class="active"' : '' }}><a href="{{ item.url }}">{{ item.title }}</a></li>
+			<li{{ item.active ? ' class="active"' : '' }}><a href="{{ url_for(item.url) }}">{{ item.title }}</a></li>
 {% endif %}
 {% endfor %}
 		</ul>

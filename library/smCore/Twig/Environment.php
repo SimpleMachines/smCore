@@ -48,6 +48,7 @@ class Environment extends Twig_Environment
 			'scripturl' => $settings['url'],
 			'theme_url' => rtrim($settings['url'], '/') . '/themes/default', // @todo
 			'default_theme_url' => rtrim($settings['url'], '/') . '/themes/default',
+			'menu' => $this->_app['menu'],
 		), parent::mergeGlobals($context));
 	}
 

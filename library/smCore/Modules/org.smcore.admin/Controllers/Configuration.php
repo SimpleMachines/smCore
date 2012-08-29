@@ -111,6 +111,8 @@ class Configuration extends Controller
 			),
 		)));
 
+		$this->_app['menu']->setActive('admin', 'admin_config');
+
 		return $this->module->render('configuration/form', array(
 			'form' => $form,
 		));

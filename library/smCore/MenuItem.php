@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Menu Class
+ * smCore Menu Item Class
  *
  * @package smCore
  * @author smCore Dev Team
@@ -24,25 +24,106 @@ namespace smCore;
 
 use ArrayAccess, ArrayIterator, IteratorAggregate;
 
-class Menu implements ArrayAccess, IteratorAggregate
+class MenuItem implements ArrayAccess, IteratorAggregate
 {
+	protected $_name;
+	protected $_title;
+	protected $_visible;
+	protected $_url;
+	protected $_order;
+	protected $_active = false;
+
 	protected $_children = array();
 
-	public function __construct()
+	public function __construct($name, $title, $url, $visible = true, $order = 50)
 	{
+		$this->_name = $name;
+		$this->_title = $title;
+		$this->_url = $url;
+		$this->_visible = (bool) $visible;
+		$this->_order = (int) $order;
 	}
 
-	public function setActive()
+	public function setName($name)
 	{
-		$active = func_get_args();
-		$current = array_shift($active);
+		$this->_name = $name;
 
-		if (!empty($current) && isset($this->_children[$current]))
+		return $this;
+	}
+
+	public function getName()
+	{
+		return $this->_name;
+	}
+
+	public function setTitle($title)
+	{
+		$this->_title = $title;
+
+		return $this;
+	}
+
+	public function getTitle()
+	{
+		return $this->_title;
+	}
+
+	public function setUrl($url)
+	{
+		$this->_url = $url;
+
+		return $this;
+	}
+
+	public function getUrl()
+	{
+		return $this->_url;
+	}
+
+	public function setVisible($visible)
+	{
+		$this->_visible = (bool) $visible;
+
+		return $this;
+	}
+
+	public function getVisible()
+	{
+		return $this->_visible;
+	}
+
+	public function setOrder($order)
+	{
+		$this->_order = (int) $order;
+
+		return $this;
+	}
+
+	public function getOrder()
+	{
+		return $this->_order;
+	}
+
+	public function setActive($active, $children)
+	{
+		$this->_active = (bool) $active;
+
+		if (is_array($children) && !empty($children))
 		{
-			$this->_children[$current]->setActive(true, $active);
+			$current = array_shift($children);
+
+			if (!empty($current) && isset($this->_children[$current]))
+			{
+				$this->_children[$current]->setActive(true, $children);
+			}
 		}
 
 		return $this;
+	}
+
+	public function isActive()
+	{
+		return $this->_active;
 	}
 
 	public function addItem(MenuItem $item)

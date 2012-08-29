@@ -54,6 +54,9 @@ class Maintenance extends Controller
 			),
 		);
 
+
+		$this->_app['menu']->setActive('admin', 'admin_maintenance', 'admin_maintenance_main');
+
 		return $module->render('maintenance/main', array(
 			'tasks' => $tasks
 		));
@@ -63,6 +66,8 @@ class Maintenance extends Controller
 	{
 		$cache_info = $this->_app['cache']->getStats();
 
+		$this->_app['menu']->setActive('admin', 'admin_maintenance', 'admin_maintenance_cache');
+
 		return $this->module->render('maintenance/cache', array(
 			'cache_stats' => $cache_info,
 		));
@@ -70,6 +75,9 @@ class Maintenance extends Controller
 
 	public function database()
 	{
+
+		$this->_app['menu']->setActive('admin', 'admin_maintenance', 'admin_maintenance_database');
+
 		return $this->module->render('maintenance/database');
 	}
 }

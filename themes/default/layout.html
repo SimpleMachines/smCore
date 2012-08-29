@@ -24,12 +24,27 @@
 				<a class="brand" href="{{ scripturl }}">smCore</a>
 				<div class="nav-collapse">
 					<ul class="nav">
-{% set menu = smcMenu(menu_active) %}
-{% for item in menu %}
-						<li{{ item.active ? ' class="active"' : '' }}><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% for item in menu if item.visible %}
+						<li id="menu_{{ item.name }}"{{ item.active ? ' class="active"' : '' }}>
+							<a href="{{ url_for(item.url) }}">{{ item.title }}</a>
+						</li>
 {% endfor %}
 					</ul>
 				</div>
+{% if user.id > 0 %}
+				<ul class="nav pull-right">
+					<li class="dropdown">
+						<a class="dropdown-toggle" href="#" data-toggle="dropdown">{{ user.display_name }} <b class="caret"></b></a>
+						<ul class="dropdown-menu">
+{% for item in menu['profile'] if item.visible %}
+							<li id="menu_{{ item.name }}"{{ item.active ? ' class="active"' : '' }}>
+								<a href="{{ url_for(item.url) }}">{{ item.title }}</a>
+							</li>
+{% endfor %}
+						</ul>
+					</li>
+				</ul>
+{% endif %}
 			</div>
 		</div>
 	</div>
