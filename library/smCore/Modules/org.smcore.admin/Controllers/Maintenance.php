@@ -43,17 +43,28 @@ class Maintenance extends Controller
 			'clear_cache' => array(
 				'name' => $module->lang('maintenance.empty_cache'),
 				'help' => $module->lang('maintenance.empty_cache.help'),
-				'link' => '#',
-				'button_text' => $module->lang('maintenance.empty_cache.button'),
+				'buttons' => array(
+					'clear' => array(
+						'text' => $module->lang('maintenance.empty_cache.button'),
+						'href' => '#',
+					),
+				),
 			),
 			'empty_logs' => array(
 				'name' => $module->lang('maintenance.empty_logs'),
 				'help' => $module->lang('maintenance.empty_logs.help'),
-				'link' => '#',
-				'button_text' => $module->lang('maintenance.empty_logs.button'),
+				'buttons' => array(
+					'empty' => array(
+						'text' => $module->lang('maintenance.empty_logs.button'),
+						'href' => '#',
+					),
+				),
 			),
 		);
 
+		$this->_app['events']->fire('admin.maintenance.tasks', array(
+			'tasks' => &$tasks,
+		));
 
 		$this->_app['menu']->setActive('admin', 'admin_maintenance', 'admin_maintenance_main');
 

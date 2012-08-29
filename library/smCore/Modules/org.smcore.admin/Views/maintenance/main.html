@@ -10,11 +10,16 @@
 		<h1>{{ lang('admin.maintenance.titles.main') }}</h1>
 	</div>
 
-{% for task in tasks %}
+	{% for task in tasks %}
 	<h2>{{ task.name }}</h2>
 	<div class="well">
-		<a href="{{ task.link }}" class="btn btn-danger pull-right">{{ task.button_text }}</a>
-		{{ task.help }}
+		<p>
+			{{ task.help }}
+		</p>
+		
+		{% for button in task.buttons %}
+		<a href="{{ button.href }}" class="btn btn-danger">{{ button.text }}</a>
+		{% endfor %}
 	</div>
-{% endfor %}
+	{% endfor %}
 {% endblock %}
