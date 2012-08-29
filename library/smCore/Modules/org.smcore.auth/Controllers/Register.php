@@ -109,7 +109,7 @@ class Register extends Controller
 			$this->module->throwLangException('register.invalid_email');
 		}
 
-		$storage = Storage\Factory::factory('Users');
+		$storage = $this->_app['storage_factory']->factory('Users');
 
 		// Check to see if this username is taken
 		if (false !== $storage->getUserByName($username))

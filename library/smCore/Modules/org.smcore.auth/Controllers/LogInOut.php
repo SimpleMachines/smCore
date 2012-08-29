@@ -43,7 +43,7 @@ class LogInOut extends Controller
 			$username = $input->post->getRaw('login_user');
 			$password = $input->post->getRaw('login_pass');
 
-			$storage = Storage\Factory::factory('Users');
+			$storage = $this->_app['storage_factory']->factory('Users');
 
 			if (false === $user = $storage->getUserByName($username))
 			{
