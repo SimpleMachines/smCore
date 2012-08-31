@@ -36,7 +36,8 @@ class Events extends AbstractStorage
 			$result = $db->query("
 				SELECT *
 				FROM {db_prefix}event_listeners
-				WHERE listener_enabled = 1"
+				WHERE listener_enabled = 1
+				ORDER BY listener_priority ASC"
 			);
 
 			while ($row = $result->fetch())
