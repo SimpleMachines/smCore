@@ -25,6 +25,7 @@ namespace smCore;
 class EventDispatcher
 {
 	protected $_listeners = array();
+	protected $_global_data = array();
 
 	/**
 	 * Creates a new EventDispatcher.
@@ -50,6 +51,8 @@ class EventDispatcher
 		{
 			$this->_listeners[$listener['name']][] = $listener['callback'];
 		}
+
+		return $this;
 	}
 
 	/**
@@ -61,6 +64,8 @@ class EventDispatcher
 	public function addListener($name, $callback)
 	{
 		$this->_listeners[$name][] = $callback;
+
+		return $this;
 	}
 
 	/**
@@ -74,7 +79,11 @@ class EventDispatcher
 	{
 		if (!$event instanceof Event)
 		{
-			$event = new Event($event, $data);
+			$event = new Event($event, array_merge($this->_global_data, $data));
+		}
+		else
+		{
+			$event->setData(array_merge($this->_global_data, $event->getData()));
 		}
 
 		$name = $event->getName();
@@ -100,6 +109,18 @@ class EventDispatcher
 				}
 			}
 		}
+	}
+
+	public function setGlobalData(array $data)
+	{
+		$this->_global_data = $data;
+
+		return $this;
+	}
+
+	public function getGlobalData()
+	{
+		return $this->_global_data;
 	}
 
 	public function getListeners($name = null)

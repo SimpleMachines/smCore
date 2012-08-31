@@ -76,7 +76,13 @@ class Application extends Container
 		$this['response'] = new Response($this);
 
 		$this['events'] = new EventDispatcher;
-		$this['events']->addListeners($this['storage_factory']->factory('Events')->getActiveListeners());
+		$this['events']
+			->addListeners($this['storage_factory']->factory('Events')->getActiveListeners())
+			// All events will get the app object. Makes things easier.
+			->setGlobalData(array(
+				'app' => $this,
+			))
+		;
 
 		$this['user'] = $this['storage_factory']->factory('Users')->getCurrentUser();
 
@@ -84,12 +90,12 @@ class Application extends Container
 
 		$this['lang'] = $this['lang'] = $this['storage_factory']->factory('Languages')->getByCode($this['user']['language']);
 		$this['lang']->loadPackageByName('org.smcore.common');
+		$this['lang']->loadPackagesByType('menu');
 
 		$this['menu'] = new Menu;
 
 		$this['events']->fire('org.smcore.core.menu', array(
 			'menu' => &$this['menu'],
-			'app' => $this,
 		));
 
 		// @todo don't just call this here
@@ -167,20 +173,17 @@ class Application extends Container
 	 */
 	public function loadTheme()
 	{
-		$user = $this['user'];
-		$id = $user['theme'];
 		$themes = $this['storage_factory']->factory('Themes');
-		$settings = $this['settings'];
 
 		try
 		{
-			$theme = $themes->getById($user['theme']);
+			$theme = $themes->getById($this['user']['theme']);
 		}
 		catch (Exception $e)
 		{
-			if ($settings['default_theme'] !== $id)
+			if ($this['settings']['default_theme'] !== $this['user']['theme'])
 			{
-				$theme = $themes->getById($settings['default_theme']);
+				$theme = $themes->getById($this['settings']['default_theme']);
 			}
 			else
 			{
@@ -190,12 +193,12 @@ class Application extends Container
 
 		Twig_Autoloader::register();
 
-		$twig_loader = new Twig_Loader_Filesystem($settings['theme_dir'] . '/' . $theme->getDirectory());
-		$twig_loader->addPath($settings['theme_dir'] . '/' . $theme->getDirectory(), 'theme');
+		$twig_loader = new Twig_Loader_Filesystem($this['settings']['theme_dir'] . '/' . $theme->getDirectory());
+		$twig_loader->addPath($this['settings']['theme_dir'] . '/' . $theme->getDirectory(), 'theme');
 
 		$twig = new Twig\Environment($this, $twig_loader, array(
-			'cache' => $settings['cache_dir'],
-			'recompile' => true,
+			'cache' => $this['settings']['cache_dir'],
+			'recompile' => (bool) $this['settings']['debug'],
 			'auto_reload' => true,
 		));
 
