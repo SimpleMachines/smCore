@@ -30,8 +30,6 @@ class Settings extends smCore\Settings
 
 		/**
 		 * Use database-driven sessions instead of file-based sessions?
-		 *
-		 * @todo: Change this to a string, to allow for memcached/etc. to be used for sessions?
 		 */
 		'session_driver'    => 'Database',
 
@@ -66,12 +64,12 @@ class Settings extends smCore\Settings
 		 *         prefix   string Prefix all table names with this string, to prevent clashes with other software or other smCore installations
 		 */
 		'database' => array(
-			'driver' => 'PDOMySql',
-			'host' => 'localhost',
-			'user' => '',
+			'driver'   => 'PDOMySql',
+			'host'     => 'localhost',
+			'user'     => '',
 			'password' => '',
-			'dbname' => '',
-			'prefix' => 'smcore_',
+			'dbname'   => '',
+			'prefix'   => 'smcore_',
 		),
 
 		/**
@@ -96,5 +94,7 @@ class Settings extends smCore\Settings
 			'driver'      => 'Blackhole',
 			'default_ttl' => 3600,
 		),
+
+		'debug' => true,
 	);
 }

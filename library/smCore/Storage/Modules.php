@@ -45,7 +45,6 @@ class Modules extends AbstractStorage implements IteratorAggregate
 			$settings = $this->_app['settings'];
 
 			// Load internal modules first, then any user-added modules
-			// @todo won't this try /path/to/smcore/library/smCore/Storage/Modules ?
 			$this->_readModulesFromDirectory(dirname(__DIR__) . '/Modules');
 			$this->_readModulesFromDirectory($settings['module_dir']);
 
