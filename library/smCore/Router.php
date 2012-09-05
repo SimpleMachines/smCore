@@ -69,7 +69,9 @@ class Router
 			}
 		}
 
-		return array('method' => 404);
+		return array(
+			'method' => 404,
+		);
 	}
 
 	/**
@@ -111,6 +113,37 @@ class Router
 		}
 
 		return null;
+	}
+
+	public function addRoute($match, $callback, $identifier)
+	{
+		$type = 'literal';
+		$match = trim($match, '/');
+
+		// If any of these characters is in the route, it has to be a regex.
+		if (false !== strpbrk($match, '([{?*'))
+		{
+			$type = 'regex';
+			$match = str_replace('/', '\\/', $match);
+
+			// Test for a valid regex... @todo: throw an Exception?
+			if (false === preg_match('/' . $match . '/', ''))
+			{
+				return;
+			}
+		}
+		else if (false !== strpos($match, ':'))
+		{
+			$type = 'regex';
+			$match = preg_replace('/:([^\/]+)/', '(?<$1>[^/]+)', $match);
+			$match = str_replace('/', '\\/', $match);
+		}
+
+		$this->_routes[$type][$match] = array(
+			'module' => $identifier,
+			'controller' => $callback[0],
+			'method' => $callback[1],
+		);
 	}
 
 	/**
@@ -258,33 +291,7 @@ class Router
 			// @todo: clean the regexes?
 			foreach ($route['match'] as $match)
 			{
-				$type = 'literal';
-				$match = trim($match, '/ ');
-
-				// If any of these characters is in the route, it has to be a regex.
-				if (false !== strpbrk($match, '([{?*'))
-				{
-					$type = 'regex';
-					$match = str_replace('/', '\\/', $match);
-
-					// Test for a valid regex... @todo: throw an Exception?
-					if (false === preg_match('/' . $match . '/', ''))
-					{
-						continue;
-					}
-				}
-				else if (false !== strpos($match, ':'))
-				{
-					$type = 'regex';
-					$match = preg_replace('/:([^\/]+)/', '(?<$1>[^/]+)', $match);
-					$match = str_replace('/', '\\/', $match);
-				}
-
-				$this->_routes[$type][$match] = array(
-					'module' => $identifier,
-					'controller' => $route['controller'],
-					'method' => $route['method'],
-				);
+				$this->addRoute($match, array($route['controller'], $route['method']), $identifier);
 			}
 		}
 

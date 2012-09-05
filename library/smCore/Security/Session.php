@@ -96,9 +96,7 @@ class Session
 
 	public function exists()
 	{
-		$cookie = $this->_app['input']->cookie->getRaw($this->_app['settings']['cookie_name']);
-
-		if (empty($cookie))
+		if (empty($_COOKIE[$this->_app['settings']['cookie_name']]))
 		{
 			return false;
 		}

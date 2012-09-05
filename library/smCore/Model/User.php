@@ -29,6 +29,7 @@ class User extends AbstractModel implements ArrayAccess
 {
 	// Data for this user
 	protected $_data = array();
+	protected $_permissions_cache = array();
 
 	/**
 	 * Create a new User object
@@ -178,12 +179,17 @@ class User extends AbstractModel implements ArrayAccess
 	 *
 	 * @return boolean
 	 */
-	public function hasPermission($name)
+	public function hasPermission($name, $check_cache = true)
 	{
+		if ($check_cache && isset($this->_permissions_cache[$name]))
+		{
+			return $this->_permissions_cache[$name];
+		}
+
 		// Try the primary role first
 		if (null !== $result = $this->_data['roles']['primary']->hasPermission($name))
 		{
-			return $result;
+			return $this->_permissions_cache[$name] = $result;
 		}
 
 		if (!empty($this->_data['roles']['additional']))
@@ -192,12 +198,17 @@ class User extends AbstractModel implements ArrayAccess
 			{
 				if (null !== $result = $role->hasPermission($name))
 				{
-					return $result;
+					return $this->_permissions_cache[$name] = $result;
 				}
 			}
 		}
 
-		return false;
+		return $this->_permissions_cache[$name] = false;
+	}
+
+	public function clearPermissionsCache()
+	{
+		$this->_permissions_cache = array();
 	}
 
 	public function hasRole($role)

@@ -50,12 +50,16 @@ class Application extends Container
 	 */
 	public function run()
 	{
-		if (null !== $this['start_time'])
+		if (null !== $this['request'])
 		{
 			throw new Exception('Cannot load the application again!');
 		}
 
-		$this['start_time'] = microtime(true);
+		$this['request'] = new Request;
+		$this['request']
+			->setBaseUrl($this['settings']['url'])
+			->parse()
+		;
 
 		$this['storage_factory'] = new Storage\Factory($this);
 
@@ -63,17 +67,17 @@ class Application extends Container
 		new Handlers\Exception($this);
 		new Handlers\Session($this);
 
-		$this['session'] = new Security\Session($this);
 
 		$this->add('db', array($this, 'loadDatabase'));
 		$this->add('cache', array($this, 'loadCache'));
 		$this->add('mail', array($this, 'loadMail'));
 		$this->add('twig', array($this, 'loadTheme'));
+		$this['session'] = new Security\Session($this);
 
 		$this['input'] = Inspekt::makeSuperCage(null, false);
 
-		$this['request'] = new Request($this);
-		$this['response'] = new Response($this);
+		$this['response'] = new Response($this['request']);
+		$this['response']->setBaseUrl($this['settings']['url']);
 
 		$this['events'] = new EventDispatcher;
 		$this['events']
@@ -82,24 +86,15 @@ class Application extends Container
 			->setGlobalData(array(
 				'app' => $this,
 			))
+			->fire('org.smcore.core.events_loaded')
 		;
 
 		$this['user'] = $this['storage_factory']->factory('Users')->getCurrentUser();
 
 		$this['modules'] = $this['storage_factory']->factory('Modules');
 
-		$this['lang'] = $this['lang'] = $this['storage_factory']->factory('Languages')->getByCode($this['user']['language']);
+		$this['lang'] = $this['storage_factory']->factory('Languages')->getByCode($this['user']['language']);
 		$this['lang']->loadPackageByName('org.smcore.common');
-		$this['lang']->loadPackagesByType('menu');
-
-		$this['menu'] = new Menu;
-
-		$this['events']->fire('org.smcore.core.menu', array(
-			'menu' => &$this['menu'],
-		));
-
-		// @todo don't just call this here
-		$theme = $this['theme'];
 
 		$this['events']->fire('org.smcore.core.pre_router');
 
@@ -118,6 +113,14 @@ class Application extends Container
 		}
 
 		$route = $this['router']->match($this['request']->getPath());
+
+		$this['lang']->loadPackagesByType('menu');
+
+		$this['menu'] = new Menu;
+
+		$this['events']->fire('org.smcore.core.menu', array(
+			'menu' => &$this['menu'],
+		));
 
 		if (is_int($route['method']))
 		{

@@ -280,9 +280,13 @@ class Module
 	/**
 	 * Kick a user out if they don't have the correct permissions.
 	 *
-	 * @param $name The permission to check. It will be prepended by this module's identifier and a period ("edit" -> "org.smcore.yourmodule" . "." . $name)
+	 * @param string  $name           The permission to check.
+	 * @param boolean $use_namespace  Whether or not this module's namespace should be prepended to the permission name.
+	 * @param mixed   $lang_exception A custom exception key to use instead of the generic one.
+	 *
+	 * @return self
 	 */
-	public function requirePermission($name, $use_namespace = true)
+	public function requirePermission($name, $use_namespace = true, $lang_exception = null)
 	{
 		if ($use_namespace)
 		{
@@ -291,12 +295,17 @@ class Module
 
 		if (!$this->_app['user']->hasPermission($name))
 		{
-			throw new Exception('exceptions.no_permission');
+			throw new Exception($exception_key ?: 'exceptions.no_permission');
 		}
 
 		return $this;
 	}
 
+	/**
+	 * Require the user to be an administrator to access this page.
+	 *
+	 * @return self
+	 */
 	public function requireAdmin()
 	{
 		if (!$this->_app['user']->isAdmin())
@@ -304,7 +313,7 @@ class Module
 			if (!$this->_app['user']->isLoggedIn())
 			{
 				$this->_app['session']->start();
-				$_SESSION['redirect_url'] = $this->_app['request']->getUrl();
+				$_SESSION['redirect_url'] = $this->_app['request']->getPath();
 				$this->_app['response']->redirect('login');
 			}
 
@@ -445,15 +454,15 @@ class Module
 	/**
 	 * Check a token sent with a (likely destructive) request.
 	 *
-	 * @param string $name          The name of the token
-	 * @param string $value         The token value that was sent
-	 * @param string $langException A language key to use instead of the default if the token doesn't match
+	 * @param string $name           The name of the token
+	 * @param string $value          The token value that was sent
+	 * @param string $lang_exception A language key to use instead of the default if the token doesn't match
 	 */
-	public function checkToken($name, $value, $langException = null)
+	public function checkToken($name, $value, $lang_exception = null)
 	{
 		if ($value !== $this->createToken($name))
 		{
-			throw new Exception($langException ? $this->lang($langException) : 'exceptions.modules.invalid_csrf');
+			throw new Exception($lang_exception ?: 'exceptions.modules.invalid_csrf');
 		}
 	}
 

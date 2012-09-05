@@ -28,11 +28,13 @@ namespace smCore;
 
 class Response
 {
-	protected $_app;
+	protected $_request;
 
-	private $_headers = array();
-	private $_meta = array();
-	private $_body = null;
+	protected $_headers = array();
+	protected $_meta = array();
+	protected $_body = '';
+
+	protected $_base_url = '';
 
 	// Some common response codes
 	const HTTP_200 = 'HTTP/1.1 200 OK';
@@ -52,9 +54,9 @@ class Response
 	/**
 	 * Constructor for the Response class.
 	 */
-	public function __construct(Application $app)
+	public function __construct(Request $request)
 	{
-		$this->_app = $app;
+		$this->_request = $request;
 
 		// Security.
 		$this
@@ -64,7 +66,7 @@ class Response
 
 		// Search engines leak prevention
 		// Do not let search engines index anything if there is something in $_GET.
-		if ($this->_app['request']->hasGetParams())
+		if (!empty($_SERVER['QUERY_STRING']))
 		{
 			$this->_meta[] = '<meta name="robots" content="noindex" />';
 		}
@@ -83,14 +85,19 @@ class Response
 	/**
 	 * Add a HTTP header to the Response.
 	 *
-	 * @param string $header A text header to send.
+	 * @param mixed $header A text header to send.
+	 *
+	 * @return self
 	 */
 	public function addHeader($header)
 	{
 		// We'll have to factor this method nicely, let it be for the moment, to see all the needs here.
-
-		// @todo: Exception if the header has newlines in it. Big no no.
 		$header = trim($header);
+
+		if (false !== strpos($header, "\n") || false !== strpos($header, "\r"))
+		{
+			throw new Exception('Headers cannot contain newlines.');
+		}
 
 		// Only allow one HTTP response code. This helps us add simple headers via ->addHeader(404)
 		if (ctype_digit($header) && defined('self::HTTP_' . $header))
@@ -111,10 +118,26 @@ class Response
 
 	/**
 	 * Clear all stored headers.
+	 *
+	 * @return self
 	 */
 	public function clearHeaders()
 	{
 		$this->_headers = array();
+
+		return $this;
+	}
+
+	/**
+	 * Set the base URL for any potential redirects
+	 *
+	 * @param string $url
+	 *
+	 * @return self
+	 */
+	public function setBaseUrl($url)
+	{
+		$this->_base_url = $url;
 
 		return $this;
 	}
@@ -159,6 +182,9 @@ class Response
 			header(self::HTTP_200);
 		}
 
+		// Add a header for the total time taken to generate the response
+		header('smCore-Response-Time: ' . sprintf('%04f', microtime(true) - $this->_request->getStartTime()) . 's');
+
 		echo $this->_body;
 
 		die();
@@ -174,12 +200,14 @@ class Response
 	{
 		if (null === $url)
 		{
-			$url = $this->_app['settings']['url'];
+			$url = $this->_base_url;
 		}
 		else if (!preg_match('/^https?:\/\//', $url))
 		{
-			$url = $this->_app['settings']['url'] . '/' . ltrim($url, '/');
+			$url = $this->_base_url . '/' . ltrim($url, '/');
 		}
+
+		// @todo: send an HTML body that backs up the redirect header
 
 		$this
 			->addHeader(303)
