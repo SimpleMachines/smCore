@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Authentication Module - Profile Controller
+ * smCore Users Module - Admin Controller
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,26 +20,22 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Modules\Auth\Controllers;
+namespace smCore\Modules\Users\Controllers;
 
-use smCore\Module\Controller;
+use smCore\Module\Controller, smCore\Storage;
 
-class Profile extends Controller
+class Admin extends Controller
 {
 	public function preDispatch()
 	{
 		$this->module->loadLangPackage();
 	}
 
-	public function summary()
+	public function main()
 	{
-		$this->_app['menu']->setActive('user', 'user_profile');
-		return $this->module->render('profile/summary');
-	}
 
-	public function settings()
-	{
-		$this->_app['menu']->setActive('user', 'user_settings');
-		return $this->module->render('profile/settings');
+		$this->_app['menu']->setActive('admin', 'admin_users', 'admin_users_main');
+
+		return $this->module->render('admin/users');
 	}
 }

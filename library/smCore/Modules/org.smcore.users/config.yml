@@ -1,0 +1,29 @@
+name: Internal smCore Users Module
+description: |
+    Profiles and settings and stuff.
+identifier: org.smcore.users
+version: 1.0 Alpha 1
+author:
+    name: smCore Dev Team
+    website: http://smcore.org
+
+namespaces:
+    php:      smCore\Modules\Users
+    lang:     users
+    template: users
+
+routes:
+    # User account management
+    user:
+        match: [user, user/:username]
+        controller: Profile
+        method: summary
+    settings:
+        match: user/:username/settings
+        controller: Profile
+        method: settings
+
+    admin:
+        match: admin/users
+        controller: Admin
+        method: main

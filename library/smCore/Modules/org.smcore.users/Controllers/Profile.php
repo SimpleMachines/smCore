@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Authentication Module - Profile Controller
+ * smCore Users Module - Profile Controller
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,7 +20,7 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Modules\Auth\Controllers;
+namespace smCore\Modules\Users\Controllers;
 
 use smCore\Module\Controller;
 
@@ -34,12 +34,12 @@ class Profile extends Controller
 	public function summary()
 	{
 		$this->_app['menu']->setActive('user', 'user_profile');
-		return $this->module->render('profile/summary');
+		return $this->module->render('profile');
 	}
 
 	public function settings()
 	{
 		$this->_app['menu']->setActive('user', 'user_settings');
-		return $this->module->render('profile/settings');
+		return $this->module->render('settings');
 	}
 }
