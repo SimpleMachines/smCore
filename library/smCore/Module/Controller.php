@@ -29,11 +29,6 @@ abstract class Controller
 	protected $_app;
 	protected $module;
 
-	/**
-	 * 
-	 *
-	 * @param smCore\Module $parentModule
-	 */
 	public function __construct(Application $app, Module $module)
 	{
 		$this->_app = $app;

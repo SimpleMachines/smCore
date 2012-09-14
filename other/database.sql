@@ -15,11 +15,19 @@ DROP TABLE IF EXISTS `{db_prefix}event_listeners`;
 
 CREATE TABLE `{db_prefix}event_listeners` (
   `id_listener` int(8) unsigned NOT NULL AUTO_INCREMENT,
-  `listener_name` tinytext CHARACTER SET latin1 NOT NULL,
-  `listener_callback` tinytext CHARACTER SET latin1 NOT NULL,
+  `listener_name` tinytext NOT NULL,
+  `listener_callback` tinytext NOT NULL,
   `listener_enabled` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `listener_priority` tinyint(2) unsigned NOT NULL DEFAULT '50',
   PRIMARY KEY (`id_listener`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `{db_prefix}event_listeners` (`id_listener`, `listener_name`, `listener_callback`, `listener_enabled`, `listener_priority`)
+VALUES
+	(1,'org.smcore.core.menu','smCore\\Modules\\Auth\\Events::menu',1,50),
+	(2,'org.smcore.core.menu','smCore\\HelloWorld\\Events::menu',1,50),
+	(3,'org.smcore.core.menu','smCore\\Modules\\Admin\\Events::menu',1,10),
+	(5,'org.smcore.core.menu','smCore\\Modules\\Users\\Events::menu',1,50);
 
 # ------------------------------------------------------------
 # Dump of table lang_packages
@@ -38,7 +46,12 @@ INSERT INTO `{db_prefix}lang_packages` (`id_package`, `package_name`, `package_t
 VALUES
 	(1,'org.smcore.common','common'),
 	(2,'org.smcore.auth','common'),
-	(3,'org.smcore.auth.menu','menu');
+	(3,'org.smcore.auth.menu','menu'),
+	(4,'org.smcore.admin','common'),
+	(5,'org.smcore.admin.menu','menu'),
+	(6,'org.smcore.users.menu','menu'),
+	(7,'org.smcore.users','common');
+
 # ------------------------------------------------------------
 # Dump of table lang_strings
 # ------------------------------------------------------------
@@ -57,6 +70,7 @@ INSERT INTO `{db_prefix}lang_strings` (`string_language`, `string_package`, `str
 VALUES
 	(1,1,'admin','Admin'),
 	(1,4,'admin.authenticate','Authenticate'),
+	(1,4,'admin.end_session','End Session'),
 	(1,4,'admin.maintenance.empty_cache','Clear the Cache'),
 	(1,4,'admin.maintenance.empty_cache.button','Clear'),
 	(1,4,'admin.maintenance.empty_cache.help','This function will empty out the cache should you need it to be cleared.'),
@@ -68,6 +82,7 @@ VALUES
 	(1,5,'admin.menu.config','Configuration'),
 	(1,5,'admin.menu.main','Admin Center'),
 	(1,5,'admin.menu.maintenance','Maintenance'),
+	(1,5,'admin.menu.maintenance.cache','Cache'),
 	(1,5,'admin.menu.maintenance.database','Database'),
 	(1,5,'admin.menu.maintenance.main','General'),
 	(1,5,'admin.menu.modules','Modules'),
@@ -100,9 +115,10 @@ VALUES
 	(1,4,'admin.settings.url.help','The full URL to this site'),
 	(1,4,'admin.settings.urls_directories','URLs & Directories'),
 	(1,4,'admin.titles.authenticate','Admin Authentication'),
-	(1,4,'admin.titles.cache','Cache Info'),
 	(1,4,'admin.titles.installed_modules','Installed Modules'),
 	(1,4,'admin.titles.main','Admin Center'),
+	(1,4,'admin.titles.maintenance.cache','Cache Maintenance'),
+	(1,4,'admin.titles.maintenance.database','Database Maintenance'),
 	(1,4,'admin.titles.settings','General Settings'),
 	(1,4,'admin.welcome_message','Welcome, %1$s! This is your \"Administration Center\". From here, you can edit settings, maintain your website, view logs, install packages, manage themes, and many other things.\n\nIf you have any trouble, please look at the \"<a href=\"%2$s\">Support & Credits</a>\" page. If the information there doesn\'t help you, feel free to <a href=\"http://smcore.org/forum/\">look to us for help</a> with the problem.'),
 	(1,2,'auth.admin.titles.main','User Administration'),
@@ -119,8 +135,6 @@ VALUES
 	(1,2,'auth.login.log_in','Log In'),
 	(1,2,'auth.login.log_in_for','Log in for'),
 	(1,2,'auth.login.stay_logged_in','Stay logged in'),
-	(1,3,'auth.menu.admin.maintenance.users','Users'),
-	(1,3,'auth.menu.admin.users','Users'),
 	(1,3,'auth.menu.login','Log In'),
 	(1,3,'auth.menu.logout','Log Out'),
 	(1,3,'auth.menu.register','Register'),
@@ -155,7 +169,14 @@ VALUES
 	(1,1,'submit','Submit'),
 	(1,1,'terms_and_privacy','Terms of Use & Privacy Policy'),
 	(1,1,'terms_of_use','Terms of Use'),
-	(1,1,'username','Username\n');
+	(1,1,'username','Username\n'),
+	(1,6,'users.menu.admin.maintenance.users','Users'),
+	(1,6,'users.menu.admin.users','Users'),
+	(1,6,'users.menu.profile','Profile'),
+	(1,6,'users.menu.settings','Settings'),
+	(1,6,'users.menu.summary','Summary'),
+	(1,7,'users.titles.settings','Account Settings'),
+	(1,7,'users.titles.summary','%s\'s Profile');
 
 # ------------------------------------------------------------
 # Dump of table languages
@@ -173,31 +194,6 @@ CREATE TABLE `{db_prefix}languages` (
 INSERT INTO `{db_prefix}languages` (`id_language`, `language_code`, `language_name`)
 VALUES
 	(1,'en_US','English (American)');
-
-# ------------------------------------------------------------
-# Dump of table menu
-# ------------------------------------------------------------
-
-DROP TABLE IF EXISTS `{db_prefix}menu`;
-
-CREATE TABLE `{db_prefix}menu` (
-  `id_menu` int(8) unsigned NOT NULL AUTO_INCREMENT,
-  `menu_title` varchar(255) NOT NULL DEFAULT '',
-  `menu_visible` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `menu_module` varchar(255) NOT NULL DEFAULT '',
-  `menu_parent` int(8) unsigned NOT NULL,
-  `menu_order` tinyint(3) unsigned NOT NULL DEFAULT '50',
-  `menu_url` varchar(255) NOT NULL,
-  `menu_permission` varchar(255) NOT NULL DEFAULT '',
-  `menu_name` varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id_menu`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-INSERT INTO `{db_prefix}menu` (`id_menu`, `menu_title`, `menu_visible`, `menu_module`, `menu_parent`, `menu_order`, `menu_url`, `menu_permission`, `menu_name`)
-VALUES
-	(1,'auth.menu.login',1,'org.smcore.auth',0,98,'/login/','org.smcore.auth.is_guest','login'),
-	(2,'auth.menu.register',1,'org.smcore.auth',0,99,'/register/','org.smcore.auth.is_guest','register'),
-	(3,'auth.menu.logout',1,'org.smcore.auth',0,99,'/logout/','org.smcore.auth.is_member','logout');
 
 # ------------------------------------------------------------
 # Dump of table permissions
